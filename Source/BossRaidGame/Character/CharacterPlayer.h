@@ -43,6 +43,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<class UInputAction> LookAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	TObjectPtr<class UInputAction> AttackAction;
 	virtual void BeginPlay() override;
 
 

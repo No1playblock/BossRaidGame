@@ -46,6 +46,14 @@ ACharacterPlayer::ACharacterPlayer()
 	{
 		LookAction = LookActionRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> AttackActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_Attack.IA_Attack'"));
+	if (AttackActionRef.Object)
+	{
+		AttackAction = AttackActionRef.Object;
+	}
+	
+
+
 }
 
 void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
