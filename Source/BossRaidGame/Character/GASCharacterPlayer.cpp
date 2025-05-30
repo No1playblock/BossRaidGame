@@ -10,32 +10,26 @@
 
 AGASCharacterPlayer::AGASCharacterPlayer()
 {
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f;
-	CameraBoom->bUsePawnControlRotation = true;
-
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-
-	FollowCamera->bUsePawnControlRotation = false;
+	ASC = nullptr;
 }
 
 UAbilitySystemComponent* AGASCharacterPlayer::GetAbilitySystemComponent() const
 {
-	return nullptr;
+	return ASC;
 }
 
 void AGASCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
+	UE_LOG(LogTemp, Warning, TEXT("PossessdBy"));
 	ABRPlayerState* BRPS = GetPlayerState<ABRPlayerState>();
 	if (BRPS)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("BRPS"));
+
+
 		ASC = BRPS->GetAbilitySystemComponent();
-		ASC->InitAbilityActorInfo(this, this);
+		ASC->InitAbilityActorInfo(BRPS, this);
 
 		for (const auto& StartAbility : StartAbilities)
 		{
@@ -66,20 +60,50 @@ void AGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AGASCharacterPlayer::SetupGASInputComponent()
 {
+	
 	if (IsValid(ASC) && IsValid(InputComponent))
 	{
 		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
-		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 0);
-		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AGASCharacterPlayer::GASInputReleased, 0);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 0);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AGASCharacterPlayer::GASInputReleased, 0);
+		
 		//EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 1);
 	}
 }
 
 void AGASCharacterPlayer::GASInputPressed(int32 InputId)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Input"));
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
+	if (Spec)
+	{
+		Spec->InputPressed = true;
+
+		if (Spec->IsActive())
+		{
+			ASC->AbilitySpecInputPressed(*Spec);
+		}
+		else
+		{
+			ASC->TryActivateAbility(Spec->Handle);
+		}
+	}
+	
 }
 
 void AGASCharacterPlayer::GASInputReleased(int32 InputId)
 {
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
+	if (Spec)
+	{
+		Spec->InputPressed = false;
+
+
+		if (Spec->IsActive())
+		{
+			ASC->AbilitySpecInputReleased(*Spec);
+		}
+	}
+	
 }

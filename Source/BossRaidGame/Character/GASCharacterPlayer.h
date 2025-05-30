@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "Character/BaseCharacter.h"
 #include "AbilitySystemInterface.h"
+#include "CharacterPlayer.h"
 #include "GASCharacterPlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BOSSRAIDGAME_API AGASCharacterPlayer : public ABaseCharacter, public IAbilitySystemInterface
+class BOSSRAIDGAME_API AGASCharacterPlayer : public ACharacterPlayer, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
@@ -28,12 +29,6 @@ protected:
 	void GASInputReleased(int32 InputId);
 
 protected:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class USpringArmComponent> CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UCameraComponent> FollowCamera;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
