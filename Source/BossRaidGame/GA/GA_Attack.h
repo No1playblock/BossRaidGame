@@ -26,10 +26,31 @@ public:
 
 
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+	UFUNCTION()
+	void CheckComboInput();
+
 protected:
 	UFUNCTION()
-	void OnCompletedCallback();
+	void OnCompleteCallback();
 
 	UFUNCTION()
 	void OnInterruptedCallback();
+
+	FName GetNextSection();
+
+	void StartComboTimer();
+
+	
+
+protected:
+	
+	UPROPERTY()
+	TObjectPtr<class UComboActionData> CurrentComboData;
+
+	uint8 CurrentCombo = 0;
+	FTimerHandle ComboTimerHandle;
+	bool HasNextComboInput = false;
+
+
 };
