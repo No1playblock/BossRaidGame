@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Character/ComboActionData.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()
@@ -16,10 +17,13 @@ public:
 	ABaseCharacter();
 
 	FORCEINLINE UAnimMontage* GetAttackMontage() const { return AttackMontage; }
+	FORCEINLINE UComboActionData* GetComboActionData() const { return ComboActionData; }
 protected:
 
-	UPROPERTY(EditAnywhere, Category = Montage)
+	UPROPERTY(EditAnywhere, Category = Animation)
 	TObjectPtr<class UAnimMontage> AttackMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UComboActionData> ComboActionData;
 
 };
