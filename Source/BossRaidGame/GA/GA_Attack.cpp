@@ -36,8 +36,6 @@ void UGA_Attack::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGa
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Input"));
-
 		HasNextComboInput = true;
 	}
 }
@@ -104,7 +102,6 @@ void UGA_Attack::CheckComboInput()
 	ComboTimerHandle.Invalidate();
 	if (HasNextComboInput)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CheckComboInput"));
 		MontageJumpToSection(GetNextSection());
 		StartComboTimer();
 		HasNextComboInput = false;
