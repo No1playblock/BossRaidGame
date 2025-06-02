@@ -31,5 +31,10 @@ protected:
 protected:
 	FTimerHandle SweepTimerHandle;
 
+	FVector LastLocation;
+	FVector EndLastLocation;
 
+	TSet<TWeakObjectPtr<AActor>> HitActors;
+
+	bool bHasLastLocation = false;
 };
