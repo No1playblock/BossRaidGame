@@ -17,6 +17,7 @@ class BOSSRAIDGAME_API UGA_AttackHitCheck : public UGameplayAbility
 public:
 	UGA_AttackHitCheck();
 
+	FORCEINLINE TSubclassOf<UGameplayEffect> GetDamageEffectClass() const  { return DamageEffectClass; }
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
@@ -24,9 +25,14 @@ protected:
 
 	void OnEndEventReceived(const FGameplayEventData* Payload);
 
+	UFUNCTION()
+	void OnHitResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 protected:
 	
 	TObjectPtr<class UAT_CollisionSweep> Task;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTag TriggerStartTag;
