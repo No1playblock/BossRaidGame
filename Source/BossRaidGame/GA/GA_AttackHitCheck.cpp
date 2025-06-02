@@ -51,3 +51,8 @@ void UGA_AttackHitCheck::OnEndEventReceived(const FGameplayEventData* Payload)
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
+
+void UGA_AttackHitCheck::OnHitResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
+{
+
+}
