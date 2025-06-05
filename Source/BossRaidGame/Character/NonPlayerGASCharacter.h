@@ -20,7 +20,14 @@ public:
 
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
+
+	
 		
+protected:
+	UFUNCTION()
+	void OnOutOfHealth();
+
+
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
@@ -28,4 +35,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UCharacterAttributeSet> AttributeSet;
 
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	TObjectPtr<class UAnimMontage> DeadMontage;
 };
