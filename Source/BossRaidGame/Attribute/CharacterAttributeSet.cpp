@@ -3,6 +3,7 @@
 
 #include "Attribute/CharacterAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "Tag/BRGameplayTag.h"
 
 UCharacterAttributeSet::UCharacterAttributeSet() :
 AttackRate(30.0f),
@@ -38,4 +39,14 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
+
+	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
+	{
+		Data.Target.AddLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
+		OnOutOfHealth.Broadcast();
+	}
+
+	bOutOfHealth = (GetHealth() <= 0.0f);
+
+
 }
