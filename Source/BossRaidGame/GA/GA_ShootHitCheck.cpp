@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Character/BaseCharacter.h"
 
 UGA_ShootHitCheck::UGA_ShootHitCheck()
 {
@@ -17,10 +18,10 @@ void UGA_ShootHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	
+	InvokeGameplayCue();
 	
 	UAT_LineTrace* AttackTraceTask = UAT_LineTrace::CreateTask(this, FName("LineTraceTask"));
-	//AttackTraceTask->OnComplete.AddDynamic(this, &UGA_ShootHitCheck::OnTraceResultCallback);
+	AttackTraceTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
 	AttackTraceTask->ReadyForActivation();
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
@@ -46,4 +47,12 @@ void UGA_ShootHitCheck::OnHitTarget(const FHitResult& Hit)
 			TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
+}
+void UGA_ShootHitCheck::InvokeGameplayCue()
+{
+	FGameplayCueParameters Param;
+	Param.SourceObject = this;
+	Param.Instigator = GetAvatarActorFromActorInfo();
+	Param.Location = Cast<ABaseCharacter>(GetAvatarActorFromActorInfo())->GetMesh()->GetSocketLocation(TEXT("Socket_Barrel"));
+	GetAbilitySystemComponentFromActorInfo()->ExecuteGameplayCue(GameplayCueShootTag, Param);
 }
