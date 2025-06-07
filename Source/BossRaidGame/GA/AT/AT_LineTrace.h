@@ -21,11 +21,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (DisplayName = "WaitForTrace", HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
 	static UAT_LineTrace* CreateTask(UGameplayAbility* OwningAbility, FName TaskInstanceName);
 
+	UPROPERTY(BlueprintAssignable)
+	FOnLineTraceHit OnHit;
 protected:
 	virtual void Activate() override;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnLineTraceHit OnHit;
+	
 
 	void PerformTrace();
 
