@@ -33,8 +33,8 @@ void UAT_LineTrace::PerformTrace()
 
 	ABaseCharacter* Character = Cast<ABaseCharacter>(Avatar);
 	if (!Character) return;
+	//Character->GetMesh()->GetSocketLocation(TEXT("SMG_Barrel"));
 	
-	FVector Start = Character->GetMesh()->GetSocketLocation(TEXT("SMG_Barrel"));
 
 	APlayerController* PC = Cast<APlayerController>(Avatar->GetInstigatorController());
 	if (!PC) return;
@@ -46,16 +46,19 @@ void UAT_LineTrace::PerformTrace()
 	PC->DeprojectScreenPositionToWorld(SizeX / 2.0f, SizeY / 2.0f, WorldOrigin, WorldDirection);
 
 	const float TraceLength = 10000.f;
+	FVector Start = WorldOrigin;
 	FVector End = Start + WorldDirection * TraceLength;
 
+	FVector SocketStart = Character->GetMesh()->GetSocketLocation(TEXT("Socket_Barrel"));
 	FHitResult Hit;
-	FCollisionQueryParams Params;
 	//Params.AddIgnoredActor(Avatar);
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params);
+	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Pawn);
+
+
 
 #if ENABLE_DRAW_DEBUG
-	DrawDebugLine(GetWorld(), Start, End, bHit ? FColor::Green : FColor::Red, false, 2.0f, 0, 1.0f);
+	DrawDebugLine(GetWorld(), SocketStart, End, bHit ? FColor::Green : FColor::Red, false, 2.0f, 0, 1.0f);
 #endif
 
 	if (bHit)
