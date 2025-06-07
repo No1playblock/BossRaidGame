@@ -19,14 +19,21 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 	
+
+
 protected:
 
 	UFUNCTION()
 	void OnHitTarget(const FHitResult& Hit);
 
+	void InvokeGameplayCue();
+
+protected:
 	float CurrentLevel;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UGameplayEffect> DamageEffectClass;
 	
+	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
+	FGameplayTag GameplayCueShootTag;
 };
