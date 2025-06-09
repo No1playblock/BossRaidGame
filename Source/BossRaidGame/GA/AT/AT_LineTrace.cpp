@@ -18,15 +18,13 @@ UAT_LineTrace* UAT_LineTrace::CreateTask(UGameplayAbility* OwningAbility, FName 
 	UAT_LineTrace* Task = NewAbilityTask<UAT_LineTrace>(OwningAbility, TaskInstanceName);
 	return Task;
 }
-
 void UAT_LineTrace::Activate()
 {
 	Super::Activate();
-	PerformTrace();
-	EndTask();
+	//DoShoot();
+	//EndTask();
 }
-
-void UAT_LineTrace::PerformTrace()
+void UAT_LineTrace::DoShoot()
 {
 	AActor* Avatar = GetAvatarActor();
 	if (!Avatar) return;
@@ -54,11 +52,11 @@ void UAT_LineTrace::PerformTrace()
 	//Params.AddIgnoredActor(Avatar);
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Pawn);
-
+	
 
 
 #if ENABLE_DRAW_DEBUG
-	DrawDebugLine(GetWorld(), SocketStart, End, bHit ? FColor::Green : FColor::Red, false, 2.0f, 0, 1.0f);
+	DrawDebugLine(GetWorld(), SocketStart, bHit ? Hit.Location : End, bHit ? FColor::Green : FColor::Red, false, 2.0f, 0, 1.0f);
 #endif
 
 	if (bHit)
