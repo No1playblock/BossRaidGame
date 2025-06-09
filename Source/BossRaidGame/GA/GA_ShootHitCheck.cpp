@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "AT/AT_ShootBase.h"
 #include "Character/BaseCharacter.h"
 
 UGA_ShootHitCheck::UGA_ShootHitCheck()
@@ -19,10 +20,15 @@ void UGA_ShootHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	InvokeGameplayCue();
-	
-	UAT_LineTrace* AttackTraceTask = UAT_LineTrace::CreateTask(this, FName("LineTraceTask"));
+
+	UAT_ShootBase* ShootTask = Cast<UAT_ShootBase>(ShootClass->GetDefaultObject())->CreateTask(this, FName("ShootTask"));
+
+	/*UAT_LineTrace* AttackTraceTask = UAT_LineTrace::CreateTask(this, FName("LineTraceTask"));
 	AttackTraceTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
-	AttackTraceTask->ReadyForActivation();
+	AttackTraceTask->ReadyForActivation();*/
+
+	ShootTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
+	ShootTask->ReadyForActivation();
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 
