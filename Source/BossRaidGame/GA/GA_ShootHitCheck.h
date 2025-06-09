@@ -18,9 +18,6 @@ public:
 	UGA_ShootHitCheck();
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	
-
-
 protected:
 
 	UFUNCTION()
@@ -36,4 +33,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
 	FGameplayTag GameplayCueShootTag;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UAT_ShootBase> ShootClass;
 };
