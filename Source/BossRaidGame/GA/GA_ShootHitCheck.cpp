@@ -6,8 +6,9 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerController.h"
-#include "AT/AT_ShootBase.h"
+#include "AT/AT_ShootProjectile.h"
 #include "Character/BaseCharacter.h"
+#include "AT/AT_ShootProjectile.h"
 
 UGA_ShootHitCheck::UGA_ShootHitCheck()
 {
@@ -21,23 +22,24 @@ void UGA_ShootHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 	InvokeGameplayCue();
 
-	UAT_ShootBase* ShootTask = Cast<UAT_ShootBase>(ShootClass->GetDefaultObject())->CreateTask(this, FName("ShootTask"));
+	UAT_ShootProjectile* ShootTask = UAT_ShootProjectile::CreateTask(this, FName("ShootTask"));
+	ShootTask->Initialize(BulletClass);
 
 	/*UAT_LineTrace* AttackTraceTask = UAT_LineTrace::CreateTask(this, FName("LineTraceTask"));
 	AttackTraceTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
 	AttackTraceTask->ReadyForActivation();*/
 
-	ShootTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
+	//ShootTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
 	ShootTask->ReadyForActivation();
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 
 }
-
+/*
 void UGA_ShootHitCheck::OnHitTarget(const FHitResult& Hit)
 {
 	AActor* Target = Hit.GetActor();
-	UE_LOG(LogTemp, Warning, TEXT("HitAcotr Name: %s"), *Target->GetFName().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("OntHitActor Name: %s"), *Target->GetFName().ToString());
 	if (!Target || Target == GetAvatarActorFromActorInfo()) return;
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
@@ -53,7 +55,8 @@ void UGA_ShootHitCheck::OnHitTarget(const FHitResult& Hit)
 			TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
-}
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}*/
 void UGA_ShootHitCheck::InvokeGameplayCue()
 {
 	FGameplayCueParameters Param;
