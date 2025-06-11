@@ -21,8 +21,8 @@ UAT_LineTrace* UAT_LineTrace::CreateTask(UGameplayAbility* OwningAbility, FName 
 void UAT_LineTrace::Activate()
 {
 	Super::Activate();
-	//DoShoot();
-	//EndTask();
+	DoShoot();
+	EndTask();
 }
 void UAT_LineTrace::DoShoot()
 {
