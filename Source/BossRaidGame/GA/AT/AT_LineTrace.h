@@ -7,25 +7,28 @@
 #include "AT_ShootBase.h"
 #include "AT_LineTrace.generated.h"
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLineTraceHit, const FHitResult&, HitResult);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLineTraceHit, const FHitResult&, HitResult);
 
 /**
  * 
  */
 UCLASS()
-class BOSSRAIDGAME_API UAT_LineTrace : public UAT_ShootBase
+class BOSSRAIDGAME_API UAT_LineTrace : public UAbilityTask
 {
 	GENERATED_BODY()
 
 public:
 	UAT_LineTrace();
-	virtual UAT_LineTrace* CreateTask(UGameplayAbility* OwningAbility, FName TaskInstanceName) override;
 
-	/*UPROPERTY(BlueprintAssignable)
-	FOnLineTraceHit OnHit;*/
+	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (DisplayName = "WaitForTrace", HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
+
+	static UAT_LineTrace* CreateTask(UGameplayAbility* OwningAbility, FName TaskInstanceName);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLineTraceHit OnHit;
 protected:
 	virtual void Activate() override;
 
-	virtual void DoShoot() override;
+	void DoShoot() ;
 
 };
