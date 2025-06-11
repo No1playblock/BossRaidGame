@@ -20,8 +20,8 @@ public:
 
 protected:
 
-	UFUNCTION()
-	void OnHitTarget(const FHitResult& Hit);
+	/*UFUNCTION()
+	void OnHitTarget(const FHitResult& Hit);*/
 
 	void InvokeGameplayCue();
 
@@ -34,6 +34,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = GAS, Meta = (Categories = GameplayCue))
 	FGameplayTag GameplayCueShootTag;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UAT_ShootBase> ShootClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class APrimaryBullet> BulletClass;
 };
