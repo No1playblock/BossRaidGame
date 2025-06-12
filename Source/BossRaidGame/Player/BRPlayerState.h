@@ -25,5 +25,5 @@ protected:
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
 	UPROPERTY()
-	TObjectPtr<class UCharacterAttributeSet> AttributeSet;
+	TObjectPtr<class UPlayerCharacterAttributeSet> AttributeSet;
 };
