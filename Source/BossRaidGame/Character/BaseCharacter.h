@@ -20,10 +20,17 @@ public:
 	FORCEINLINE UComboActionData* GetComboActionData() const { return ComboActionData; }
 protected:
 
+	UFUNCTION()
+	virtual void OnOutOfHealth();
+
+protected:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	TObjectPtr<class UAnimMontage> AttackMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UComboActionData> ComboActionData;
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	TObjectPtr<class UAnimMontage> DeadMontage;
 
 };
