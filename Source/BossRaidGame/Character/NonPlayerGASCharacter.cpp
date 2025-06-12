@@ -3,13 +3,17 @@
 
 #include "Character/NonPlayerGASCharacter.h"
 #include "AbilitySystemComponent.h"
-#include "Attribute/CharacterAttributeSet.h"
+#include "Attribute/MobCharacterAttributeSet.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Character/GASCharacterPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "GA/GA_GainExperience.h"
+#include "Tag/BRGameplayTag.h"
 ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
-	AttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>(TEXT("AttributeSet"));
+	AttributeSet = CreateDefaultSubobject<UMobCharacterAttributeSet>(TEXT("AttributeSet"));
+	
 }
 
 UAbilitySystemComponent* ANonPlayerGASCharacter::GetAbilitySystemComponent() const
@@ -24,15 +28,44 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 	ASC->InitAbilityActorInfo(this, this);
 
 	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+	AttributeSet->SetExpReward(ExpReward);
 }
+
 void ANonPlayerGASCharacter::OnOutOfHealth()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(DeadMontage, 1.0f);
-	
-	SetActorEnableCollision(false);
+	Super::OnOutOfHealth();
+
+	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (Player)
+	{
+		//Player->GainExperience(AttributeSet->GetExpReward()); // float ExpReward; 몬스터가 가진 보상 경험치
+	}
+
+	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
+        if (PlayerASC)
+        {
+			UE_LOG(LogTemp, Warning, TEXT("PlayerASC"));
+            // Effect Context 생성
+            FGameplayEffectContextHandle EffectContext = PlayerASC->MakeEffectContext();
+            EffectContext.AddSourceObject(this); // 경험치 제공자: 이 적 캐릭터
+
+            // Effect Spec 생성
+            FGameplayEffectSpecHandle SpecHandle = PlayerASC->MakeOutgoingSpec(GainExpEffectClass, 1.f, EffectContext);
+
+            if (SpecHandle.IsValid())
+            {
+
+                // SetByCaller 값 세팅
+                //const FGameplayTag XPTag = FGameplayTag::RequestGameplayTag(FName("Data.Experience"));
+                SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_EXPERIENCE, ExpReward);
+
+				UE_LOG(LogTemp, Warning, TEXT("GiveEXP"));
+                // 적용
+				PlayerASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+				
+            }
+        }
 
 	FTimerHandle DeadTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
@@ -41,5 +74,4 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
 			Destroy();
 		}
 	), 5.0f, false);
-
 }

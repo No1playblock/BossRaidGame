@@ -21,20 +21,19 @@ public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 
-	
-		
-protected:
-	UFUNCTION()
-	void OnOutOfHealth();
-
+	virtual void OnOutOfHealth() override;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
 	UPROPERTY()
-	TObjectPtr<class UCharacterAttributeSet> AttributeSet;
+	TObjectPtr<class UMobCharacterAttributeSet> AttributeSet;
 
-	UPROPERTY(EditAnywhere, Category = "Animation")
-	TObjectPtr<class UAnimMontage> DeadMontage;
+	UPROPERTY(EditAnywhere)
+	float ExpReward = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UGameplayEffect> GainExpEffectClass;
+	
 };
