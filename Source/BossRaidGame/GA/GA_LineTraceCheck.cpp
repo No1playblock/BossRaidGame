@@ -33,7 +33,7 @@ void UGA_LineTraceCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 void UGA_LineTraceCheck::OnHitTarget(const FHitResult& Hit)
 {
 	AActor* Target = Hit.GetActor();
-	UE_LOG(LogTemp, Warning, TEXT("OntHitActor Name: %s"), *Target->GetFName().ToString());
+
 	if (!Target || Target == GetAvatarActorFromActorInfo()) return;
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);

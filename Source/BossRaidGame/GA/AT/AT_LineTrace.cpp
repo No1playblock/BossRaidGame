@@ -61,8 +61,6 @@ void UAT_LineTrace::DoShoot()
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("bHit TargetName: %s"), *Hit.GetActor()->GetFName().ToString());
-
 		OnHit.Broadcast(Hit);
 	}
 }
