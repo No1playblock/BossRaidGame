@@ -7,10 +7,12 @@
 #include "Player/BRPlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Attribute/PlayerCharacterAttributeSet.h"
 
 AGASCharacterPlayer::AGASCharacterPlayer()
 {
 	ASC = nullptr;
+	AttributeSet = CreateDefaultSubobject<UPlayerCharacterAttributeSet>(TEXT("AttributeSet"));
 }
 
 UAbilitySystemComponent* AGASCharacterPlayer::GetAbilitySystemComponent() const
@@ -47,6 +49,8 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
 	}
+
+	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
 }
 
