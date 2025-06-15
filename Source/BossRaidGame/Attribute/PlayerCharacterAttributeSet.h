@@ -26,6 +26,9 @@ public:
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
 protected:
+	void UpdateLevelFromExp(float Exp);
+
+protected:
 
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
@@ -33,5 +36,7 @@ protected:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData CurrentLevel;
+
+	TObjectPtr<class UCurveTable> LevelTable;
 	
 };
