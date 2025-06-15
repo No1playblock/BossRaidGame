@@ -12,6 +12,10 @@
 				"Engine",
 				"GameplayAbilities"
 			]
+		},
+		{
+			"Name": "LevelStatEditor",
+			"Type": "Editor"
 		}
 	],
 	"Plugins": [
