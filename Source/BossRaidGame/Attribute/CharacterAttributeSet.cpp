@@ -6,8 +6,12 @@
 #include "Tag/BRGameplayTag.h"
 
 UCharacterAttributeSet::UCharacterAttributeSet() :
-AttackRate(30.0f),
-MaxAttackRate(100.0f),
+AttackPower(30.0f),
+AttackSpeed(1.0f),
+SkillPower(10.0f),
+SkillCooldownRate(1.0f),
+MoveSpeed(1.0f),
+Health(100.0f),
 MaxHealth(100.0f),
 Damage(0.0f)
 {
