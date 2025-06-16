@@ -7,12 +7,20 @@
 #include "Player/BRPlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
+#include "GameData/LevelStatData.h"
+#include "Blueprint/UserWidget.h"              
 #include "Attribute/PlayerCharacterAttributeSet.h"
-
+#include "Kismet/GameplayStatics.h"               // SetGamePaused
+#include "GameFramework/PlayerController.h"         // PlayerController 클래스
+#include "GameplayEffect.h"                       // UGameplayEffect 클래스
+#include "GameplayEffectTypes.h"                  // FGameplayModifierInfo
+#include "Algo/RandomShuffle.h"
+#include "GameFramework/CharacterMovementComponent.h"
 AGASCharacterPlayer::AGASCharacterPlayer()
 {
 	ASC = nullptr;
 	AttributeSet = CreateDefaultSubobject<UPlayerCharacterAttributeSet>(TEXT("AttributeSet"));
+	
 }
 
 UAbilitySystemComponent* AGASCharacterPlayer::GetAbilitySystemComponent() const
@@ -48,11 +56,33 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+
+		if (ASC)
+		{
+			
+			MoveSpeedChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(
+				UPlayerCharacterAttributeSet::GetMoveSpeedAttribute()
+			).AddLambda([this](const FOnAttributeChangeData& Data)
+				{
+					if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
+					{
+						MovementComponent->MaxWalkSpeed = Data.NewValue;
+					}
+				});
+
+			if (AttributeSet)
+			{
+				GetCharacterMovement()->MaxWalkSpeed = AttributeSet->GetMoveSpeed();
+			}
+		}
+		AttributeSet->SetMoveSpeed(400.0f);
 	}
 
 	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
 }
+
+
 
 void AGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -109,4 +139,14 @@ void AGASCharacterPlayer::GASInputReleased(int32 InputId)
 		}
 	}
 	
+}
+void AGASCharacterPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (ASC)
+	{
+		// 등록했던 델리게이트를 핸들을 사용해 안전하게 해제합니다.
+		ASC->GetGameplayAttributeValueChangeDelegate(UPlayerCharacterAttributeSet::GetMoveSpeedAttribute()).Remove(MoveSpeedChangedDelegateHandle);
+	}
+
+	Super::EndPlay(EndPlayReason);
 }

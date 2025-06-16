@@ -6,7 +6,12 @@
 #include "Character/BaseCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "CharacterPlayer.h"
+#include "GameData/StatChoiceData.h"
 #include "GASCharacterPlayer.generated.h"
+
+
+class UDataTable;
+class UUserWidget;
 
 /**
  * 
@@ -29,6 +34,7 @@ protected:
 	void GASInputPressed(int32 InputId);
 	void GASInputReleased(int32 InputId);
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 protected:
 
@@ -43,4 +49,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPlayerCharacterAttributeSet> AttributeSet;
+
+	FDelegateHandle MoveSpeedChangedDelegateHandle;
+
 };
