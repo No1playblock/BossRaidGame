@@ -10,12 +10,14 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"GameplayAbilities"
+				"GameplayAbilities",
+				"UMG"
 			]
 		},
 		{
 			"Name": "LevelStatEditor",
-			"Type": "Editor"
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
