@@ -31,12 +31,14 @@ class BOSSRAIDGAME_API UCharacterAttributeSet : public UAttributeSet
 public:
 	UCharacterAttributeSet();
 
-	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, AttackRate);
-	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxAttackRate);
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, AttackPower);
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, AttackSpeed);
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, SkillPower);
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, SkillCooldownRate);
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MoveSpeed);
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Damage);
-
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
@@ -49,10 +51,19 @@ protected:
 	
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData AttackRate;
+	FGameplayAttributeData AttackPower;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData MaxAttackRate;
+	FGameplayAttributeData AttackSpeed;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData SkillPower;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData SkillCooldownRate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Utility", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MoveSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Health;
