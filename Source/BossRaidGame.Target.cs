@@ -10,7 +10,9 @@ public class BossRaidGameTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_4;
-		ExtraModuleNames.Add("BossRaidGame");
-        
+		//ExtraModuleNames.Add("BossRaidGame");
+        ExtraModuleNames.AddRange(new string[] { "BossRaidGame", "LevelStatEditor" });
+
+
     }
 }
