@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Modules/ModuleInterface.h"
 
 class FLevelStatEditorModule : public IModuleInterface
 {
@@ -9,10 +10,12 @@ public:
     
     virtual void ShutdownModule() override;
 
+   
+private:
+
     void RegisterMenus();
 
     void HandleMenuClicked();
-private:
     TSharedRef<SDockTab> OnSpawnPluginTab(const FSpawnTabArgs& Args);
 
     
