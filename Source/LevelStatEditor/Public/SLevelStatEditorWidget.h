@@ -2,10 +2,10 @@
 
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Views/SListView.h"
-#include "Widgets/Input/SButton.h"
-#include "Widgets/Input/SEditableTextBox.h"
+#include "GameData/LevelStatData.h"
 
-#include "../../BossRaidGame/GameData/LevelStatData.h" // FLevelStatRow 정의 포함
+// 전방 선언
+class UDataTable;
 
 class SLevelStatEditorWidget : public SCompoundWidget
 {
@@ -16,18 +16,25 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
-	/** 내부 데이터 */
+	TWeakObjectPtr<UDataTable> TargetDataTable;
+
 	TArray<TSharedPtr<FLevelStatRow>> StatRows;
 
-	/** 리스트 뷰 위젯 */
 	TSharedPtr<SListView<TSharedPtr<FLevelStatRow>>> StatListView;
 
-	/** 행 UI 생성 */
 	TSharedRef<ITableRow> OnGenerateRow(TSharedPtr<FLevelStatRow> InItem, const TSharedRef<STableViewBase>& OwnerTable);
 
-	/** 행 추가 버튼 */
+	FString SelectedDataTablePath;
+private:
+	FORCEINLINE FString GetSelectedDataTablePath() const { return SelectedDataTablePath; };
+
 	FReply OnClick_AddRow();
 
-	/** 저장 버튼 */
 	FReply OnClick_Save();
+
+	void OnDataTableChanged(const FAssetData& AssetData);
+
+	FReply OnClick_DeleteRow(TSharedPtr<FLevelStatRow> ItemToDelete); // <<< [추가]
+
+
 };
