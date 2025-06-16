@@ -20,9 +20,6 @@ public:
 
 protected:
 
-	/*UFUNCTION()
-	void OnHitTarget(const FHitResult& Hit);*/
-
 	void InvokeGameplayCue();
 
 protected:

@@ -25,38 +25,12 @@ void UGA_ShootHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	UAT_ShootProjectile* ShootTask = UAT_ShootProjectile::CreateTask(this, FName("ShootTask"));
 	ShootTask->Initialize(BulletClass);
 
-	/*UAT_LineTrace* AttackTraceTask = UAT_LineTrace::CreateTask(this, FName("LineTraceTask"));
-	AttackTraceTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
-	AttackTraceTask->ReadyForActivation();*/
-
-	//ShootTask->OnHit.AddDynamic(this, &UGA_ShootHitCheck::OnHitTarget);
 	ShootTask->ReadyForActivation();
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 
 }
-/*
-void UGA_ShootHitCheck::OnHitTarget(const FHitResult& Hit)
-{
-	AActor* Target = Hit.GetActor();
-	UE_LOG(LogTemp, Warning, TEXT("OntHitActor Name: %s"), *Target->GetFName().ToString());
-	if (!Target || Target == GetAvatarActorFromActorInfo()) return;
 
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
-	UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
-
-	if (TargetASC && SourceASC && DamageEffectClass)
-	{
-		FGameplayEffectContextHandle EffectContext = SourceASC->MakeEffectContext();
-		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, 1.f, EffectContext);
-
-		if (SpecHandle.IsValid())
-		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-	}
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}*/
 void UGA_ShootHitCheck::InvokeGameplayCue()
 {
 	FGameplayCueParameters Param;
