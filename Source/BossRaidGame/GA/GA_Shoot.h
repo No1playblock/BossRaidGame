@@ -50,5 +50,5 @@ protected:
 	FTimerHandle ComboTimerHandle;
 	bool HasNextComboInput = false;
 
-
+	float AnimationRate;
 };
