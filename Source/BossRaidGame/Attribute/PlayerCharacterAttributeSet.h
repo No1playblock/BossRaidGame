@@ -7,7 +7,7 @@
 #include "PlayerCharacterAttributeSet.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BOSSRAIDGAME_API UPlayerCharacterAttributeSet : public UCharacterAttributeSet
@@ -19,6 +19,11 @@ public:
 
 	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, CurrentExp);
 	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, CurrentLevel);
+	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, AttackPowerLevel);
+	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, AttackSpeedLevel);
+	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, SkillPowerLevel);
+	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, SkillCooldownRateLevel);
+	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, MoveSpeedLevel);
 
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
@@ -37,6 +42,22 @@ protected:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData CurrentLevel;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData AttackPowerLevel;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData AttackSpeedLevel;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData SkillPowerLevel;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData SkillCooldownRateLevel;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MoveSpeedLevel;
+
+
 	TObjectPtr<class UCurveTable> LevelTable;
-	
+
 };
