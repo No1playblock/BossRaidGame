@@ -10,8 +10,11 @@
 #include "Character/GASCharacterPlayer.h"
 #include "Character/ComboActionData.h"
 #include "GameFramework/Actor.h"
-UGA_Shoot::UGA_Shoot()
+#include "Attribute/PlayerCharacterAttributeSet.h"
+UGA_Shoot::UGA_Shoot() :
+	AnimationRate(1.0f)
 {
+	
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
@@ -19,11 +22,20 @@ void UGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+
 	ABaseCharacter* Character = CastChecked<ABaseCharacter>(ActorInfo->AvatarActor.Get());
 	CurrentComboData = Character->GetComboActionData();
-	//Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
-	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), Character->GetAttackMontage(), 1.0f, GetNextSection());
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	if (!ASC)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+	//Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	AnimationRate = ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackSpeedAttribute());
+
+	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), Character->GetAttackMontage(), AnimationRate, GetNextSection());
 	PlayAttackTask->OnCompleted.AddDynamic(this, &UGA_Shoot::OnCompleteCallback);
 	PlayAttackTask->OnInterrupted.AddDynamic(this, &UGA_Shoot::OnInterruptedCallback);
 	PlayAttackTask->ReadyForActivation();
@@ -84,10 +96,17 @@ FName UGA_Shoot::GetNextSection()
 
 void UGA_Shoot::StartComboTimer()
 {
+	if (CurrentCombo >= CurrentComboData->MaxComboCount)
+	{
+		return;
+	}
+
 	int32 ComboIndex = CurrentCombo - 1;
 	ensure(CurrentComboData->EffectiveFrameCount.IsValidIndex(ComboIndex));
+	
+	const float ComboEffectiveTime = CurrentComboData->EffectiveFrameCount[ComboIndex] / CurrentComboData->FrameRate / AnimationRate;
 
-	const float ComboEffectiveTime = CurrentComboData->EffectiveFrameCount[ComboIndex] / CurrentComboData->FrameRate;
+	UE_LOG(LogTemp, Warning, TEXT("ComboEffectvieTIme: %f"), ComboEffectiveTime);
 	if (ComboEffectiveTime > 0.0f)
 	{
 		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &UGA_Shoot::CheckComboInput, ComboEffectiveTime, false);
@@ -100,8 +119,10 @@ void UGA_Shoot::CheckComboInput()
 	ComboTimerHandle.Invalidate();
 	if (HasNextComboInput)
 	{
+		HasNextComboInput = false;
+		UE_LOG(LogTemp, Warning, TEXT("NextShot"));
 		MontageJumpToSection(GetNextSection());
 		StartComboTimer();
-		HasNextComboInput = false;
+		
 	}
 }
