@@ -36,8 +36,13 @@ protected:
 
 private:
 	void OnDataTableLoaded();
+
 	void OnWidgetClassLoaded();
 
+	UFUNCTION()
+	void GamePausedSetting(bool bValue);
+
+private:
 	UPROPERTY()
 	TObjectPtr<UUserWidget> CurrentStatChoiceWidget;
 
