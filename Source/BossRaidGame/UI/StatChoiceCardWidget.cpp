@@ -24,6 +24,10 @@ void UStatChoiceCardWidget::SetChoiceInfo(const FStatChoiceInfo& InChoiceInfo)
 	{
 		StatValueText->SetText(CurrentChoiceInfo.DisplayValue);
 	}
+	if (StatLevelText)
+	{
+		StatLevelText->SetText(CurrentChoiceInfo.DisplayLevelText);
+	}
 }
 
 void UStatChoiceCardWidget::OnSelectButtonClicked()

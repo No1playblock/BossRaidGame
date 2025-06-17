@@ -34,6 +34,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> StatValueText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> StatLevelText;
 private:
 	UFUNCTION()
 	void OnSelectButtonClicked();
