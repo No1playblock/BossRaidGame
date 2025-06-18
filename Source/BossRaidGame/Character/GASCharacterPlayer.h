@@ -50,6 +50,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPlayerCharacterAttributeSet> AttributeSet;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<class USkillComponent> SkillComponent;
+
 	FDelegateHandle MoveSpeedChangedDelegateHandle;
 
 };
