@@ -16,11 +16,13 @@
 #include "GameplayEffectTypes.h"                  // FGameplayModifierInfo
 #include "Algo/RandomShuffle.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SkillComponent.h"
 AGASCharacterPlayer::AGASCharacterPlayer()
 {
 	ASC = nullptr;
 	AttributeSet = CreateDefaultSubobject<UPlayerCharacterAttributeSet>(TEXT("AttributeSet"));
-	
+	SkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
+
 }
 
 UAbilitySystemComponent* AGASCharacterPlayer::GetAbilitySystemComponent() const
