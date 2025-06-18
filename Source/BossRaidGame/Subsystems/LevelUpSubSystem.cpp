@@ -106,6 +106,15 @@ void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter,
 			{
 				ChoiceScreen->InitializeChoices(FinalChoices, PlayerCharacter);
 			}
+<<<<<<< Updated upstream
+=======
+			
+			CurrentStatChoiceWidget->AddToViewport();
+			//GamePausedSetting(true);
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+			PC->SetInputMode(FInputModeUIOnly());
+			PC->bShowMouseCursor = true;
+>>>>>>> Stashed changes
 
 			CurrentStatChoiceWidget->AddToViewport();
 			UGameplayStatics::SetGamePaused(GetWorld(), true);
