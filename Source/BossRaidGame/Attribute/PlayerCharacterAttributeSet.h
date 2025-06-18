@@ -24,7 +24,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, SkillPowerLevel);
 	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, SkillCooldownRateLevel);
 	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, MoveSpeedLevel);
-
+	ATTRIBUTE_ACCESSORS(UPlayerCharacterAttributeSet, SkillPoint);
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
@@ -56,6 +56,9 @@ protected:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MoveSpeedLevel;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Status", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData SkillPoint;
 
 
 	TObjectPtr<class UCurveTable> LevelTable;
