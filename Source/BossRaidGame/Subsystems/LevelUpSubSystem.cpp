@@ -45,8 +45,6 @@ void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter,
 	TargetPlayer = PlayerCharacter;
 
 	const FString RowName = FString::FromInt(NewLevel);
-	FLevelStatRow* StatData = LevelStatDataTable->FindRow<FLevelStatRow>(*RowName, TEXT("ShowLevelUpChoices"));
-	if (!StatData) return;
 
 	UAbilitySystemComponent* ASC = PlayerCharacter->GetAbilitySystemComponent();
 	if (!ASC) return;
@@ -54,40 +52,91 @@ void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter,
 	const UPlayerCharacterAttributeSet* MyAttributeSet = ASC->GetSet<UPlayerCharacterAttributeSet>();
 	if (!MyAttributeSet) return;
 
-	TArray<FStatChoiceInfo> AvailableChoices;
+	TArray<EStatChoiceType> StatPool;
+	StatPool.Add(EStatChoiceType::AttackPower);
+	StatPool.Add(EStatChoiceType::AttackSpeed);
+	StatPool.Add(EStatChoiceType::SkillPower);
+	StatPool.Add(EStatChoiceType::SkillCooldownRate);
+	StatPool.Add(EStatChoiceType::MoveSpeed);
 
-	if (StatData->AttackPower > 0)
-	{
-		FStatChoiceInfo Choice(FText::FromString(TEXT("AttackPower Up")), StatData->AttackPower, UPlayerCharacterAttributeSet::GetAttackPowerAttribute());
-		AvailableChoices.Add(Choice);
-	}
-	if (StatData->AttackSpeed > 0)
-	{
-		FStatChoiceInfo Choice(FText::FromString(TEXT("AttackSpeed Up")), StatData->AttackSpeed, UPlayerCharacterAttributeSet::GetAttackSpeedAttribute());
-		AvailableChoices.Add(Choice);
-	}
-	if (StatData->SkillPower > 0)
-	{
-		FStatChoiceInfo Choice(FText::FromString(TEXT("SkillPower Up")), StatData->SkillPower, UPlayerCharacterAttributeSet::GetSkillPowerAttribute());
-		AvailableChoices.Add(Choice);
-	}
-	if (StatData->SkillCooldownRate > 0) // 여기서 비교 연산자를 > 0 으로 통일했습니다. (기존 >= 0)
-	{
-		FStatChoiceInfo Choice(FText::FromString(TEXT("Skill Cool down")), StatData->SkillCooldownRate, UPlayerCharacterAttributeSet::GetSkillCooldownRateAttribute());
-		AvailableChoices.Add(Choice);
-	}
-	if (StatData->MoveSpeed > 0)
-	{
-		FStatChoiceInfo Choice(FText::FromString(TEXT("MoveSpeed Up")), StatData->MoveSpeed, UPlayerCharacterAttributeSet::GetMoveSpeedAttribute());
-		AvailableChoices.Add(Choice);
-	}
-
-	Algo::RandomShuffle(AvailableChoices);
+	Algo::RandomShuffle(StatPool);
 
 	TArray<FStatChoiceInfo> FinalChoices;
-	for (int i = 0; i < FMath::Min(3, AvailableChoices.Num()); ++i)
+	int32 ChoiceCount = FMath::Min(3, StatPool.Num());
+	for (int i = 0; i < ChoiceCount; ++i)
 	{
-		FinalChoices.Add(AvailableChoices[i]);
+		EStatChoiceType SelectedStatType = StatPool[i];
+		int32 CurrentLevel = 0;
+		int32 NextLevel = 0;
+		FLevelStatRow* StatData = nullptr;
+		FText LevelText;
+
+		// switch 문을 사용해 선택된 enum에 따라 각기 다른 로직을 처리합니다.
+		switch (SelectedStatType)						//나중에 좀 더 확장성 있게 짤것. (스탯이 추가될때마다 코드를 추가해야됨)
+		{
+		case EStatChoiceType::AttackPower:
+			CurrentLevel = MyAttributeSet->GetAttackPowerLevel();
+			NextLevel = CurrentLevel + 1;
+			StatData = LevelStatDataTable->FindRow<FLevelStatRow>(*FString::FromInt(NextLevel), "");
+			if (StatData && StatData->AttackPower > 0)
+			{
+				LevelText = FText::FromString(FString::Printf(TEXT("Lv.%d -> Lv.%d"), CurrentLevel, NextLevel));
+				FinalChoices.Add(FStatChoiceInfo(FText::FromString(TEXT("Attack Power")), LevelText, StatData->AttackPower,
+					UPlayerCharacterAttributeSet::GetAttackPowerAttribute(), UPlayerCharacterAttributeSet::GetAttackPowerLevelAttribute()));
+			}
+			break;
+
+		case EStatChoiceType::AttackSpeed:
+			CurrentLevel = MyAttributeSet->GetAttackSpeedLevel();
+			NextLevel = CurrentLevel + 1;
+			StatData = LevelStatDataTable->FindRow<FLevelStatRow>(*FString::FromInt(NextLevel), "");
+			if (StatData && StatData->AttackSpeed > 0)
+			{
+				LevelText = FText::FromString(FString::Printf(TEXT("Lv.%d -> Lv.%d"), CurrentLevel, NextLevel));
+				FinalChoices.Add(FStatChoiceInfo(FText::FromString(TEXT("Attack Speed")), LevelText, StatData->AttackSpeed,
+					UPlayerCharacterAttributeSet::GetAttackSpeedAttribute(), UPlayerCharacterAttributeSet::GetAttackSpeedLevelAttribute()));
+			}
+			break;
+
+		case EStatChoiceType::SkillPower:
+			CurrentLevel = MyAttributeSet->GetSkillPowerLevel();
+			NextLevel = CurrentLevel + 1;
+			StatData = LevelStatDataTable->FindRow<FLevelStatRow>(*FString::FromInt(NextLevel), "");
+			if (StatData && StatData->SkillPower > 0)
+			{
+				LevelText = FText::FromString(FString::Printf(TEXT("Lv.%d -> Lv.%d"), CurrentLevel, NextLevel));
+				FinalChoices.Add(FStatChoiceInfo(FText::FromString(TEXT("Skill Power")), LevelText, StatData->SkillPower,
+					UPlayerCharacterAttributeSet::GetSkillPowerAttribute(), UPlayerCharacterAttributeSet::GetSkillPowerLevelAttribute()));
+			}
+			break;
+
+		case EStatChoiceType::SkillCooldownRate:
+			CurrentLevel = MyAttributeSet->GetSkillCooldownRateLevel();
+			NextLevel = CurrentLevel + 1;
+			StatData = LevelStatDataTable->FindRow<FLevelStatRow>(*FString::FromInt(NextLevel), "");
+			if (StatData && StatData->SkillCooldownRate > 0)
+			{
+				LevelText = FText::FromString(FString::Printf(TEXT("Lv.%d -> Lv.%d"), CurrentLevel, NextLevel));
+				FinalChoices.Add(FStatChoiceInfo(FText::FromString(TEXT("CoolTime Down")), LevelText, StatData->SkillCooldownRate,
+					UPlayerCharacterAttributeSet::GetSkillCooldownRateAttribute(), UPlayerCharacterAttributeSet::GetSkillCooldownRateLevelAttribute()));
+			}
+			break;
+
+		case EStatChoiceType::MoveSpeed:
+			CurrentLevel = MyAttributeSet->GetMoveSpeedLevel();
+			NextLevel = CurrentLevel + 1;
+			StatData = LevelStatDataTable->FindRow<FLevelStatRow>(*FString::FromInt(NextLevel), "");
+			if (StatData && StatData->MoveSpeed > 0)
+			{
+				LevelText = FText::FromString(FString::Printf(TEXT("Lv.%d -> Lv.%d"), CurrentLevel, NextLevel));
+				FinalChoices.Add(FStatChoiceInfo(FText::FromString(TEXT("MoveSpeed")), LevelText, StatData->MoveSpeed,
+					UPlayerCharacterAttributeSet::GetMoveSpeedAttribute(), UPlayerCharacterAttributeSet::GetMoveSpeedLevelAttribute()));
+			}
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	APlayerController* PC = PlayerCharacter->GetController<APlayerController>();
@@ -106,20 +155,13 @@ void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter,
 			{
 				ChoiceScreen->InitializeChoices(FinalChoices, PlayerCharacter);
 			}
-<<<<<<< Updated upstream
-=======
-			
+
 			CurrentStatChoiceWidget->AddToViewport();
 			//GamePausedSetting(true);
 			UGameplayStatics::SetGamePaused(GetWorld(), true);
 			PC->SetInputMode(FInputModeUIOnly());
 			PC->bShowMouseCursor = true;
->>>>>>> Stashed changes
 
-			CurrentStatChoiceWidget->AddToViewport();
-			UGameplayStatics::SetGamePaused(GetWorld(), true);
-			PC->bShowMouseCursor = true;
-			PC->SetInputMode(FInputModeUIOnly());
 		}
 	}
 }
