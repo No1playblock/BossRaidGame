@@ -7,7 +7,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Character/GASCharacterPlayer.h"
 #include "Kismet/GameplayStatics.h"
-#include "GA/GA_GainExperience.h"
 #include "Tag/BRGameplayTag.h"
 ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
