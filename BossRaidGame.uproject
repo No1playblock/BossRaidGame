@@ -15,7 +15,7 @@
 			]
 		},
 		{
-			"Name": "LevelStatEditor",
+			"Name": "BRCustomEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
