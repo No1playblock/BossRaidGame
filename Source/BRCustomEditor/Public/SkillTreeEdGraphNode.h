@@ -17,17 +17,14 @@ class BRCUSTOMEDITOR_API USkillTreeEdGraphNode : public UEdGraphNode
 	
 public:
     // 이 노드가 담고 있는 실제 스킬 데이터
-    UPROPERTY(VisibleAnywhere, Category = "SkillTree")
+    UPROPERTY(EditAnywhere, Category = "SkillTree")
     FSkillTreeDataRow SkillData;
 
     // 그래프 에디터에서 노드의 제목을 설정하는 함수
     virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 
-    // 노드의 입력 핀을 생성하는 함수
-    void CreateInputPin();
 
-    // 노드의 출력 핀을 생성하는 함수
-    void CreateOutputPin();
+    virtual void AllocateDefaultPins() override;
 
     UEdGraphPin* GetInputPin() const;
     UEdGraphPin* GetOutputPin() const;
