@@ -31,6 +31,10 @@ struct FSkillTreeDataRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 SkillPointCost;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SkillDamage;
+
+
 	// 이 스킬을 배웠을 때 부여될 실제 GameplayAbility 클래스
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayAbility> GrantedAbility;
