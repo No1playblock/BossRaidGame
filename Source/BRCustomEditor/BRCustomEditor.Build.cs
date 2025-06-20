@@ -8,7 +8,7 @@ public class BRCustomEditor : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate", "SlateCore",
                                                                 "EditorStyle", "UnrealEd", "PropertyEditor", "Projects", 
-                                                                    "LevelEditor", "ToolMenus", "BossRaidGame", "GraphEditor", "BlueprintGraph"
+                                                                    "LevelEditor", "ToolMenus", "BossRaidGame", "GraphEditor", "BlueprintGraph", "PropertyEditor"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "GameplayAbilities", "GameplayTags", "GameplayTasks" });
