@@ -28,6 +28,10 @@ private:
 	void OnSkillPointCostCommitted(int32 InValue, ETextCommit::Type CommitInfo);
 	void OnSkillDamageCommitted(float InValue, ETextCommit::Type CommitInfo);
 
+	void OnSkillIconChanged(const FAssetData& InAssetData);
+
+
+
 	// 아이콘을 표시하기 위한 Slate 브러시
 	TSharedPtr<FSlateBrush> IconBrush;
 
