@@ -7,7 +7,6 @@
 #include "PropertyEditorModule.h"       // FPropertyEditorModule
 #include "Modules/ModuleManager.h"      // FModuleManager
 #include "SkillTreeEdGraph.h"
-#include "SkillTreeEdGraph.h"
 #include "SkillTreeEdGraphNode.h" // 노드 클래스 헤더
 #include "SkillTreeEdGraphSchema.h"
 #include "GraphEditor.h"
@@ -18,8 +17,7 @@
 
 void SSkillTreeEditorWidget::Construct(const FArguments& InArgs)
 {
-
-
+	
 	GraphEditorCommands = MakeShareable(new FUICommandList);
 
 	// 삭제(Delete) 명령을 우리가 만든 함수와 연결
@@ -28,6 +26,8 @@ void SSkillTreeEditorWidget::Construct(const FArguments& InArgs)
 		FExecuteAction::CreateSP(this, &SSkillTreeEditorWidget::OnDeleteNodes), // 실행할 함수
 		FCanExecuteAction::CreateSP(this, &SSkillTreeEditorWidget::CanDeleteNodes) // 실행 가능 여부 판단 함수
 	);
+
+	FEditorDelegates::PostUndoRedo.AddRaw(this, &SSkillTreeEditorWidget::OnUndoRedo);
 
 
 
@@ -76,9 +76,17 @@ void SSkillTreeEditorWidget::Construct(const FArguments& InArgs)
 						.AutoWidth()
 						[
 							SNew(SButton)
+								.Text(FText::FromString(TEXT("Refresh")))
+								.OnClicked(this, &SSkillTreeEditorWidget::OnClick_Refresh)
+						]
+						+ SHorizontalBox::Slot()
+						.AutoWidth()
+						[
+							SNew(SButton)
 								.Text(FText::FromString(TEXT("Save")))
 								.OnClicked(this, &SSkillTreeEditorWidget::OnClick_Save)
 						]
+						
 				]
 
 				// 2. 기존의 Splitter 영역
@@ -102,11 +110,38 @@ void SSkillTreeEditorWidget::Construct(const FArguments& InArgs)
 							DetailsView.ToSharedRef()
 						]
 				]
+				
 		];
 
-
+	
 }
 
+FReply SSkillTreeEditorWidget::OnClick_Refresh()
+{
+	if (GraphEditorWidget.IsValid())
+	{
+		GraphEditorWidget->NotifyGraphChanged(); // Slate 노드 다시 그리기
+	}
+	return FReply::Handled();
+}
+SSkillTreeEditorWidget::~SSkillTreeEditorWidget()
+{
+	if (SkillGraph)
+	{
+		SkillGraph->RemoveFromRoot();
+	}
+
+	FEditorDelegates::PostUndoRedo.RemoveAll(this);
+
+}
+void SSkillTreeEditorWidget::OnUndoRedo()
+{
+	if (GraphEditorWidget.IsValid())
+	{
+		GraphEditorWidget->ClearSelectionSet();
+		GraphEditorWidget->NotifyGraphChanged(); // Undo된 노드도 Slate에 반영됨
+	}
+}
 FReply SSkillTreeEditorWidget::OnClick_Save()
 {
 	// 1. 저장할 데이터 테이블 애셋을 로드합니다.
@@ -196,6 +231,7 @@ void SSkillTreeEditorWidget::CreateNodesFromDataTable()
 		}
 	}
 }
+
 void SSkillTreeEditorWidget::ConnectNodes()
 {
 	// 모든 노드를 순회합니다.
