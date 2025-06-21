@@ -140,3 +140,43 @@ void USkillTreeEdGraphSchema::BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGrap
 		SourceNode->GetGraph()->NotifyGraphChanged();
 	}
 }
+
+USkillTreeEdGraphNode* USkillTreeEdGraphSchema::CreateNewSkillNode(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
+{
+	const FScopedTransaction Transaction(FText::FromString(TEXT("Add New Skill Node")));
+	ParentGraph->Modify();
+
+	USkillTreeEdGraphNode* NewNode = NewObject<USkillTreeEdGraphNode>(ParentGraph, NAME_None, RF_Transactional);
+	NewNode->NodeGuid = FGuid::NewGuid();
+	NewNode->SkillData.SkillID = FName(*NewNode->NodeGuid.ToString());
+	NewNode->SkillData.SkillName = FText::FromString(TEXT("New Skill"));
+	NewNode->SkillData.UpgradeDescription = FText::FromString(TEXT("Skill Description"));
+	NewNode->SkillData.SkillPointCost = 1;
+	NewNode->SkillData.SkillDamage = 10.f;
+
+	NewNode->AllocateDefaultPins();
+	NewNode->NodePosX = Location.X;
+	NewNode->NodePosY = Location.Y;
+	NewNode->SnapToGrid(16);
+
+	ParentGraph->AddNode(NewNode, true, bSelectNewNode);
+
+	if (FromPin)
+	{
+		if (FromPin->Direction == EGPD_Output)
+		{
+			ParentGraph->GetSchema()->TryCreateConnection(FromPin, NewNode->GetInputPin());
+		}
+		else if (FromPin->Direction == EGPD_Input)
+		{
+			ParentGraph->GetSchema()->TryCreateConnection(NewNode->GetOutputPin(), FromPin);
+		}
+	}
+
+	return NewNode;
+}
+
+UEdGraphNode* FSkillTreeSchemaAction_NewNode::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
+{
+	return USkillTreeEdGraphSchema::CreateNewSkillNode(ParentGraph, FromPin, Location, bSelectNewNode);
+}

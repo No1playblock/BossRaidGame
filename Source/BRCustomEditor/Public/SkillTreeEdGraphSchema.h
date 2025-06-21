@@ -20,50 +20,51 @@ struct FSkillTreeSchemaAction_NewNode : public FEdGraphSchemaAction
 	FSkillTreeSchemaAction_NewNode(FText InNodeCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping)
 		: FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGrouping) {
 	}
+	virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override;
 
 	// 이 액션을 실행했을 때 실제로 노드를 생성하는 함수
-	virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override
-	{
-		const FScopedTransaction Transaction(FText::FromString(TEXT("Add New Skill Node")));
-		ParentGraph->Modify(); // undo 가능하게 만듦
+	//virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode = true) override
+	//{
+	//	const FScopedTransaction Transaction(FText::FromString(TEXT("Add New Skill Node")));
+	//	ParentGraph->Modify(); // undo 가능하게 만듦
 
-		USkillTreeEdGraphNode* NewNode = NewObject<USkillTreeEdGraphNode>(ParentGraph, NAME_None, RF_Transactional);
-		NewNode->SetFlags(RF_Transactional); // undo 가능하게 만듦
-		NewNode->NodeGuid = FGuid::NewGuid();
+	//	USkillTreeEdGraphNode* NewNode = NewObject<USkillTreeEdGraphNode>(ParentGraph, NAME_None, RF_Transactional);
+	//	NewNode->SetFlags(RF_Transactional); // undo 가능하게 만듦
+	//	NewNode->NodeGuid = FGuid::NewGuid();
 
-		NewNode->SkillData.SkillID = FName(*NewNode->NodeGuid.ToString());
-		NewNode->SkillData.SkillName = FText::FromString(TEXT("New Skill"));
-		NewNode->SkillData.UpgradeDescription = FText::FromString(TEXT("Skill Description"));
+	//	NewNode->SkillData.SkillID = FName(*NewNode->NodeGuid.ToString());
+	//	NewNode->SkillData.SkillName = FText::FromString(TEXT("New Skill"));
+	//	NewNode->SkillData.UpgradeDescription = FText::FromString(TEXT("Skill Description"));
 
-		NewNode->NodePosX = Location.X;
-		NewNode->NodePosY = Location.Y;
-		NewNode->SnapToGrid(16);
+	//	NewNode->NodePosX = Location.X;
+	//	NewNode->NodePosY = Location.Y;
+	//	NewNode->SnapToGrid(16);
 
-		NewNode->AllocateDefaultPins();
+	//	NewNode->AllocateDefaultPins();
 
-		ParentGraph->AddNode(NewNode, true, false);
+	//	ParentGraph->AddNode(NewNode, true, false);
 
-		if (bSelectNewNode)
-		{
-			TSet<const UEdGraphNode*> Selected = { NewNode };
-			ParentGraph->SelectNodeSet(Selected);
-		}
-		if (FromPin != nullptr)
-		{
-			UEdGraphPin* TargetPin = (FromPin->Direction == EGPD_Output)
-				? NewNode->GetInputPin()
-				: NewNode->GetOutputPin();
+	//	if (bSelectNewNode)
+	//	{
+	//		TSet<const UEdGraphNode*> Selected = { NewNode };
+	//		ParentGraph->SelectNodeSet(Selected);
+	//	}
+	//	if (FromPin != nullptr)
+	//	{
+	//		UEdGraphPin* TargetPin = (FromPin->Direction == EGPD_Output)
+	//			? NewNode->GetInputPin()
+	//			: NewNode->GetOutputPin();
 
-			if (FromPin->GetOwningNode() != NewNode && TargetPin)
-			{
-				FromPin->MakeLinkTo(TargetPin);
-			}
-		}
-		// 그래프 변경 알림 (Undo 시 Slate 업데이트)
-		ParentGraph->NotifyGraphChanged();
+	//		if (FromPin->GetOwningNode() != NewNode && TargetPin)
+	//		{
+	//			FromPin->MakeLinkTo(TargetPin);
+	//		}
+	//	}
+	//	// 그래프 변경 알림 (Undo 시 Slate 업데이트)
+	//	ParentGraph->NotifyGraphChanged();
 
-		return NewNode;
-	}
+	//	return NewNode;
+	//}
 };
 
 class FConnectionDrawingPolicy; // 전방 선언
@@ -82,6 +83,8 @@ public:
 	virtual FConnectionDrawingPolicy* CreateConnectionDrawingPolicy(int32 InBackLayerID, int32 InFrontLayerID, float InZoomFactor, const FSlateRect& InClippingRect, FSlateWindowElementList& InDrawElements, UEdGraph* InGraphObj) const override;
 
 	virtual void BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const override;
+	
+	static USkillTreeEdGraphNode* CreateNewSkillNode(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode);
 
 
 	virtual void BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotifcation) const override;
