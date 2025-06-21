@@ -28,4 +28,6 @@ public:
 
     UEdGraphPin* GetInputPin() const;
     UEdGraphPin* GetOutputPin() const;
+
+    virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 };

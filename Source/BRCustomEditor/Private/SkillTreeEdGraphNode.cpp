@@ -49,3 +49,22 @@ UEdGraphPin* USkillTreeEdGraphNode::GetOutputPin() const
 	}
 	return nullptr;
 }
+void USkillTreeEdGraphNode::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	FName ChangedPropertyName = PropertyChangedEvent.Property
+		? PropertyChangedEvent.Property->GetFName()
+		: NAME_None;
+
+	if (ChangedPropertyName == GET_MEMBER_NAME_CHECKED(FSkillTreeDataRow, SkillIcon))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SkillIcon Changed!"));
+
+		// 그래프 UI에 변경 알림
+		if (UEdGraph* OwnerGraph = GetGraph())
+		{
+			OwnerGraph->NotifyGraphChanged();
+		}
+	}
+}
