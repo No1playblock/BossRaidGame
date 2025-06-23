@@ -10,6 +10,7 @@
 #include "ScopedTransaction.h" // FScopedTransaction 추가
 #include "Styling/SlateBrush.h" // FSlateBrush
 
+
 void SSkillTreeGraphNode::Construct(const FArguments& InArgs, USkillTreeEdGraphNode* InNode)
 {
     GraphNode = InNode; // SGraphNode의 멤버 변수인 GraphNode에 우리 데이터 노드를 저장
@@ -180,8 +181,16 @@ void SSkillTreeGraphNode::OnTitleCommitted(const FText& InText, ETextCommit::Typ
 {
 	if (USkillTreeEdGraphNode* SkillNode = Cast<USkillTreeEdGraphNode>(GraphNode))
 	{
+		if (SkillNode->SkillData.SkillName.EqualTo(InText))
+		{
+			return; // 변경사항 없음
+		}
+
 		const FScopedTransaction Transaction(FText::FromString(TEXT("Edit Skill Name")));
 		SkillNode->Modify();
+		UE_LOG(LogTemp, Warning, TEXT("GraphNode Class: %s"), *GraphNode->GetClass()->GetName());
+
+		UE_LOG(LogTemp, Warning, TEXT("MODIFY"));
 		SkillNode->SkillData.SkillName = InText;
 		SkillNode->GetGraph()->NotifyGraphChanged();
 	}
