@@ -40,9 +40,7 @@ void SSkillTreeEditorWidget::Construct(const FArguments& InArgs)
 	// 그래프 객체를 생성하고 멤버 변수에 저장합니다.
 	SkillGraph = NewObject<USkillTreeEdGraph>();
 	SkillGraph->Schema = USkillTreeEdGraphSchema::StaticClass();
-
-	SkillGraph->SetFlags(RF_Transactional);
-
+	SkillGraph->SetFlags(RF_Transactional);				//있어야됨
 	SkillGraph->AddToRoot();
 
 	// 1. FGraphEditorEvents 구조체 인스턴스를 생성합니다.
@@ -134,8 +132,14 @@ SSkillTreeEditorWidget::~SSkillTreeEditorWidget()
 	FEditorDelegates::PostUndoRedo.RemoveAll(this);
 
 }
+bool SSkillTreeEditorWidget::MatchesContext(const FTransactionContext& InContext, const TArray<TPair<UObject*, FTransactionObjectEvent>>& TransactionObjectContexts) const
+{
+	return true;
+}
 void SSkillTreeEditorWidget::OnUndoRedo()
 {
+
+	UE_LOG(LogTemp, Warning, TEXT("OnUndoRedo"));
 	if (GraphEditorWidget.IsValid())
 	{
 		GraphEditorWidget->ClearSelectionSet();
@@ -163,7 +167,7 @@ FReply SSkillTreeEditorWidget::OnClick_Save()
 			// 노드의 현재 위치(UI Position)를 SkillData에 업데이트합니다.
 			SkillNode->SkillData.UIPosition.X = SkillNode->NodePosX;
 			SkillNode->SkillData.UIPosition.Y = SkillNode->NodePosY;
-
+			SkillNode->SetFlags(RF_Transactional);
 			// SkillID를 RowName으로 사용하여 데이터 테이블에 행을 추가합니다.
 			SkillDataTable->AddRow(SkillNode->SkillData.SkillID, SkillNode->SkillData);
 		}
@@ -223,9 +227,9 @@ void SSkillTreeEditorWidget::CreateNodesFromDataTable()
 			NewNode->NodePosY = RowData->UIPosition.Y;
 			// 그래프에 노드를 추가하고, 핀을 생성합니다.
 			SkillGraph->AddNode(NewNode);
-			/*NewNode->CreateInputPin();
-			NewNode->CreateOutputPin();*/
+			NewNode->SetFlags(RF_Transactional);		//Text Undo를 위한 플래그
 			NewNode->AllocateDefaultPins();
+			
 			// 나중에 연결 작업을 위해 맵에 노드를 저장해둡니다.
 			NodeMap.Add(RowData->SkillID, NewNode);
 		}
@@ -302,6 +306,8 @@ bool SSkillTreeEditorWidget::CanDeleteNodes() const
 	// 선택된 노드가 1개 이상일 때만 true를 반환합니다.
 	return GetSelectedNodes().Num() > 0;
 }
+
+
 
 void SSkillTreeEditorWidget::OnDeleteNodes()
 {
