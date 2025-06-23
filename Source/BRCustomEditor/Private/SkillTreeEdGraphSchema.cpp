@@ -81,12 +81,6 @@ FConnectionDrawingPolicy* USkillTreeEdGraphSchema::CreateConnectionDrawingPolicy
 	return new FSkillTreeConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, InZoomFactor, InClippingRect, InDrawElements, InGraphObj);
 }
 
-void USkillTreeEdGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotifcation) const
-{
-	// 부모 클래스의 기능을 그대로 호출하여 기본적인 연결 해제 로직을 따릅니다.
-	Super::BreakPinLinks(TargetPin, bSendsNodeNotifcation);
-}
-
 void USkillTreeEdGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
 	const FText NodeCategory = FText::FromString(TEXT("Skill Tree"));
@@ -158,6 +152,7 @@ USkillTreeEdGraphNode* USkillTreeEdGraphSchema::CreateNewSkillNode(UEdGraph* Par
 	NewNode->NodePosX = Location.X;
 	NewNode->NodePosY = Location.Y;
 	NewNode->SnapToGrid(16);
+	NewNode->SetFlags(RF_Transactional);
 
 	ParentGraph->AddNode(NewNode, true, bSelectNewNode);
 
