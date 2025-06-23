@@ -15,7 +15,7 @@ class SGraphEditor; // 전방 선언
 class USkillTreeEdGraph; // UEdGraph 대신 우리가 만든 클래스로 변경
 class USkillTreeEdGraphNode; // 노드 클래스 전방 선언
 class IDetailsView; // 전방 선언
-class BRCUSTOMEDITOR_API SSkillTreeEditorWidget : public SCompoundWidget
+class BRCUSTOMEDITOR_API SSkillTreeEditorWidget : public SCompoundWidget, public FEditorUndoClient
 {
 public:
 	SLATE_BEGIN_ARGS(SSkillTreeEditorWidget)
@@ -26,8 +26,8 @@ public:
 	void Construct(const FArguments& InArgs);
     virtual ~SSkillTreeEditorWidget();
 
-   /* virtual void PostUndo(bool bSuccess) override;
-    virtual void PostRedo(bool bSuccess) override;*/
+    virtual bool MatchesContext(const FTransactionContext& InContext, const TArray<TPair<UObject*, FTransactionObjectEvent>>& TransactionObjectContexts) const override;
+
 private:
     // 데이터 테이블로부터 노드를 생성하는 함수
     void CreateNodesFromDataTable();
