@@ -9,7 +9,9 @@
 
 UPlayerCharacterAttributeSet::UPlayerCharacterAttributeSet() :
 	CurrentExp(0.0f),
-	CurrentLevel(0.0f)
+	CurrentLevel(0.0f),
+	SkillPower(10.0f),
+	SkillCooldownRate(1.0f)
 {
 	static ConstructorHelpers::FObjectFinder<UCurveTable> LevelTableRef(TEXT("/Script/Engine.CurveTable'/Game/Blueprints/GameData/ExpLevelTable.ExpLevelTable'"));
 	if (LevelTableRef.Object)
@@ -42,9 +44,10 @@ void UPlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 			float EvalLevel = Curve->Eval(GetCurrentExp());
 			int32 NewLevel = FMath::FloorToInt(EvalLevel);
 
-			if (NewLevel > GetCurrentLevel())
+			if (NewLevel > GetCurrentLevel())		//레벨업 된 상황
 			{
 				SetCurrentLevel(NewLevel);
+				SetSkillPoint(GetSkillPoint() + 1);
 				if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 				{
 					// AvatarActor를 우리의 플레이어 캐릭터 클래스로 캐스팅합니다.
