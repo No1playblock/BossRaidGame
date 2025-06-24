@@ -33,8 +33,6 @@ public:
 
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, AttackPower);
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, AttackSpeed);
-	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, SkillPower);
-	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, SkillCooldownRate);
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MoveSpeed);
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxHealth);
@@ -55,12 +53,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData AttackSpeed;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData SkillPower;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData SkillCooldownRate;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Utility", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MoveSpeed;
