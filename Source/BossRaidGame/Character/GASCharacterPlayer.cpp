@@ -16,11 +16,13 @@
 #include "GameplayEffectTypes.h"                  // FGameplayModifierInfo
 #include "Algo/RandomShuffle.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SkillTreeComponent.h"
 AGASCharacterPlayer::AGASCharacterPlayer()
 {
 	ASC = nullptr;
 	AttributeSet = CreateDefaultSubobject<UPlayerCharacterAttributeSet>(TEXT("AttributeSet"));
-	
+	SkillTreeComponent = CreateDefaultSubobject<USkillTreeComponent>(TEXT("SkillTreeComponent"));
+
 }
 
 UAbilitySystemComponent* AGASCharacterPlayer::GetAbilitySystemComponent() const
@@ -41,6 +43,26 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 		ASC = BRPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(BRPS, this);
 
+		//const TArray<FName> DefaultSkillIDs = {
+		//	FName("AutoMissile_T1"),    // Q
+		//	FName("Grenade_T1"),        // E
+		//	FName("OrbitalStrike_T1"),  // R
+		//	FName("Dash_T1")            // Shift
+		//};
+		//if (SkillTreeComponent && SkillTreeComponent->SkillDataTable)
+		//{
+		//	for (const FName& SkillID : DefaultSkillIDs)
+		//	{
+		//		const FSkillTreeDataRow* Row = SkillTreeComponent->GetSkillData(SkillID);
+		//		if (Row && Row->GrantedAbility)
+		//		{
+		//			SkillTreeComponent->AcquiredSkills.AddUnique(SkillID);
+
+		//			FGameplayAbilitySpec Spec(Row->GrantedAbility, 1);
+		//			ASC->GiveAbility(Spec);
+		//		}
+		//	}
+		//}
 		for (const auto& StartAbility : StartAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartAbility);
@@ -103,6 +125,7 @@ void AGASCharacterPlayer::SetupGASInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AGASCharacterPlayer::GASInputReleased, 0);
 		
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 1);
+		EnhancedInputComponent->BindAction(QSkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 2);
 	}
 }
 
