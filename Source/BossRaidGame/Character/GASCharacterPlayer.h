@@ -52,4 +52,7 @@ protected:
 
 	FDelegateHandle MoveSpeedChangedDelegateHandle;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill Tree", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class USkillTreeComponent> SkillTreeComponent;
+
 };
