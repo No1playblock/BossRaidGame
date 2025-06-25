@@ -13,8 +13,8 @@
 
 void SSkillTreeGraphNode::Construct(const FArguments& InArgs, USkillTreeEdGraphNode* InNode)
 {
-    GraphNode = InNode; // SGraphNode의 멤버 변수인 GraphNode에 우리 데이터 노드를 저장
-    UpdateGraphNode();  // 노드 위젯의 내용을 채우는 함수 호출
+	GraphNode = InNode; // SGraphNode의 멤버 변수인 GraphNode에 우리 데이터 노드를 저장
+	UpdateGraphNode();  // 노드 위젯의 내용을 채우는 함수 호출
 
 
 }
@@ -100,28 +100,56 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 		// 4. Cost & Damage
 		+ SVerticalBox::Slot().AutoHeight().Padding(8)
 		[
-			SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+			SNew(SVerticalBox)
+				+ SVerticalBox::Slot().AutoHeight().Padding(0, 2)
 				[
-					SNew(STextBlock).Text(FText::FromString("Cost:")).ColorAndOpacity(FLinearColor::White)
+					SNew(SHorizontalBox)
+
+						+ SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+						[
+							SNew(STextBlock).Text(FText::FromString("Damage:"))
+						]
+						+ SHorizontalBox::Slot().AutoWidth().Padding(5, 0).VAlign(VAlign_Center)
+						[
+							SNew(SNumericEntryBox<float>)
+								.Value(this, &SSkillTreeGraphNode::GetSkillDamage)
+								.OnValueCommitted(this, &SSkillTreeGraphNode::OnSkillDamageCommitted)
+						]
 				]
-				+ SHorizontalBox::Slot().AutoWidth().Padding(10, 0).VAlign(VAlign_Center)
+
+				+ SVerticalBox::Slot().AutoHeight().Padding(0, 2)
 				[
-					SNew(SNumericEntryBox<int32>)
-						.Value(this, &SSkillTreeGraphNode::GetSkillPointCost)
-						.OnValueCommitted(this, &SSkillTreeGraphNode::OnSkillPointCostCommitted)
+					SNew(SHorizontalBox)
+
+						+ SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+						[
+							SNew(STextBlock).Text(FText::FromString("CoolTime:"))
+						]
+						+ SHorizontalBox::Slot().AutoWidth().Padding(5, 0).VAlign(VAlign_Center)
+						[
+							SNew(SNumericEntryBox<float>)
+								.Value(this, &SSkillTreeGraphNode::GetSkillCoolTime)
+								.OnValueCommitted(this, &SSkillTreeGraphNode::OnSkillCoolTimeCommitted)
+						]
 				]
-				+ SHorizontalBox::Slot().AutoWidth().Padding(20, 0).VAlign(VAlign_Center)
+				+ SVerticalBox::Slot().AutoHeight().Padding(0, 2)
 				[
-					SNew(STextBlock).Text(FText::FromString("Damage:")).ColorAndOpacity(FLinearColor::White)
+					SNew(SHorizontalBox)
+
+						+ SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+						[
+							SNew(STextBlock).Text(FText::FromString("Skill Point:"))
+						]
+						+ SHorizontalBox::Slot().AutoWidth().Padding(5, 0).VAlign(VAlign_Center)
+						[
+							SNew(SNumericEntryBox<int32>)
+								.Value(this, &SSkillTreeGraphNode::GetSkillPointCost)
+								.OnValueCommitted(this, &SSkillTreeGraphNode::OnSkillPointCostCommitted)
+						]
 				]
-				+ SHorizontalBox::Slot().AutoWidth().Padding(10, 0).VAlign(VAlign_Center)
-				[
-					SNew(SNumericEntryBox<float>)
-						.Value(this, &SSkillTreeGraphNode::GetSkillDamage)
-						.OnValueCommitted(this, &SSkillTreeGraphNode::OnSkillDamageCommitted)
-				]
+
 		];
+	
 
 	// 최종 노드 외곽 구성
 	this->ContentScale.Bind(this, &SGraphNode::GetContentScale);
@@ -172,6 +200,15 @@ TOptional<float> SSkillTreeGraphNode::GetSkillDamage() const
 {
 	if (const USkillTreeEdGraphNode* SkillNode = Cast<const USkillTreeEdGraphNode>(GraphNode)) { return SkillNode->SkillData.SkillDamage; }
 	return 0.f;
+}
+
+TOptional<float> SSkillTreeGraphNode::GetSkillCoolTime() const
+{
+	if (USkillTreeEdGraphNode* Node = Cast<USkillTreeEdGraphNode>(GraphNode))
+	{
+		return Node->SkillData.SkillCoolTime;
+	}
+	return TOptional<float>();
 }
 
 
@@ -226,5 +263,15 @@ void SSkillTreeGraphNode::OnSkillDamageCommitted(float InValue, ETextCommit::Typ
 		SkillNode->Modify();
 		SkillNode->SkillData.SkillDamage = InValue;
 		SkillNode->GetGraph()->NotifyGraphChanged();
+	}
+}
+
+void SSkillTreeGraphNode::OnSkillCoolTimeCommitted(float NewValue, ETextCommit::Type CommitType)
+{
+	if (USkillTreeEdGraphNode* Node = Cast<USkillTreeEdGraphNode>(GraphNode))
+	{
+		const FScopedTransaction Transaction(FText::FromString(TEXT("Change Skill CoolTime")));
+		Node->Modify();
+		Node->SkillData.SkillCoolTime = NewValue;
 	}
 }
