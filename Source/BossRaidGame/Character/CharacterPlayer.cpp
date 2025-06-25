@@ -51,8 +51,12 @@ ACharacterPlayer::ACharacterPlayer()
 	{
 		AttackAction = AttackActionRef.Object;
 	}
-	
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> QSkillActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_QSkill.IA_QSkill'"));
+	if (QSkillActionRef.Object)
+	{
+		QSkillAction = QSkillActionRef.Object;
+	}
 
 }
 
