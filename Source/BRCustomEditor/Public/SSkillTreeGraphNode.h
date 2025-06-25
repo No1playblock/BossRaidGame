@@ -21,14 +21,14 @@ private:
 	const FSlateBrush* GetIconBrush() const;
 	TOptional<int32> GetSkillPointCost() const;
 	TOptional<float> GetSkillDamage() const;
-
+	TOptional<float> GetSkillCoolTime() const;
 	// --- Commit Handlers (UI에서 값을 수정한 뒤 호출될 함수들) ---
 	void OnTitleCommitted(const FText& InText, ETextCommit::Type CommitInfo);
 	void OnDescriptionCommitted(const FText& InText, ETextCommit::Type CommitInfo);
 	void OnSkillPointCostCommitted(int32 InValue, ETextCommit::Type CommitInfo);
 	void OnSkillDamageCommitted(float InValue, ETextCommit::Type CommitInfo);
 
-	void OnSkillIconChanged(const FAssetData& InAssetData);
+	void OnSkillCoolTimeCommitted(float NewValue, ETextCommit::Type CommitType);
 
 
 
