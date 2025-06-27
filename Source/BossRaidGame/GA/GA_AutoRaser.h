@@ -30,4 +30,7 @@ protected:
 	float FireDelay = 0.5f;
 
 	void SpawnOrbsAndFire(ACharacter* OwnerCharacter, float Damage);
+
+	UPROPERTY(EditAnywhere)
+	float OrbCount;
 };
