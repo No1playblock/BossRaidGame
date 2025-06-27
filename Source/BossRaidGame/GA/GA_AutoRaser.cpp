@@ -49,11 +49,12 @@ void UGA_AutoRaser::SpawnOrbsAndFire(ACharacter* OwnerCharacter, float Damage)
 	UWorld* World = OwnerCharacter->GetWorld();
 	if (!World) return;
 
-	const FVector Origin = OwnerCharacter->GetActorLocation();
+	FVector Origin = OwnerCharacter->GetActorLocation();
+	Origin.Z += 50.0f;
 	const FVector Left = OwnerCharacter->GetActorRightVector()*-1.f;   // 중심 기준 축 (Y축)
 	const FVector Up = OwnerCharacter->GetActorUpVector();         // 회전 축 (Z축)
 
-	const int32 OrbCount = 4;
+	
 	const float Radius = OrbSpawnRadius;
 	const float AngleStep = 180.f / (OrbCount - 1); // 반원 각도 간격
 
