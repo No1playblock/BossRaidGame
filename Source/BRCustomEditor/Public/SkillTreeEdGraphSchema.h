@@ -49,6 +49,8 @@ public:
 
 	virtual void BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotifcation) const override;
 
+	virtual FLinearColor GetPinTypeColor(const FEdGraphPinType& PinType) const override;
+
 private:
 	void UpdateNodeBranchingState(USkillTreeEdGraphNode* Node) const;
 

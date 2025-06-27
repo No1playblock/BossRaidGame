@@ -98,7 +98,7 @@ void USkillTreeEdGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& C
 void USkillTreeEdGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotifcation) const
 {
 	const FScopedTransaction Transaction(FText::FromString(TEXT("Break Pin Links")));
-	UE_LOG(LogTemp, Error, TEXT("--- BreakPinLinks CALLED! This is the REAL function! ---"));
+	UE_LOG(LogTemp, Warning, TEXT("--- BreakPinLinks CALLED! This is the REAL function! ---"));
 
 	// 1. 링크가 실제로 끊어지기 전에, 영향을 받을 반대편 노드들을 미리 찾아둡니다.
 	TSet<USkillTreeEdGraphNode*> NodesToUpdate;
@@ -125,6 +125,10 @@ void USkillTreeEdGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsN
 		UpdateNodeBranchingState(TargetNode);
 	}
 
+}
+FLinearColor USkillTreeEdGraphSchema::GetPinTypeColor(const FEdGraphPinType& PinType) const
+{
+	return FLinearColor::White;
 }
 //void USkillTreeEdGraphSchema::BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const
 //{
