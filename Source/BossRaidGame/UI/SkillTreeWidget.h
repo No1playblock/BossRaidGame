@@ -9,15 +9,16 @@
 /**
  * 
  */
+class USkillTreeNodeWidget;
 UCLASS()
 class BOSSRAIDGAME_API USkillTreeWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
-protected:
-	virtual void NativeConstruct() override;
+
 
 public:
+
+
 	// SkillTree DataTable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkillTree")
 	UDataTable* SkillTreeDataTable;
@@ -26,15 +27,27 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UCanvasPanel> SkillTreeCanvas;
 
-	// 노드 위젯 클래스 (디자인용)
-	UPROPERTY(EditDefaultsOnly, Category = "SkillTree")
-	TSubclassOf<class USkillTreeNodeWidget> SkillTreeNodeWidgetClass;
-
-	//void CloseWidget();
-
-
-
 protected:
+	
+	virtual void NativeConstruct() override;
+
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
+	UFUNCTION()
+	void HandleNodeSelection(USkillTreeNodeWidget* ClickedNode);
+
+	UFUNCTION()
+	void HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClickedNode);
+protected:
+	// 등록된 모든 스킬 노드 위젯의 목록
+	UPROPERTY()
+	TArray<USkillTreeNodeWidget*> AllSkillNodes;
+
+	// 현재 선택된 노드를 가리키는 포인터
+	UPROPERTY()
+	USkillTreeNodeWidget* CurrentlySelectedNode;
+
+	/*UPROPERTY()
+	UDataTable* SkillDataTable;*/ // 스킬 데이터 테이블
 
 };
