@@ -12,13 +12,18 @@ class UImage;
 class UTextBlock;
 class UBorder;
 class UButton;
+class USkillTreeNodeWidget;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillNodeClicked, USkillTreeNodeWidget*, ClickedNode);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillNodeDoubleClicked, USkillTreeNodeWidget*, DoubleClickedNode); // 더블클릭 델리게이트 추가
+
+
 UCLASS()
 class BOSSRAIDGAME_API USkillTreeNodeWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	// 스킬 데이터를 설정하고 UI를 업데이트합니다.
 	void SetSkillData(const FSkillTreeDataRow& InData);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Node")
@@ -27,19 +32,30 @@ public:
 	// 외부에서 이 노드의 스킬 데이터를 가져갈 수 있도록 Getter를 제공합니다.
 	FORCEINLINE const FSkillTreeDataRow* GetNodeData() const { return CachedSkillData; }
 
+	void SetSelected(bool bIsSelected);
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "SkillNode")
+	FOnSkillNodeClicked OnNodeClicked;
+
+	UPROPERTY(BlueprintAssignable, Category = "SkillNode")
+	FOnSkillNodeDoubleClicked OnNodeDoubleClicked;
+
 protected:
 
 	virtual void NativePreConstruct() override;
 
+	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 	void UpdateNodeVisuals();
 
+protected:
 
 	// 블루프린트 위젯의 컴포넌트와 바인딩될 변수들
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBorder> NodeBorder;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> SkillButton;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> SkillIcon;
@@ -62,6 +78,13 @@ protected:
 	// 현재 노드의 스킬 데이터
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill Node")
 	FSkillTreeDataRow SkillData;
+
+
+	UPROPERTY(EditAnywhere, Category = "Style")
+	FLinearColor SelectedColor = FLinearColor::Green;
+
+	UPROPERTY(EditAnywhere, Category = "Style")
+	FLinearColor DefaultColor = FLinearColor::White;
 
 	FSkillTreeDataRow* CachedSkillData;
 

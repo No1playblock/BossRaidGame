@@ -7,6 +7,54 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "GameData/SkillTreeData.h"
+#include "Blueprint/WidgetTree.h" // WidgetTree를 사용하기 위해 포함
+
+
+void USkillTreeNodeWidget::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+	UpdateNodeVisuals();
+
+}
+
+FReply USkillTreeNodeWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		OnNodeDoubleClicked.Broadcast(this);
+
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
+
+FReply USkillTreeNodeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		OnNodeClicked.Broadcast(this);
+
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
+
+
+void USkillTreeNodeWidget::SetSelected(bool bIsSelected)
+{
+	if (NodeBorder)
+	{
+		NodeBorder->SetBrushColor(bIsSelected ? SelectedColor : DefaultColor);
+	}
+}
+
 
 void USkillTreeNodeWidget::SetSkillData(const FSkillTreeDataRow& InData)
 {
@@ -25,6 +73,7 @@ void USkillTreeNodeWidget::SetSkillData(const FSkillTreeDataRow& InData)
 		SkillCostText->SetText(FText::Format(
 			FText::FromString(TEXT("Cost: {0}")),
 			FText::AsNumber(SkillData.SkillPointCost)
+		
 		));
 	}
 	if (SkillDamageText)
@@ -45,11 +94,12 @@ void USkillTreeNodeWidget::SetSkillData(const FSkillTreeDataRow& InData)
     {
         SkillDescriptionText->SetText(SkillData.UpgradeDescription);
     }
+	UE_LOG(LogTemp, Warning, TEXT("Success"));
 
 }
 void USkillTreeNodeWidget::UpdateNodeVisuals()
 {
-	// 핸들이 유효하지 않으면 아무것도 하지 않습니다.
+
 	if (!SkillRowHandle.DataTable || SkillRowHandle.RowName == NAME_None)
 	{
 		CachedSkillData = nullptr;
@@ -60,24 +110,9 @@ void USkillTreeNodeWidget::UpdateNodeVisuals()
 	CachedSkillData = SkillRowHandle.GetRow<FSkillTreeDataRow>(ContextString);
 	SkillData = *CachedSkillData; // 캐시된 데이터를 현재 SkillData에 저장
 	SetSkillData(*CachedSkillData); // UI 위젯들을 업데이트합니다.
-	//if (CachedSkillData)
-	//{
-	//	// 로드한 데이터로 UI 위젯들을 채웁니다.
-	//	if (SkillIcon)
-	//	{
-	//		SkillIcon->SetBrushFromTexture(CachedSkillData->SkillIcon.LoadSynchronous());
-	//	}
-	//	if (SkillNameText)
-	//	{
-	//		SkillNameText->SetText(CachedSkillData->SkillName);
-	//	}
-	//	// ... 나머지 TextBlock들도 위와 같은 방식으로 데이터를 설정 ...
-	//}
+	
 }
-void USkillTreeNodeWidget::NativePreConstruct()
-{
-    Super::NativePreConstruct();
-	UpdateNodeVisuals();
-    // 추가 초기화 코드 작성
-}
+
+
+
 
