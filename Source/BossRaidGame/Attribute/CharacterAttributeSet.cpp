@@ -37,7 +37,7 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Damage : %f"), GetDamage());
+		//UE_LOG(LogTemp, Warning, TEXT("Damage : %f"), GetDamage());
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
