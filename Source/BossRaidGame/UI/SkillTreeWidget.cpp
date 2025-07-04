@@ -54,7 +54,7 @@ void USkillTreeWidget::NativeConstruct()
 		SkillTreeComp = PlayerCharacter->GetSkillTreeComponent();
 		if (SkillTreeComp)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("SkillTreeWidget: Found SkillTreeComponent for player %s"), *PlayerCharacter->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("SkillTreeWidget: Found SkillTreeComponent for player %s"), *PlayerCharacter->GetName());
 			// 스킬 습득 성공 시 HandleSkillAcquired 함수가 호출되도록 연결합니다.
 			SkillTreeComp->OnSkillAcquired.AddDynamic(this, &USkillTreeWidget::RefreshNodeStates);
 		}
@@ -140,14 +140,14 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 //스킬을 배우거나 최초 생성시 노드를 갱신
 void USkillTreeWidget::RefreshNodeStates()
 {
-	UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Refreshing all skill nodes"));
+	//UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Refreshing all skill nodes"));
 	if (SkillTreeComp)
 	{
 		for (USkillTreeNodeWidget* Node : AllSkillNodes)
 		{
 			if (Node)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Updating node %s"), *Node->GetName());
+				//UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Updating node %s"), *Node->GetName());
 				Node->UpdateNodeState(SkillTreeComp);
 			}
 		}
