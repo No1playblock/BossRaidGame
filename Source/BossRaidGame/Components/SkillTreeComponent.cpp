@@ -80,6 +80,31 @@ bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
 	// 스킬에 연결된 게임플레이 어빌리티를 부여합니다.
 	if (SkillData->GrantedAbility)
 	{
+		// 만약 부여할 스킬에 InputID가 지정되어 있다면,
+		// 동일한 InputID를 가진 기존 스킬을 찾아 제거합니다.
+		if (SkillData->InputID != EAbilityInputID::None)
+		{
+			// 현재 활성화 가능한 모든 어빌리티의 스펙을 가져옵니다.
+			TArray<FGameplayAbilitySpec> ActivatableAbilities = OwnerASC->GetActivatableAbilities();
+			TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
+
+			for (const FGameplayAbilitySpec& Spec : ActivatableAbilities)
+			{
+				// InputID가 동일하고, 새로 배울 어빌리티와 다른 어빌리티인 경우
+				if (Spec.InputID == static_cast<int32>(SkillData->InputID) && Spec.Ability != SkillData->GrantedAbility->GetDefaultObject())
+				{
+					// 제거할 어빌리티의 핸들을 목록에 추가합니다.
+					AbilitiesToRemove.Add(Spec.Handle);
+				}
+			}
+
+			// 목록에 있는 모든 어빌리티를 제거합니다.
+			for (const FGameplayAbilitySpecHandle& Handle : AbilitiesToRemove)
+			{
+				OwnerASC->ClearAbility(Handle); // 핸들을 사용하여 어빌리티를 영구히 제거
+				UE_LOG(LogTemp, Log, TEXT("Delete (InputID: %d)"), static_cast<int32>(SkillData->InputID));
+			}
+		}
 		FGameplayAbilitySpec AbilitySpec(SkillData->GrantedAbility, 1); // 레벨 1로 부여
 
 		// 데이터 테이블의 InputID가 'None'이 아니면 스펙에 추가합니다.
