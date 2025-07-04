@@ -29,6 +29,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FORCEINLINE class USkillTreeComponent* GetSkillTreeComponent() const { return SkillTreeComponent; }
 protected:
 	void SetupGASInputComponent();
 	void GASInputPressed(int32 InputId);
