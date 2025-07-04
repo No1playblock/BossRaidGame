@@ -6,6 +6,18 @@
 #include "Abilities/GameplayAbility.h"
 #include "SkillTreeData.generated.h"
 
+UENUM(BlueprintType)
+enum class EAbilityInputID : uint8
+{
+	None		UMETA(DisplayName = "None"),
+	// GASCharacterPlayer의 InputID와 값을 일치시켜야 합니다.
+	Q_Skill = 2	UMETA(DisplayName = "Q Skill"),      // 2
+	E_Skill			UMETA(DisplayName = "E Skill"),      // 3
+	R_Skill			UMETA(DisplayName = "R Skill"),      // 4
+	Shift_Skill		UMETA(DisplayName = "Shift Skill")   // 5
+};
+
+
 USTRUCT(BlueprintType)
 struct FSkillTreeDataRow : public FTableRowBase
 {
@@ -16,8 +28,11 @@ struct FSkillTreeDataRow : public FTableRowBase
 	FName SkillID;
 
 	// 이 스킬이 속한 슬롯 (예: Gameplay.Skill.Q) - 스킬을 구분하기 위한 태그
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag SkillSlotTag;*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag SkillSlotTag;
+	FName PrerequisiteSkillID;
 
 	// UI에 표시될 정보
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -55,6 +70,11 @@ struct FSkillTreeDataRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bIsBranchingPoint"))
 	TArray<FName> BranchChoices;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EAbilityInputID InputID = EAbilityInputID::None;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D UIPosition;
+
+
 };
