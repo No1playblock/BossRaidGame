@@ -10,7 +10,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Blueprint/WidgetTree.h" // WidgetTree를 사용하기 위해 필요합니다.
-
+#include "SkillInfoWidget.h"
+#include "SkillSimpleBuyWidget.h"
+#include "Character/GASCharacterPlayer.h"
+#include "Components/SkillTreeComponent.h"
 
 void USkillTreeWidget::NativeConstruct()
 {
@@ -30,7 +33,7 @@ void USkillTreeWidget::NativeConstruct()
 			}
 		}
 	}
-
+	//RefreshNodeStates();
 	for (USkillTreeNodeWidget* NodeWidget : AllSkillNodes)
 	{
 		if (NodeWidget)
@@ -45,9 +48,20 @@ void USkillTreeWidget::NativeConstruct()
 			}
 		}
 	}
+	AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(GetOwningPlayerPawn());
+	if (PlayerCharacter)
+	{
+		SkillTreeComp = PlayerCharacter->GetSkillTreeComponent();
+		if (SkillTreeComp)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SkillTreeWidget: Found SkillTreeComponent for player %s"), *PlayerCharacter->GetName());
+			// 스킬 습득 성공 시 HandleSkillAcquired 함수가 호출되도록 연결합니다.
+			SkillTreeComp->OnSkillAcquired.AddDynamic(this, &USkillTreeWidget::RefreshNodeStates);
+		}
+	}
+	SkillInfo->OnSkillInfoClosed.AddDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
+	SimpleBuyWidget->OnSimpleBuyClosed.AddDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
 }
-
-
 
 
 FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -55,7 +69,7 @@ FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKey
 	if (InKeyEvent.GetKey() == EKeys::Tab)
 	{
 		RemoveFromParent();
-		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		//UGameplayStatics::SetGamePaused(GetWorld(), false);
 		APlayerController* PlayerController = GetOwningPlayer();
 		if (PlayerController)
 		{
@@ -72,36 +86,111 @@ FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKey
 
 void USkillTreeWidget::HandleNodeSelection(USkillTreeNodeWidget* ClickedNode)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OneClick"));
-	if (CurrentlySelectedNode)
+	UWorld* World = GetWorld();
+	if (!World)
 	{
-		CurrentlySelectedNode->SetSelected(false);
+		UE_LOG(LogTemp, Error, TEXT("HandleNodeSelection: GetWorld() returned null. Cannot set timer."));
+		return;
 	}
 
-	if (CurrentlySelectedNode != ClickedNode)
+	// 이미 타이머가 실행 중이면 (빠르게 여러 번 클릭), 새로운 타이머를 시작하지 않습니다.
+	if (World->GetTimerManager().IsTimerActive(SelectionTimerHandle))
 	{
-		CurrentlySelectedNode = ClickedNode;
-		CurrentlySelectedNode->SetSelected(true);
+		return;
 	}
-	else
-	{
-		CurrentlySelectedNode = nullptr;
-	}
+
+	PendingSelectionNode = ClickedNode;
+
+	// 0.25초 뒤에 ProcessSingleClick 함수를 호출하는 타이머를 설정합니다.
+	World->GetTimerManager().SetTimer(SelectionTimerHandle, this, &USkillTreeWidget::ProcessSingleClick, 0.25f, false);
 }
 
 void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClickedNode)
 {
-	UE_LOG(LogTemp, Warning, TEXT("DoubleClick"));
+	UWorld* World = GetWorld();
+	if (!World) return;
 
-	if (CurrentlySelectedNode && CurrentlySelectedNode == DoubleClickedNode)
+	// 더블클릭이 발생했으므로, 대기 중이던 단일 클릭 타이머를 취소합니다.
+	World->GetTimerManager().ClearTimer(SelectionTimerHandle);
+	PendingSelectionNode = nullptr; // 대기 중인 노드도 비웁니다.
+	
+	UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Double clicked on node %s"), *DoubleClickedNode->GetName());
+	if (CurrentlySelectedNode)
 	{
-		// 현재 선택된 노드가 더블클릭되면 선택 해제
-		CurrentlySelectedNode->SetSelected(true);
-		CurrentlySelectedNode = DoubleClickedNode;
+		CurrentlySelectedNode->SetSelected(false);
+	}
+	CurrentlySelectedNode = DoubleClickedNode;
+	CurrentlySelectedNode->SetSelected(true);
+	//구매하시겠습니까?
+	const FSkillTreeDataRow* NodeData = CurrentlySelectedNode->GetNodeData();
+	if (NodeData)
+	{
+
+		SimpleBuyWidget->SetSkillCostText(*NodeData);
+		SimpleBuyWidget->SetVisibility(ESlateVisibility::Visible);
+
+		UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Opened simple buy widget for node %s"), *CurrentlySelectedNode->GetName());
 	}
 	else
 	{
-		// 더블클릭된 노드를 선택
-		HandleNodeSelection(DoubleClickedNode);
+		UE_LOG(LogTemp, Error, TEXT("HandleNodeDoubleClick: NodeData is null."));
 	}
 }
+
+//스킬을 배우거나 최초 생성시 노드를 갱신
+void USkillTreeWidget::RefreshNodeStates()
+{
+	UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Refreshing all skill nodes"));
+	if (SkillTreeComp)
+	{
+		for (USkillTreeNodeWidget* Node : AllSkillNodes)
+		{
+			if (Node)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Updating node %s"), *Node->GetName());
+				Node->UpdateNodeState(SkillTreeComp);
+			}
+		}
+	}
+
+}
+
+void USkillTreeWidget::ProcessSingleClick()  
+{  
+    if (!PendingSelectionNode)  
+    {  
+        return;  
+    }  
+    if (CurrentlySelectedNode)  
+    {  
+        CurrentlySelectedNode->SetSelected(false);  
+    }  
+
+    UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: Selected node %s"), *PendingSelectionNode->GetName());  
+    if (CurrentlySelectedNode != PendingSelectionNode)  
+    {  
+        CurrentlySelectedNode = PendingSelectionNode;  
+        CurrentlySelectedNode->SetSelected(true);  
+
+        // Fix: Ensure the data is dereferenced properly before passing to OpenSkillInfo  
+        const FSkillTreeDataRow* NodeData = CurrentlySelectedNode->GetNodeData();  
+        if (NodeData)  
+        {  
+            SkillInfo->OpenSkillInfo(*NodeData);
+			SkillInfo->SetVisibility(ESlateVisibility::Visible);
+			UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: Opened skill info for node %s"), *CurrentlySelectedNode->GetName());
+			
+        }  
+        else  
+        {  
+            UE_LOG(LogTemp, Error, TEXT("ProcessSingleClick: NodeData is null."));  
+        }  
+    }  
+}
+
+void USkillTreeWidget::OnNodeUnSelected()
+{
+	CurrentlySelectedNode->SetSelected(false);
+	//CurrentlySelectedNode = nullptr;
+}
+

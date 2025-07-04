@@ -27,6 +27,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UCanvasPanel> SkillTreeCanvas;
 
+	UFUNCTION()
+	void RefreshNodeStates();
+
 protected:
 	
 	virtual void NativeConstruct() override;
@@ -38,6 +41,12 @@ protected:
 
 	UFUNCTION()
 	void HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClickedNode);
+
+	void ProcessSingleClick();
+
+	UFUNCTION()
+	void OnNodeUnSelected();
+
 protected:
 	// 등록된 모든 스킬 노드 위젯의 목록
 	UPROPERTY()
@@ -47,7 +56,17 @@ protected:
 	UPROPERTY()
 	USkillTreeNodeWidget* CurrentlySelectedNode;
 
-	/*UPROPERTY()
-	UDataTable* SkillDataTable;*/ // 스킬 데이터 테이블
 
+	FTimerHandle SelectionTimerHandle;
+
+	UPROPERTY()
+	TObjectPtr<USkillTreeNodeWidget> PendingSelectionNode;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<class USkillInfoWidget> SkillInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class USkillSimpleBuyWidget> SimpleBuyWidget;
+
+	TObjectPtr<class USkillTreeComponent> SkillTreeComp;
 };
