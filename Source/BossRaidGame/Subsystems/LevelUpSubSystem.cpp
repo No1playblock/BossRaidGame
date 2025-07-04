@@ -12,33 +12,53 @@
 void ULevelUpSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
+	
+	UE_LOG(LogTemp, Warning, TEXT("LevelUpSubsystem: Initializing LevelUpSubsystem."));
 	// .ini 에서 설정한 경로의 애셋들을 비동기 로드합니다.
 	FStreamableManager& Streamable = UAssetManager::Get().GetStreamableManager();
-	if (LevelStatDataTablePath.IsValid())
+	if (!LevelStatDataTablePath.IsNull())
 	{
 		Streamable.RequestAsyncLoad(LevelStatDataTablePath.ToSoftObjectPath(), FStreamableDelegate::CreateUObject(this, &ThisClass::OnDataTableLoaded));
 	}
-	if (StatChoiceWidgetClassPath.IsValid())
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("LevelUpSubsystem: LevelStatDataTablePath is not valid."));
+	}
+	if (!StatChoiceWidgetClassPath.IsNull())
 	{
 		Streamable.RequestAsyncLoad(StatChoiceWidgetClassPath.ToSoftObjectPath(), FStreamableDelegate::CreateUObject(this, &ThisClass::OnWidgetClassLoaded));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("LevelUpSubsystem: StatChoiceWidgetClassPath is not valid."));
 	}
 }
 
 void ULevelUpSubsystem::OnDataTableLoaded()
 {
 	LevelStatDataTable = LevelStatDataTablePath.Get();
+	if(!LevelStatDataTable)
+	{
+		UE_LOG(LogTemp, Error, TEXT("LevelUpSubsystem: Failed to load LevelStatDataTable."));
+		return;
+	}
 }
 
 void ULevelUpSubsystem::OnWidgetClassLoaded()
 {
 	StatChoiceWidgetClass = StatChoiceWidgetClassPath.Get();
+	if(!StatChoiceWidgetClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("LevelUpSubsystem: Failed to load StatChoiceWidgetClass."));
+		return;
+	}
 }
 
 void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter, int32 NewLevel)
 {
 	if (!LevelStatDataTable || !StatChoiceWidgetClass || !PlayerCharacter)
 	{
+		UE_LOG(LogTemp, Error, TEXT("LevelUpSubsystem: Required data or widget class is not valid."));
 		return;
 	}
 
@@ -137,6 +157,8 @@ void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter,
 		default:
 			break;
 		}
+
+
 	}
 
 	APlayerController* PC = PlayerCharacter->GetController<APlayerController>();
@@ -181,6 +203,16 @@ void ULevelUpSubsystem::ApplyStatChoice(const FStatChoiceInfo& ChoiceInfo)
 		ModifierInfo.ModifierOp = EGameplayModOp::Additive;
 		ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(ChoiceInfo.ModifierValue);
 		Effect->Modifiers.Add(ModifierInfo);
+
+		if (ChoiceInfo.TargetLevelAttribute.IsValid())
+		{
+			FGameplayModifierInfo LevelModifier;
+			LevelModifier.Attribute = ChoiceInfo.TargetLevelAttribute;
+			LevelModifier.ModifierOp = EGameplayModOp::Additive;
+			LevelModifier.ModifierMagnitude = FGameplayEffectModifierMagnitude(1.0f); // 레벨은 1씩 증가
+			Effect->Modifiers.Add(LevelModifier);
+		}
+
 
 		ASC->ApplyGameplayEffectToSelf(Effect, 1.0f, ASC->MakeEffectContext());
 	}
