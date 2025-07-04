@@ -42,7 +42,6 @@ void USkillSimpleBuyWidget::SetSkillCostText(const FSkillTreeDataRow& SkillData)
 }
 void USkillSimpleBuyWidget::OnBuyButtonClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("SkillInfoWidget: Buy button clicked for skill %s"), *SkillID.ToString());
 	AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (PlayerCharacter->GetSkillTreeComponent()->TryAcquireSkill(SkillID))
 	{
