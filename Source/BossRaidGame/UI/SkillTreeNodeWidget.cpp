@@ -8,13 +8,21 @@
 #include "Components/Border.h"
 #include "GameData/SkillTreeData.h"
 #include "Blueprint/WidgetTree.h" // WidgetTree를 사용하기 위해 포함
-
-
+#include "Components/SkillTreeComponent.h"
+#include "Attribute/PlayerCharacterAttributeSet.h" // AttributeSet 헤더 포함
+#include "Kismet/GameplayStatics.h"
+#include "Character/GASCharacterPlayer.h"
 void USkillTreeNodeWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 	UpdateNodeVisuals();
+}
 
+void USkillTreeNodeWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	UpdateNodeState(Cast<USkillTreeComponent>(Cast<AGASCharacterPlayer>(GetOwningPlayerPawn())->GetSkillTreeComponent()));
+	
 }
 
 FReply USkillTreeNodeWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -55,25 +63,81 @@ void USkillTreeNodeWidget::SetSelected(bool bIsSelected)
 	}
 }
 
+void USkillTreeNodeWidget::UpdateNodeState(USkillTreeComponent* SkillTreeComp)
+{
+	if (!SkillTreeComp || !NodeBorder || !SkillCostText) return;
+
+	// 데이터 테이블 핸들에서 스킬 데이터를 가져옵니다.
+	if (!CachedSkillData && SkillRowHandle.DataTable && SkillRowHandle.RowName != NAME_None)
+	{
+		CachedSkillData = SkillRowHandle.GetRow<FSkillTreeDataRow>(TEXT(""));
+	}
+	if (!CachedSkillData) return;
+
+	// 1. 선행 스킬 조건 확인
+	bool bPrerequisiteMet = true;
+	if (CachedSkillData->PrerequisiteSkillID != NAME_None)
+	{
+		bPrerequisiteMet = SkillTreeComp->HasLearnedSkill(CachedSkillData->PrerequisiteSkillID);
+	}
+
+	// 선행 스킬을 배우지 못했다면 노드를 잠김 상태로 표시
+	if (!bPrerequisiteMet)
+	{
+		//NodeBorder->SetBrushColor(LockedColor);
+		NodeBorder->SetContentColorAndOpacity(LockedColor);
+		//SetIsEnabled(false); // 노드 비활성화
+		return;
+	}
+
+	// 선행 스킬을 배웠다면 활성화하고 기본 색상으로 변경
+	//SetIsEnabled(true);
+	NodeBorder->SetContentColorAndOpacity(UnlockedColor);
+
+	//NodeBorder->SetBrushColor(UnlockedColor);
+
+	//
+		// 2. 스킬 포인트 조건 확인
+	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	FGameplayAttribute SkillPointAttribute = UPlayerCharacterAttributeSet::GetSkillPointAttribute();
+
+	if (SkillPointAttribute.IsValid())
+	{
+		int32 PlayerSkillPointCost = Player->GetAbilitySystemComponent()->GetNumericAttribute(SkillPointAttribute);
+		if (PlayerSkillPointCost < CachedSkillData->SkillPointCost)
+		{
+			// 스킬 포인트가 부족하면 텍스트를 빨간색으로
+			SkillCostText->SetColorAndOpacity(InsufficientPointsColor);
+		}
+		else
+		{
+			// 충분하면 기본 색상으로
+			SkillCostText->SetColorAndOpacity(DefaultCostColor);
+		}
+	}
+	
+}
+
 
 void USkillTreeNodeWidget::SetSkillData(const FSkillTreeDataRow& InData)
 {
-    SkillData = InData;
-    if (SkillNameText)
-    {
+	SkillData = InData;
+	if (SkillNameText)
+	{
 		SkillNameText->SetText(SkillData.SkillName);
-    }
-    if (SkillIcon && SkillData.SkillIcon.IsValid())
-    {
-        SkillIcon->SetBrushFromTexture(SkillData.SkillIcon.LoadSynchronous());
-    }
+	}
+	if (SkillIcon && SkillData.SkillIcon.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SkillIcon is valid for skill %s"), *SkillData.SkillID.ToString());
+		SkillIcon->SetBrushFromTexture(SkillData.SkillIcon.LoadSynchronous());
+	}
 
 	if (SkillCostText)
 	{
 		SkillCostText->SetText(FText::Format(
 			FText::FromString(TEXT("Cost: {0}")),
 			FText::AsNumber(SkillData.SkillPointCost)
-		
+
 		));
 	}
 	if (SkillDamageText)
@@ -83,18 +147,17 @@ void USkillTreeNodeWidget::SetSkillData(const FSkillTreeDataRow& InData)
 			FText::AsNumber(SkillData.SkillDamage)
 		));
 	}
-    if (SkillCoolTimeText)
-    {
+	if (SkillCoolTimeText)
+	{
 		SkillCoolTimeText->SetText(FText::Format(
 			FText::FromString(TEXT("CoolTime: {0}")),
 			FText::AsNumber(SkillData.SkillCoolTime)
 		));
-    }
-    if (SkillDescriptionText)
-    {
-        SkillDescriptionText->SetText(SkillData.UpgradeDescription);
-    }
-	UE_LOG(LogTemp, Warning, TEXT("Success"));
+	}
+	if (SkillDescriptionText)
+	{
+		SkillDescriptionText->SetText(SkillData.UpgradeDescription);
+	}
 
 }
 void USkillTreeNodeWidget::UpdateNodeVisuals()
@@ -110,7 +173,7 @@ void USkillTreeNodeWidget::UpdateNodeVisuals()
 	CachedSkillData = SkillRowHandle.GetRow<FSkillTreeDataRow>(ContextString);
 	SkillData = *CachedSkillData; // 캐시된 데이터를 현재 SkillData에 저장
 	SetSkillData(*CachedSkillData); // UI 위젯들을 업데이트합니다.
-	
+
 }
 
 

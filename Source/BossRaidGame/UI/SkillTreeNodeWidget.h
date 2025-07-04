@@ -13,7 +13,7 @@ class UTextBlock;
 class UBorder;
 class UButton;
 class USkillTreeNodeWidget;
-
+class USkillTreeComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillNodeClicked, USkillTreeNodeWidget*, ClickedNode);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillNodeDoubleClicked, USkillTreeNodeWidget*, DoubleClickedNode); // 더블클릭 델리게이트 추가
 
@@ -34,6 +34,8 @@ public:
 
 	void SetSelected(bool bIsSelected);
 
+	void UpdateNodeState(USkillTreeComponent* SkillTreeComp);
+
 public:
 	UPROPERTY(BlueprintAssignable, Category = "SkillNode")
 	FOnSkillNodeClicked OnNodeClicked;
@@ -45,6 +47,7 @@ protected:
 
 	virtual void NativePreConstruct() override;
 
+	virtual void NativeConstruct() override;
 	virtual FReply NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -85,6 +88,22 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Style")
 	FLinearColor DefaultColor = FLinearColor::White;
+
+	UPROPERTY(EditAnywhere, Category = "Style")
+	FLinearColor LockedColor = FLinearColor(0.18f, 0.18f, 0.18f);
+
+	/** 스킬을 배울 수 있을 때의 기본 테두리 색상 */
+	UPROPERTY(EditAnywhere, Category = "Style")
+	FLinearColor UnlockedColor = FLinearColor::White;
+
+	/** 스킬 포인트가 충분할 때의 텍스트 색상 */
+	UPROPERTY(EditAnywhere, Category = "Style")
+	FLinearColor DefaultCostColor = FLinearColor(FLinearColor::White);
+
+	/** 스킬 포인트가 부족할 때의 텍스트 색상 */
+	UPROPERTY(EditAnywhere, Category = "Style")
+	FLinearColor InsufficientPointsColor = FLinearColor(FLinearColor::Red);
+
 
 	FSkillTreeDataRow* CachedSkillData;
 
