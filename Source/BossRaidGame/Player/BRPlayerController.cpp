@@ -63,7 +63,7 @@ void ABRPlayerController::ToggleSkillTreeUI()
 			// 탭키만 UI 입력에 포함
 			SetInputMode(FInputModeUIOnly());
 			SkillTreeWidgetInstance->SetKeyboardFocus();
-			UGameplayStatics::SetGamePaused(GetWorld(), true);
+			//UGameplayStatics::SetGamePaused(GetWorld(), true);
 
 		}
 	}
