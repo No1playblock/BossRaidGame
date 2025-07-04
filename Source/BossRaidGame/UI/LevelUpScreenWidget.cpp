@@ -31,6 +31,13 @@ void ULevelUpScreenWidget::InitializeChoices(const TArray<FStatChoiceInfo>& Choi
 			if (NewSlot)
 			{
 				NewSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center); 
+				NewSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
+
+				FSlateChildSize NewSize;
+				NewSize.SizeRule = ESlateSizeRule::Fill;  // Fill·Î ¼³Á¤
+				NewSize.Value = 1.0f;
+
+				NewSlot->SetSize(NewSize);
 				NewSlot->SetPadding(FMargin(15.f, 0.f));                   
 			}
 		}
