@@ -58,6 +58,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<class UInputAction> ShiftSkillAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	TObjectPtr<class UInputAction> InteractAction;
+
 	virtual void BeginPlay() override;
 
 
