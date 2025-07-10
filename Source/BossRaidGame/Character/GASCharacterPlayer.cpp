@@ -104,7 +104,18 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 
 }
 
+void AGASCharacterPlayer::SetInteractableActor(AActor* Interactable)
+{
+	CurrentInteractableActor = Interactable;
+}
 
+void AGASCharacterPlayer::ClearInteractableActor(AActor* Interactable)
+{
+	if (CurrentInteractableActor == Interactable)
+	{
+		CurrentInteractableActor = nullptr;
+	}
+}
 
 void AGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -126,6 +137,8 @@ void AGASCharacterPlayer::SetupGASInputComponent()
 		
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 1);
 		EnhancedInputComponent->BindAction(QSkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 2);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 6);
+
 	}
 }
 

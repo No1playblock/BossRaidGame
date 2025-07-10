@@ -30,12 +30,19 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	FORCEINLINE class USkillTreeComponent* GetSkillTreeComponent() const { return SkillTreeComponent; }
+
+	FORCEINLINE AActor* GetCurrentInteractableActor() const { return CurrentInteractableActor; }
+
+	void SetInteractableActor(AActor* Interactable);
+	void ClearInteractableActor(AActor* Interactable);
 protected:
+
 	void SetupGASInputComponent();
 	void GASInputPressed(int32 InputId);
 	void GASInputReleased(int32 InputId);
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 
 protected:
 
@@ -56,4 +63,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill Tree", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USkillTreeComponent> SkillTreeComponent;
 
+private:
+	// 현재 상호작용 가능한 액터를 저장할 변수
+	UPROPERTY()
+	AActor* CurrentInteractableActor = nullptr;
 };
