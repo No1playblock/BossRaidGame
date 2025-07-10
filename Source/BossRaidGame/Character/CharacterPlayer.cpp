@@ -58,6 +58,12 @@ ACharacterPlayer::ACharacterPlayer()
 		QSkillAction = QSkillActionRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> InteractActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_Interact.IA_Interact'"));
+	if (InteractActionRef.Object)
+	{
+		InteractAction = InteractActionRef.Object;
+	}
+
 }
 
 void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
