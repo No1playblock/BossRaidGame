@@ -32,8 +32,6 @@ public:
 	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
-protected:
-	void UpdateLevelFromExp(float Exp);
 
 protected:
 
@@ -69,5 +67,7 @@ protected:
 	FGameplayAttributeData SkillPoint;
 
 	TObjectPtr<class UCurveTable> LevelTable;
+
+
 
 };
