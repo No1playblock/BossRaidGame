@@ -13,7 +13,7 @@ UPlayerCharacterAttributeSet::UPlayerCharacterAttributeSet() :
 	SkillPower(10.0f),
 	SkillCooldownRate(1.0f)
 {
-	static ConstructorHelpers::FObjectFinder<UCurveTable> LevelTableRef(TEXT("/Script/Engine.CurveTable'/Game/Blueprints/GameData/ExpLevelTable.ExpLevelTable'"));
+	static ConstructorHelpers::FObjectFinder<UCurveTable> LevelTableRef(TEXT("/Script/Engine.CurveTable'/Game/GameData/ExpLevelTable.ExpLevelTable'"));
 	if (LevelTableRef.Object)
 	{
 		LevelTable = LevelTableRef.Object;
@@ -69,15 +69,4 @@ void UPlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 		}
 		
 	}
-}
-void UPlayerCharacterAttributeSet::UpdateLevelFromExp(float Exp)
-{
-	/*static const FString CurvePath = TEXT("/Game/Blueprints/GameData/ExpLevelTable.ExpLevelTable");
-	static UCurveTable* CurveTable = LoadObject<UCurveTable>(nullptr, *CurvePath);
-	if (!CurveTable) return;
-	else
-		UE_LOG(LogTemp, Warning, TEXT("CurveTable NULL"));*/
-
-
-	
 }
