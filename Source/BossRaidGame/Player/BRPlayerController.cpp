@@ -7,19 +7,19 @@
 #include "Kismet/GameplayStatics.h" 
 ABRPlayerController::ABRPlayerController()
 {
-	static ConstructorHelpers::FClassFinder<USkillTreeWidget> SkillTreeWidgetBPClass(TEXT("/Game/Blueprints/UI/WBP_SkillTree.WBP_SkillTree_C"));
+	static ConstructorHelpers::FClassFinder<USkillTreeWidget> SkillTreeWidgetBPClass(TEXT("/Game/UI/WBP_SkillTree.WBP_SkillTree_C"));
 	if (SkillTreeWidgetBPClass.Succeeded())
 	{
 		SkillTreeWidgetClass = SkillTreeWidgetBPClass.Class; // 수정한 부분입니다.
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleSkillTreeAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_ToggleSkillUI.IA_ToggleSkillUI'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleSkillTreeAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_ToggleSkillUI.IA_ToggleSkillUI'"));
 	if (ToggleSkillTreeAction.Succeeded())
 	{
 		IA_ToggleSkillTree = ToggleSkillTreeAction.Object; // 수정한 부분입니다.
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> MappingContext(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Blueprints/Input/IMC_Default.IMC_Default'"));
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> MappingContext(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
 	if (MappingContext.Succeeded())
 	{
 		DefaultMappingContext = MappingContext.Object; // 수정한 부분입니다.
@@ -59,7 +59,7 @@ void ABRPlayerController::ToggleSkillTreeUI()
 		if (!bVisible)
 		{
 			SkillTreeWidgetInstance->AddToViewport();
-			SetShowMouseCursor(true);
+			SetShowMouseCursor(true);						//여기서 CallStack
 			// 탭키만 UI 입력에 포함
 			SetInputMode(FInputModeUIOnly());
 			SkillTreeWidgetInstance->SetKeyboardFocus();
