@@ -26,13 +26,11 @@ void UGA_BaseMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
-	HitActors.Empty();
+	//HitActors.Empty();
 	// 몽타주 재생 태스크 생성
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, AttackMontage);
 	MontageTask->OnCompleted.AddDynamic(this, &UGA_BaseMeleeAttack::OnCompleteCallback);
 	MontageTask->OnInterrupted.AddDynamic(this, &UGA_BaseMeleeAttack::OnInterruptedCallback);
-
-	UE_LOG(LogTemp, Warning, TEXT("ActivateAbility: %s"), *GetName());
 
 	// 데미지 이벤트 대기 태스크 생성
 	UAbilityTask_WaitGameplayEvent* EventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, DamageEventTag);
@@ -99,15 +97,23 @@ void UGA_BaseMeleeAttack::OnDamageEvent(FGameplayEventData Payload)
 	FVector WorldOffset = OwnerCharacter->GetActorTransform().TransformVector(AttackLocationOffset);
 
 	const FVector TraceStart = OwnerCharacter->GetActorLocation() + WorldOffset;
-	const FVector TraceEnd = TraceStart;	// + (OwnerCharacter->GetActorForwardVector() * AttackRadius)
+	//const FVector TraceEnd = TraceStart;	// + (OwnerCharacter->GetActorForwardVector() * AttackRadius)
+
 
 	// 충돌 검사 태스크 생성 및 활성화
+	//UAT_SphereTraceForTargets* TraceTask = UAT_SphereTraceForTargets::SphereTraceForTargets(
+	//	this,
+	//	TraceStart,
+	//	TraceEnd,
+	//	AttackRadius,
+	//	true // 디버깅 시각화 활성화
+	//	, TargetChannel
+	//);
 	UAT_SphereTraceForTargets* TraceTask = UAT_SphereTraceForTargets::SphereTraceForTargets(
 		this,
-		TraceStart,
-		TraceEnd,
+		TraceStart, // 공격 위치에 오프셋 적용
 		AttackRadius,
-		true // 디버깅 시각화 활성화
+		TargetChannel
 	);
 
 	if (TraceTask)
@@ -118,22 +124,19 @@ void UGA_BaseMeleeAttack::OnDamageEvent(FGameplayEventData Payload)
 	}
 }
 
-void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<FHitResult>& HitResults)
+void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<AActor*>& HitActors)
 {
 	// 이전에 멤버 변수로 옮긴 HitActors Set을 사용합니다.
 	TArray<TWeakObjectPtr<AActor>> ActorsToApplyEffect;
 
 	// 먼저 피해를 줄 고유한 액터 목록을 만듭니다.
-	for (const FHitResult& Hit : HitResults)
+	for (AActor* Character : HitActors)
 	{
-		AActor* TargetActor = Hit.GetActor();
-		if (TargetActor && !HitActors.Contains(TargetActor))
+		if (Character && !ActorsToApplyEffect.Contains(Character))
 		{
 			// 이 공격으로 처음 맞는 액터라면, 목록에 추가하고 HitActors Set에도 기록합니다.
-			ActorsToApplyEffect.Add(TargetActor);
-			HitActors.Add(TargetActor);
+			ActorsToApplyEffect.Add(Character);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("OnTargetsHit: Hit Actor %s"), *TargetActor->GetName());
 	}
 
 	if (ActorsToApplyEffect.Num() > 0)
@@ -146,7 +149,6 @@ void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<FHitResult>& HitResults)
 		FGameplayAbilityTargetDataHandle TargetDataHandle;
 		TargetDataHandle.Add(NewTargetData);
 
-		UE_LOG(LogTemp, Warning, TEXT("OnTargetsHit: %d targets hit"), ActorsToApplyEffect.Num());
 		// 3. 올바른 타입의 TargetDataHandle을 사용하여 이펙트를 한 번에 적용합니다.
 		ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetDataHandle, DamageEffectClass, 1.0f);
 	}

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
 #include "Abilities/GameplayAbilityTypes.h" // 이 줄을 추가해주세요.
+#include "Engine/EngineTypes.h"
 #include "GA_BaseMeleeAttack.generated.h"
 
 /**
@@ -30,7 +31,7 @@ protected:
 	void OnDamageEvent(FGameplayEventData Payload);
 
 	UFUNCTION()
-	void OnTargetsHit(const TArray<FHitResult>& HitResults);
+	void OnTargetsHit(const TArray<AActor*>& HitActors);
 
 	UFUNCTION()
 	void OnCompleteCallback();
@@ -64,9 +65,11 @@ protected:
 	UPROPERTY(EditAnyWhere)
 	FVector AttackLocationOffset = FVector(0.0f, 0.0f, 50.0f); // 공격 위치 오프셋
 
+	UPROPERTY(EditAnyWhere, Category = "Melee Attack")
+	TEnumAsByte<ECollisionChannel> TargetChannel;
 private:
 	FDelegateHandle CancelledHandle;
 	FDelegateHandle EndedHandle;
 
-	TSet<TObjectPtr<AActor>> HitActors;
+	//TSet<TObjectPtr<AActor>> HitActors;
 };
