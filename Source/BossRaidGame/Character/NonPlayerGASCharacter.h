@@ -23,6 +23,7 @@ public:
 
 	virtual void OnOutOfHealth() override;
 
+	FORCEINLINE class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
@@ -30,10 +31,16 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UMobCharacterAttributeSet> AttributeSet;
 
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
+
 	UPROPERTY(EditAnywhere)
 	float ExpReward = 0.0f;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UGameplayEffect> GainExpEffectClass;
+
+	UPROPERTY(EditAnywhere, Category = Pawn)
+	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	
 };

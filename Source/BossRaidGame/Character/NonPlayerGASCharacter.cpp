@@ -28,6 +28,12 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 
 	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 	AttributeSet->SetExpReward(ExpReward);
+
+	for (const auto& StartAbility : StartAbilities)
+	{
+		FGameplayAbilitySpec StartSpec(StartAbility);
+		ASC->GiveAbility(StartSpec);
+	}
 }
 
 void ANonPlayerGASCharacter::OnOutOfHealth()
