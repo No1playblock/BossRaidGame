@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const TArray<FHitResult>&, HitResults);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const TArray<AActor*>&, HitResults);
 
 
 UCLASS()
@@ -30,21 +30,28 @@ public:
 	 * @param Radius 추적 구체의 반지름
 	 * @param bDebug 디버깅 시각화를 표시할지 여부
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility"))
+	/*UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility"))
 	static UAT_SphereTraceForTargets* SphereTraceForTargets(
 		UGameplayAbility* OwningAbility,
 		FVector StartLocation,
 		FVector EndLocation,
 		float Radius,
 		bool bDebug = false
-	);
-
+		, ECollisionChannel Channel = ECollisionChannel::ECC_Pawn
+	);*/
+	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility"))
+	static UAT_SphereTraceForTargets* SphereTraceForTargets(UGameplayAbility* OwningAbility, FVector TraceSpherePos, float Radius, ECollisionChannel Channel);
 private:
+	
 	// 태스크가 실제 로직을 수행하는 함수
 	virtual void Activate() override;
 
-	FVector TraceStart;
+	/*FVector TraceStart;
 	FVector TraceEnd;
 	float TraceRadius;
-	bool bShowDebug;
+	bool bShowDebug;*/
+
+	FVector SpherePos;
+	float SphereRadius;
+	ECollisionChannel TargetChannel;
 };
