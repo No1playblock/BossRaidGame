@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GA/AT/AT_ShootBase.h"
+#include "Abilities/Tasks/AbilityTask.h"
 #include "AT_ShootProjectile.generated.h"
 
 /**
