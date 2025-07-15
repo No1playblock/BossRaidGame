@@ -42,8 +42,8 @@ struct FStatChoiceInfo
 
 	FStatChoiceInfo(const FText& InDisplayName, const FText& InDisplayLevelText, float InValue, FGameplayAttribute InAttribute, const FGameplayAttribute InTargetLevelAttribute)
 		: DisplayName(InDisplayName)
+		, DisplayLevelText(InDisplayLevelText)
 		, ModifierValue(InValue)
-		,DisplayLevelText(InDisplayLevelText)
 		, TargetAttribute(InAttribute) 
 		, TargetLevelAttribute(InTargetLevelAttribute)
 	{
