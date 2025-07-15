@@ -29,7 +29,7 @@ ABaseCharacter::ABaseCharacter()
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Assets/Animation/Belica/AttackMontage.AttackMontage'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Art/Animation/Belica/AttackMontage.AttackMontage'"));
 	if (AttackMontageRef.Object)
 	{
 		AttackMontage = AttackMontageRef.Object;
