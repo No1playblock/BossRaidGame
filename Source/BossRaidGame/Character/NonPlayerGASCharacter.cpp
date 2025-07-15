@@ -12,7 +12,8 @@ ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 	AttributeSet = CreateDefaultSubobject<UMobCharacterAttributeSet>(TEXT("AttributeSet"));
-	
+	GetCharacterMovement()->SetWalkableFloorAngle(5.0f);
+	//GetCharacterMovement()->bUseRVOAvoidance = true;		정확성이 조금 낮음
 }
 
 UAbilitySystemComponent* ANonPlayerGASCharacter::GetAbilitySystemComponent() const
@@ -50,7 +51,6 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
         if (PlayerASC)
         {
-			UE_LOG(LogTemp, Warning, TEXT("PlayerASC"));
             // Effect Context 생성
             FGameplayEffectContextHandle EffectContext = PlayerASC->MakeEffectContext();
             EffectContext.AddSourceObject(this); // 경험치 제공자: 이 적 캐릭터
@@ -65,7 +65,6 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
                 //const FGameplayTag XPTag = FGameplayTag::RequestGameplayTag(FName("Data.Experience"));
                 SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_EXPERIENCE, ExpReward);
 
-				UE_LOG(LogTemp, Warning, TEXT("GiveEXP"));
                 // 적용
 				PlayerASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
 				
