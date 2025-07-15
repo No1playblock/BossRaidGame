@@ -9,11 +9,14 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "GameplayEffect.h"
+#include "Attribute/PlayerCharacterAttributeSet.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "Tag/BRGameplayTag.h"
 
 // Sets default values
 ARaserOrb::ARaserOrb()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -58,18 +61,20 @@ FHitResult ARaserOrb::LineTrace() const
 
 		return Hit;
 	}
-	
+
 	return FHitResult();
 }
 
 void ARaserOrb::SelfDestroy()
 {
+	UE_LOG(LogTemp, Warning, TEXT("RaserOrb SelfDestroy called"));
+
 	Destroy();
 }
 
 void ARaserOrb::FireLaser()
 {
-	
+
 
 	FHitResult Hit = LineTrace();
 
@@ -77,25 +82,43 @@ void ARaserOrb::FireLaser()
 	if (Hit.IsValidBlockingHit())
 	{
 		AActor* HitActor = Hit.GetActor();
-		if (HitActor)
-		{
-			if (UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(HitActor))
-			{
-				if (DamageEffectClass)
-				{
-					FGameplayEffectContextHandle ContextHandle = TargetASC->MakeEffectContext();
-					ContextHandle.AddSourceObject(this);
 
-					FGameplayEffectSpecHandle SpecHandle = TargetASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, ContextHandle);
-					if (SpecHandle.IsValid())
+		if (HitActor && InstigatorActor && DamageEffectClass)
+		{
+			UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InstigatorActor);
+			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
+
+			if (SourceASC && TargetASC)
+			{
+
+				const float BaseDamage = DamageAmount;
+
+				// 2. 플레이어(Instigator)의 SkillPower 어트리뷰트 값을 가져옵니다.
+				const float SkillPower = SourceASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetSkillPowerAttribute());
+
+				// 3. 최종 데미지를 계산합니다. SkillPower가 0이면 데미지가 없으므로, 1을 기본값으로 간주할 수 있습니다.
+				const float FinalDamage = BaseDamage * FMath::Max(1.f, SkillPower);
+				UE_LOG(LogTemp, Warning, TEXT("Final Damage: %f"), FinalDamage);
+				if (FinalDamage > 0.f)
+				{
+					if (DamageEffectClass)
 					{
-						SpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag("Data.Damage"), DamageAmount);
-						TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+						FGameplayEffectContextHandle ContextHandle = TargetASC->MakeEffectContext();
+						ContextHandle.AddSourceObject(this);
+
+						FGameplayEffectSpecHandle SpecHandle = TargetASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, ContextHandle);
+						if (SpecHandle.IsValid())
+						{
+							SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE_QSKILL, -1.0f * FinalDamage);		//여기서 음수로 줌
+							TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+						}
 					}
 				}
 			}
 		}
+
 	}
+
 
 	FTimerHandle DestroyTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &ARaserOrb::SelfDestroy, 1.0f, false);
