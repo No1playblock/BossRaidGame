@@ -149,7 +149,7 @@ void SSkillTreeEditorWidget::OnUndoRedo()
 FReply SSkillTreeEditorWidget::OnClick_Save()
 {
 	// 1. 저장할 데이터 테이블 애셋을 로드합니다.
-	UDataTable* SkillDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Blueprints/GameData/DT_SkillTree.DT_SkillTree"));
+	UDataTable* SkillDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/GameData/DT_SkillTree.DT_SkillTree"));
 	if (!SkillDataTable)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Save Failed: DT_SkillTree를 로드할 수 없습니다."));
@@ -200,7 +200,7 @@ void SSkillTreeEditorWidget::CreateNodesFromDataTable()
 {
 	// 1. 데이터 테이블 애셋을 로드합니다.
 	// 경로를 직접 하드코딩하거나, .ini 파일에서 읽어올 수 있습니다. 여기서는 직접 로드합니다.
-	UDataTable* SkillDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Blueprints/GameData/DT_SkillTree.DT_SkillTree"));
+	UDataTable* SkillDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/GameData/DT_SkillTree.DT_SkillTree"));
 	if (!SkillDataTable)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Don't Finde DT_SkillTree"));
