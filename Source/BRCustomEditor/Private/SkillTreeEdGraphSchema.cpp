@@ -35,46 +35,42 @@ const FPinConnectionResponse USkillTreeEdGraphSchema::CanCreateConnection(const 
 bool USkillTreeEdGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const
 {
 
-	const bool bMadeConnection = Super::TryCreateConnection(A, B);
+	//const bool bMadeConnection = Super::TryCreateConnection(A, B);
 
+	//	
 	//if (bMadeConnection)
 	//{
-	//	// 연결에 성공했다면, 데이터 업데이트 로직을 추가합니다.
+	//	// [정리] 연결에 성공했다면, 소스 노드의 분기 상태를 업데이트합니다.
+	//	// 모든 데이터 업데이트 로직은 UpdateNodeBranchingState 함수로 중앙화되었습니다.
 	//	UEdGraphPin* OutputPin = (A->Direction == EGPD_Output) ? A : B;
-	//	UEdGraphPin* InputPin = (A->Direction == EGPD_Input) ? A : B;
-
-	//	USkillTreeEdGraphNode* SourceNode = Cast<USkillTreeEdGraphNode>(OutputPin->GetOwningNode());
-	//	USkillTreeEdGraphNode* TargetNode = Cast<USkillTreeEdGraphNode>(InputPin->GetOwningNode());
-
-	//	if (SourceNode && TargetNode)
+	//	if (USkillTreeEdGraphNode* SourceNode = Cast<USkillTreeEdGraphNode>(OutputPin->GetOwningNode()))
 	//	{
-	//		// 소스 노드가 분기점이 아니라면 NextLevelSkillID를 업데이트합니다.
-	//		if (!SourceNode->SkillData.bIsBranchingPoint)
-	//		{
-	//			SourceNode->SkillData.NextLevelSkillID = TargetNode->SkillData.SkillID;
-	//		}
-	//		// 소스 노드가 분기점이라면 BranchChoices 배열에 추가합니다.
-	//		else
-	//		{
-	//			SourceNode->SkillData.BranchChoices.AddUnique(TargetNode->SkillData.SkillID);
-	//		}
-
-	//		// 그래프가 변경되었음을 에디터에 알립니다.
-	//		SourceNode->GetGraph()->NotifyGraphChanged();
+	//		UpdateNodeBranchingState(SourceNode);
 	//	}
 	//}
+	//return bMadeConnection;
+	const bool bMadeConnection = Super::TryCreateConnection(A, B);
+
 	if (bMadeConnection)
 	{
-		// [정리] 연결에 성공했다면, 소스 노드의 분기 상태를 업데이트합니다.
-		// 모든 데이터 업데이트 로직은 UpdateNodeBranchingState 함수로 중앙화되었습니다.
+		// 연결된 두 핀에서 SourceNode와 TargetNode를 모두 가져옵니다.
 		UEdGraphPin* OutputPin = (A->Direction == EGPD_Output) ? A : B;
-		if (USkillTreeEdGraphNode* SourceNode = Cast<USkillTreeEdGraphNode>(OutputPin->GetOwningNode()))
+		UEdGraphPin* InputPin = (A->Direction == EGPD_Input) ? A : B;
+		USkillTreeEdGraphNode* SourceNode = Cast<USkillTreeEdGraphNode>(OutputPin->GetOwningNode());
+		USkillTreeEdGraphNode* TargetNode = Cast<USkillTreeEdGraphNode>(InputPin->GetOwningNode());
+
+		if (SourceNode && TargetNode) // 두 노드가 모두 유효한지 확인
 		{
+			// [추가] TargetNode의 선행 스킬 ID를 설정합니다.
+			TargetNode->Modify();
+			TargetNode->SkillData.PrerequisiteSkillID = SourceNode->SkillData.SkillID;
+
+			// 기존에 있던 SourceNode의 분기점 상태 업데이트는 그대로 유지합니다.
 			UpdateNodeBranchingState(SourceNode);
 		}
 	}
-	return bMadeConnection;
 
+	return bMadeConnection;
 }
 
 // [추가] CreateConnectionDrawingPolicy 함수 구현
@@ -109,7 +105,14 @@ void USkillTreeEdGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsN
 			NodesToUpdate.Add(Node);
 		}
 	}
-
+	if (TargetPin.Direction == EGPD_Input)
+	{
+		if (USkillTreeEdGraphNode* NodeToClear = Cast<USkillTreeEdGraphNode>(TargetPin.GetOwningNode()))
+		{
+			NodeToClear->Modify();
+			NodeToClear->SkillData.PrerequisiteSkillID = NAME_None;
+		}
+	}
 	// 2. 부모의 함수를 호출하여 실제 링크 끊기 작업을 수행합니다.
 	Super::BreakPinLinks(TargetPin, bSendsNodeNotifcation);
 
