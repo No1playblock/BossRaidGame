@@ -57,7 +57,7 @@ FReply USkillTreeNodeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 
 void USkillTreeNodeWidget::SetSelected(bool bIsSelected)
 {
-	if (NodeBorder)
+	if (NodeBorder)				//¿©±â¼­ Crash
 	{
 		NodeBorder->SetBrushColor(bIsSelected ? SelectedColor : DefaultColor);
 	}

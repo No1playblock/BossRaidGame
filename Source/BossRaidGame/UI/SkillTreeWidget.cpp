@@ -63,6 +63,25 @@ void USkillTreeWidget::NativeConstruct()
 	SimpleBuyWidget->OnSimpleBuyClosed.AddDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
 }
 
+void USkillTreeWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+	// 모든 노드 위젯의 이벤트 바인딩을 해제합니다.
+	for (USkillTreeNodeWidget* NodeWidget : AllSkillNodes)
+	{
+		if (NodeWidget)
+		{
+			NodeWidget->OnNodeClicked.Clear();
+			NodeWidget->OnNodeDoubleClicked.Clear();
+		}
+	}
+	if (SkillTreeComp)
+	{
+		SkillTreeComp->OnSkillAcquired.RemoveDynamic(this, &USkillTreeWidget::RefreshNodeStates);
+	}
+	SkillInfo->OnSkillInfoClosed.RemoveDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
+	SimpleBuyWidget->OnSimpleBuyClosed.RemoveDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
+}
 
 FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
@@ -128,6 +147,7 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 
 		SimpleBuyWidget->SetSkillCostText(*NodeData);
 		SimpleBuyWidget->SetVisibility(ESlateVisibility::Visible);
+		SkillInfo->SetVisibility(ESlateVisibility::Hidden);		//다른거는 안보이게
 
 		UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Opened simple buy widget for node %s"), *CurrentlySelectedNode->GetName());
 	}
@@ -159,6 +179,7 @@ void USkillTreeWidget::ProcessSingleClick()
 {  
     if (!PendingSelectionNode)  
     {  
+		UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: PendingSelectionNode is null."));
         return;  
     }  
     if (CurrentlySelectedNode)  
@@ -171,13 +192,14 @@ void USkillTreeWidget::ProcessSingleClick()
     {  
         CurrentlySelectedNode = PendingSelectionNode;  
         CurrentlySelectedNode->SetSelected(true);  
-
+		UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: CurrentlySelectedNode set to %s"), *CurrentlySelectedNode->GetName());
         // Fix: Ensure the data is dereferenced properly before passing to OpenSkillInfo  
         const FSkillTreeDataRow* NodeData = CurrentlySelectedNode->GetNodeData();  
         if (NodeData)  
         {  
             SkillInfo->OpenSkillInfo(*NodeData);
 			SkillInfo->SetVisibility(ESlateVisibility::Visible);
+			SimpleBuyWidget->SetVisibility(ESlateVisibility::Hidden);	//다른거는 안보이게
 			UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: Opened skill info for node %s"), *CurrentlySelectedNode->GetName());
 			
         }  
@@ -191,6 +213,6 @@ void USkillTreeWidget::ProcessSingleClick()
 void USkillTreeWidget::OnNodeUnSelected()
 {
 	CurrentlySelectedNode->SetSelected(false);
-	//CurrentlySelectedNode = nullptr;
+	//PendingSelectionNode = nullptr;
+	CurrentlySelectedNode = nullptr;
 }
-
