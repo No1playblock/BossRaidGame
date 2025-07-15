@@ -23,42 +23,42 @@ ACharacterPlayer::ACharacterPlayer()
 
 	FollowCamera->bUsePawnControlRotation = false;
 
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappinContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Blueprints/Input/IMC_Default.IMC_Default'"));
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappinContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
 	if (InputMappinContextRef.Object)
 	{
 		DefaultMappingContext = InputMappinContextRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_Jump.IA_Jump'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Jump.IA_Jump'"));
 	if (JumpActionRef.Object)
 	{
 		JumpAction = JumpActionRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_Move.IA_Move'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Move.IA_Move'"));
 	if (MoveActionRef.Object)
 	{
 		MoveAction = MoveActionRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> LookActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_Look.IA_Look'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> LookActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Look.IA_Look'"));
 	if (LookActionRef.Object)
 	{
 		LookAction = LookActionRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UInputAction> AttackActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_Attack.IA_Attack'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> AttackActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Attack.IA_Attack'"));
 	if (AttackActionRef.Object)
 	{
 		AttackAction = AttackActionRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> QSkillActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_QSkill.IA_QSkill'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> QSkillActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QSkill.IA_QSkill'"));
 	if (QSkillActionRef.Object)
 	{
 		QSkillAction = QSkillActionRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> InteractActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Blueprints/Input/InputAction/IA_Interact.IA_Interact'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> InteractActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Interact.IA_Interact'"));
 	if (InteractActionRef.Object)
 	{
 		InteractAction = InteractActionRef.Object;
