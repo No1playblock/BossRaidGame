@@ -9,6 +9,17 @@
 USkillTreeComponent::USkillTreeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	// 컴포넌트가 생성될 때 스킬 데이터 테이블을 로드합니다.
+	static ConstructorHelpers::FObjectFinder<UDataTable> SkillDataTableRef(TEXT("/Script/Engine.DataTable'/Game/GameData/DT_SkillTree.DT_SkillTree'"));
+	if (SkillDataTableRef.Succeeded())
+	{
+		SkillDataTable = SkillDataTableRef.Object;
+		UE_LOG(LogTemp, Log, TEXT("SkillTreeComponent: Loaded Skill DataTable: %s"), *SkillDataTable->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("SkillTreeComponent: Failed to load Skill DataTable!"));
+	}
 }
 
 void USkillTreeComponent::BeginPlay()
