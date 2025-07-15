@@ -27,8 +27,9 @@ public:
 	FOnSkillInfoClosed OnSkillInfoClosed; // ½ºÅ³ Á¤º¸ UI ´ÝÈû ÀÌº¥Æ®
 protected:
 
-	void NativeConstruct() override;
+	virtual void NativeConstruct() override;
 
+	virtual void NativeDestruct() override;
 	UFUNCTION()
 	void CloseUI();
 

@@ -11,11 +11,19 @@
 #include "AbilitySystemComponent.h"
 #include "Components/SkillTreeComponent.h"
 #include "SkillSimpleBuyWidget.h"
+#include "Attribute/PlayerCharacterAttributeSet.h"
 void USkillInfoWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	CloseButton->OnClicked.AddDynamic(this, &USkillInfoWidget::CloseUI);
-	BuyButton->OnClicked.AddDynamic(this, &USkillInfoWidget::OnBuyButtonClicked);
+	if (CloseButton)
+	{
+		CloseButton->OnClicked.AddDynamic(this, &USkillInfoWidget::CloseUI);
+	}
+	if (BuyButton)
+	{
+		BuyButton->OnClicked.AddDynamic(this, &USkillInfoWidget::OnBuyButtonClicked);			//여기서 CallStack
+	}
+	
 }
 
 void USkillInfoWidget::OpenSkillInfo(const FSkillTreeDataRow& SkillData)
@@ -56,8 +64,41 @@ void USkillInfoWidget::OpenSkillInfo(const FSkillTreeDataRow& SkillData)
 	{
 		DescriptionText->SetText(SkillData.UpgradeDescription);
 	}
-	SkillPointCost = SkillData.SkillPointCost;
+	//SkillPointCost = SkillData.SkillPointCost;
 	SkillID = SkillData.SkillID;
+
+	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	FGameplayAttribute SkillPointAttribute = UPlayerCharacterAttributeSet::GetSkillPointAttribute();
+
+	if (SkillPointAttribute.IsValid())
+	{
+		int32 PlayerSkillPointCost = Player->GetAbilitySystemComponent()->GetNumericAttribute(SkillPointAttribute);
+		if (PlayerSkillPointCost < SkillData.SkillPointCost)
+		{
+			// 스킬 포인트가 부족하면 텍스트를 빨간색으로
+			SkillCostText->SetColorAndOpacity(FLinearColor::Red);
+		}
+		else
+		{
+			// 충분하면 기본 색상으로
+			SkillCostText->SetColorAndOpacity(FLinearColor::White);
+		}
+	}
+}
+
+void USkillInfoWidget::NativeDestruct()
+{
+	// NativeConstruct에서 했던 바인딩을 여기서 해제합니다.
+	if (CloseButton)
+	{
+		CloseButton->OnClicked.Clear(); // Clear()를 사용하여 바인딩을 완전히 제거합니다.
+	}
+	if (BuyButton)
+	{
+		BuyButton->OnClicked.Clear();
+	}
+
+	Super::NativeDestruct(); // 마지막에 부모 함수 호출
 }
 
 void USkillInfoWidget::CloseUI()
@@ -74,11 +115,6 @@ void USkillInfoWidget::OnBuyButtonClicked()
 	{
 		OnSkillInfoClosed.Broadcast();
 		SetVisibility(ESlateVisibility::Hidden);
-
-	}
-	else
-	{
-		SkillCostText->SetColorAndOpacity(FLinearColor::Red);
 
 	}
 
