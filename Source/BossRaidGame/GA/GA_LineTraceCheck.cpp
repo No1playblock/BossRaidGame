@@ -6,9 +6,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerController.h"
-#include "AT/AT_ShootBase.h"
+#include "Abilities/Tasks/AbilityTask.h"
 #include "Character/BaseCharacter.h"
-#include "AT/AT_LineTrace.h"
 
 UGA_LineTraceCheck::UGA_LineTraceCheck()
 {
