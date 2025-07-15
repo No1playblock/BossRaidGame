@@ -40,6 +40,23 @@ void USkillSimpleBuyWidget::SetSkillCostText(const FSkillTreeDataRow& SkillData)
 	}
 	SkillID = SkillData.SkillID;
 }
+void USkillSimpleBuyWidget::NativeDestruct()
+{
+	if(BuyButton)
+	{
+		BuyButton->OnClicked.Clear();
+	}
+	if(NoButton)
+	{
+		NoButton->OnClicked.Clear();
+	}
+
+
+
+	Super::NativeDestruct();
+
+
+}
 void USkillSimpleBuyWidget::OnBuyButtonClicked()
 {
 	AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
