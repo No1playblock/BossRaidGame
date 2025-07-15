@@ -27,19 +27,12 @@ public:
 
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
-	UFUNCTION()
-	void CheckComboInput();
-
 protected:
 	UFUNCTION()
 	void OnCompleteCallback();
 
 	UFUNCTION()
 	void OnInterruptedCallback();
-
-	FName GetNextSection();
-
-	void StartComboTimer();
 
 protected:
 
