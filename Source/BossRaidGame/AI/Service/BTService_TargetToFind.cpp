@@ -67,16 +67,29 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 		if (FoundTarget)
 		{
+			//CachedController->SetFocus(FoundTarget);
+
+
 			CachedBlackboard->SetValueAsObject(TEXT("Target"), FoundTarget);
-			DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Green, false, Interval);
-			CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+			const float Distance = CachedMobCharacter->GetDistanceTo(FoundTarget);
+			CachedBlackboard->SetValueAsFloat(TEXT("Distance"), Distance);
+			CachedBlackboard->SetValueAsVector(TEXT("TargetLocation"), FoundTarget->GetActorLocation());
+
+			//DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Green, false, Interval);
+			CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = 600.0f;	//¸÷¸¶´Ù ¶Ù´Â ¼Óµµ º¯¼ö
 		}
 	}
 	else
 	{
+		//CachedController->ClearFocus(EAIFocusPriority::Gameplay);
+
+
 		CachedBlackboard->ClearValue(TEXT("Target")); 
-		DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Red, false, Interval);
-		CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		CachedBlackboard->ClearValue(TEXT("Distance"));
+		CachedBlackboard->ClearValue(TEXT("TargetLocation"));
+
+		//DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Red, false, Interval);
+		CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = 300.0f;		//¸÷¸¶´Ù °È´Â ¼Óµµ º¯¼ö
 	}
 }
 

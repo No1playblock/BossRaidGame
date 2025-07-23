@@ -31,4 +31,6 @@ protected:
 	class ANonPlayerGASCharacter* CachedMobCharacter;
 	UPROPERTY()
 	class UBlackboardComponent* CachedBlackboard;
+
+
 };
