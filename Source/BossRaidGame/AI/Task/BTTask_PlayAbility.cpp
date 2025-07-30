@@ -37,7 +37,7 @@ EBTNodeResult::Type UBTTask_PlayAbility::ExecuteTask(UBehaviorTreeComponent& Own
 
 	if (ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(AbilityTag)))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Ability %s activated successfully."), *AbilityTag.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Ability %s activated successfully."), *AbilityTag.ToString());
 		// 올바른 시그니처를 가진 함수를 델리게이트에 바인딩합니다.
 		ASC->OnAbilityEnded.AddUObject(this, &UBTTask_PlayAbility::OnAbilityEnded);
 		CachedOwnerComp = &OwnerComp;
