@@ -10,7 +10,7 @@
 
 EBTNodeResult::Type UBTTask_SetRandomLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	ABRAIController* ThisAIController = Cast<ABRAIController>(OwnerComp.GetAIOwner());
+	AAIController* ThisAIController = Cast<AAIController>(OwnerComp.GetAIOwner());
 	if (!ThisAIController) 	return EBTNodeResult::Failed;
 
 	ANonPlayerGASCharacter* ThisMobCharacter = Cast<ANonPlayerGASCharacter>(ThisAIController->GetPawn());
