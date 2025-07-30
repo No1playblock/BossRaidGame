@@ -24,8 +24,15 @@ void ABaseCharacter::OnOutOfHealth()
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance) return;
+
 	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(DeadMontage, 1.0f);
+	
+	if (DeadMontage)
+	{
+		AnimInstance->Montage_Play(DeadMontage, 1.0f);
+	}
+	
 
 	SetActorEnableCollision(false);
 
