@@ -10,6 +10,7 @@
 #include "Components/WidgetComponent.h"
 #include "AbilitySystemComponent.h" // ASC 사용을 위해 포함
 #include "AbilitySystemBlueprintLibrary.h" // 이벤트 전송을 위해 포함
+#include "Animation/AnimInstance.h" // AnimInstance 사용을 위해 추가
 
 // Sets default values
 AStoneStatue::AStoneStatue()
@@ -87,12 +88,23 @@ void AStoneStatue::Interact(AActor* InstigatorActor)
 {
 	if (InteractionEventTag.IsValid())
 	{
+		if (DisableMontage && StatueAnimalMesh)
+		{
+			UAnimInstance* AnimInstance = StatueAnimalMesh->GetAnimInstance();
+			if (AnimInstance)
+			{
+				// 몽타주 재생
+				AnimInstance->Montage_Play(DisableMontage);
+			}
+		}
+
 		FGameplayEventData Payload;
 		Payload.Instigator = InstigatorActor;
 		Payload.Target = this;
 
 		// UPROPERTY 변수를 사용하여 이벤트를 전송합니다.
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(InstigatorActor, InteractionEventTag, Payload);
+		
 	}
 	else
 	{

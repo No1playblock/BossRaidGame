@@ -49,7 +49,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS")
 	FGameplayTag InteractionEventTag;
 
-
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UAnimMontage> DisableMontage;
 
 private:
 	
