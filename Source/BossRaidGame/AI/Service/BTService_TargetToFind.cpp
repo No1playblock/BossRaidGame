@@ -22,11 +22,11 @@ void UBTService_TargetToFind::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp
 {
 	Super::OnBecomeRelevant(OwnerComp, NodeMemory);
 
-	CachedController = Cast<ABRAIController>(OwnerComp.GetAIOwner());
+	CachedController = Cast<AAIController>(OwnerComp.GetAIOwner());
 	if (CachedController)
 	{
 		CachedMobCharacter = Cast<ANonPlayerGASCharacter>(CachedController->GetPawn());
-		CachedBlackboard = CachedController->GetBlackboardComp();
+		CachedBlackboard = CachedController->GetBlackboardComponent();
 		UE_LOG(LogTemp, Warning, TEXT("BTService_TargetToFind OnBecomeRelevant called. Controller: %s, Character: %s"), 
 			*CachedController->GetName(), *CachedMobCharacter->GetName());
 	}
@@ -76,7 +76,9 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			CachedBlackboard->SetValueAsVector(TEXT("TargetLocation"), FoundTarget->GetActorLocation());
 
 			//DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Green, false, Interval);
-			CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = 600.0f;	//¸÷¸¶´Ù ¶Ù´Â ¼Óµµ º¯¼ö
+			//CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = CachedMobCharacter->GetRunSpeed();	//¸÷¸¶´Ù ¶Ù´Â ¼Óµµ º¯¼ö
+			CachedMobCharacter->SetChasingState();
+
 		}
 	}
 	else
@@ -89,7 +91,9 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		CachedBlackboard->ClearValue(TEXT("TargetLocation"));
 
 		//DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Red, false, Interval);
-		CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = 300.0f;		//¸÷¸¶´Ù °È´Â ¼Óµµ º¯¼ö
+		//CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = CachedMobCharacter->GetWalkSpeed();		//¸÷¸¶´Ù °È´Â ¼Óµµ º¯¼ö
+		CachedMobCharacter->SetWalkingState();
+
 	}
 }
 

@@ -26,7 +26,7 @@ protected:
 	float Radius;
 
 	UPROPERTY()
-	class ABRAIController* CachedController;
+	class AAIController* CachedController;
 	UPROPERTY()
 	class ANonPlayerGASCharacter* CachedMobCharacter;
 	UPROPERTY()
