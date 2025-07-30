@@ -97,7 +97,7 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 				GetCharacterMovement()->MaxWalkSpeed = AttributeSet->GetMoveSpeed();
 			}
 		}
-		AttributeSet->SetMoveSpeed(400.0f);
+		AttributeSet->SetMoveSpeed(700.0f);
 	}
 
 	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
