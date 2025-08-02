@@ -6,7 +6,6 @@
 #include "Character/BaseCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "CharacterPlayer.h"
-#include "GameData/StatChoiceData.h"
 #include "GASCharacterPlayer.generated.h"
 
 
