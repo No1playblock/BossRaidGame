@@ -15,8 +15,7 @@ class BOSSRAIDGAME_API ABRAIController : public AAIController
 	GENERATED_BODY()
 
 public:
-	
-	//ABRAIController();
+
 
 	ABRAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
