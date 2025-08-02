@@ -66,7 +66,7 @@ EBTNodeResult::Type UBTTask_MoveToPlayer::AbortTask(UBehaviorTreeComponent& Owne
     AAIController* AIController = OwnerComp.GetAIOwner();
     if (AIController && AIController->GetPathFollowingComponent())
     {
-        // 이동을 멈추고 델리게이트를 정리합니다.
+        // 이동을 멈추고 델리게이트를 정리
         AIController->GetPathFollowingComponent()->AbortMove(*this, FPathFollowingResultFlags::OwnerFinished);
         AIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
     }
