@@ -7,14 +7,8 @@
 #include "Player/BRPlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
-#include "GameData/LevelStatData.h"
-#include "Blueprint/UserWidget.h"              
 #include "Attribute/PlayerCharacterAttributeSet.h"
-#include "Kismet/GameplayStatics.h"               // SetGamePaused
 #include "GameFramework/PlayerController.h"         // PlayerController 클래스
-#include "GameplayEffect.h"                       // UGameplayEffect 클래스
-#include "GameplayEffectTypes.h"                  // FGameplayModifierInfo
-#include "Algo/RandomShuffle.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkillTreeComponent.h"
 AGASCharacterPlayer::AGASCharacterPlayer()
@@ -77,7 +71,7 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 		SetupGASInputComponent();
 
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
-		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+		//PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
 
 		if (ASC)
 		{
