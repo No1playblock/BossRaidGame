@@ -7,13 +7,6 @@
 #include "Character/NonPlayerGASCharacter.h"
 #include "Navigation/CrowdFollowingComponent.h"
 
-//ABRAIController::ABRAIController()
-//{
-//	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
-//	check(BlackboardComp);
-//	BehaviorTreeComp = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
-//	check(BehaviorTreeComp);
-//}
 
 ABRAIController::ABRAIController(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
