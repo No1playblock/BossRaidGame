@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "Character/BaseCharacter.h"
 #include "AbilitySystemInterface.h"
-#include "GameData/MobSpawnInfo.h" // FSpawnData를 사용하기 위해 헤더 추가
-#include "AbilitySystemComponent.h" // FOnAttributeChangeData 정의 포함
+#include "GameData/MobSpawnInfo.h" 
+#include "AbilitySystemComponent.h" 
 #include "NonPlayerGASCharacter.generated.h"
 
 /**
