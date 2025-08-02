@@ -15,7 +15,7 @@ UBTService_TargetToFind::UBTService_TargetToFind()
 {
 	NodeName = "Target Finder";
 	bNotifyBecomeRelevant = true;
-	// 서비스가 각 AI 인스턴스별로 노드 메모리를 생성하도록 설정합니다.
+	// 서비스가 각 AI 인스턴스별로 노드 메모리를 생성하도록 설정
 	bCreateNodeInstance = true;
 }
 void UBTService_TargetToFind::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -67,31 +67,22 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 		if (FoundTarget)
 		{
-			//CachedController->SetFocus(FoundTarget);
-
-
-			CachedBlackboard->SetValueAsObject(TEXT("Target"), FoundTarget);
 			const float Distance = CachedMobCharacter->GetDistanceTo(FoundTarget);
+			
+			CachedBlackboard->SetValueAsObject(TEXT("Target"), FoundTarget);
 			CachedBlackboard->SetValueAsFloat(TEXT("Distance"), Distance);
 			CachedBlackboard->SetValueAsVector(TEXT("TargetLocation"), FoundTarget->GetActorLocation());
 
-			//DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Green, false, Interval);
-			//CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = CachedMobCharacter->GetRunSpeed();	//몹마다 뛰는 속도 변수
 			CachedMobCharacter->SetChasingState();
 
 		}
 	}
 	else
 	{
-		//CachedController->ClearFocus(EAIFocusPriority::Gameplay);
-
-
 		CachedBlackboard->ClearValue(TEXT("Target")); 
 		CachedBlackboard->ClearValue(TEXT("Distance"));
 		CachedBlackboard->ClearValue(TEXT("TargetLocation"));
 
-		//DrawDebugSphere(GetWorld(), CachedMobCharacter->GetActorLocation(), Radius, 12, FColor::Red, false, Interval);
-		//CachedMobCharacter->GetCharacterMovement()->MaxWalkSpeed = CachedMobCharacter->GetWalkSpeed();		//몹마다 걷는 속도 변수
 		CachedMobCharacter->SetWalkingState();
 
 	}
