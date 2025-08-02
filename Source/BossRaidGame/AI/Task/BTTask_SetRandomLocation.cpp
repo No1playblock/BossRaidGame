@@ -33,8 +33,7 @@ EBTNodeResult::Type UBTTask_SetRandomLocation::ExecuteTask(UBehaviorTreeComponen
 			5.0f                        // 몇 초 동안 보일지 (지속 시간)
 		);
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("RandomLocation"), RandomNavLocation.Location);
-		/*UAIBlueprintHelperLibrary::SimpleMoveToLocation(ThisAIController, RandomNavLocation.Location);
-		UE_LOG(LogTemp, Warning, TEXT("Moving to random location: %s"), *RandomNavLocation.Location.ToString());*/
+		
 		return EBTNodeResult::Succeeded;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Failed to find a random navigable point within radius: %f"), Radius);
