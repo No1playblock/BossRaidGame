@@ -66,7 +66,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Damage", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
 
-	//friend class UGE_AttackDamage;
-
 	bool bOutOfHealth = false;
 };
