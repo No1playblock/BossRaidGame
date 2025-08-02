@@ -32,17 +32,17 @@ void ANonPlayerGASCharacter::InitializeFromData(const FMobSpawnInfo* MobData)
 {
 	if (!MobData || !AttributeSet || !GetCharacterMovement()) return;
 
-	// 1. 체력 설정
+	// 체력 설정
 	// AttributeSet의 부모인 UCharacterAttributeSet에 Health, MaxHealth가 있다고 가정
 	ASC->SetNumericAttributeBase(AttributeSet->GetMaxHealthAttribute(), MobData->Health);
 	ASC->SetNumericAttributeBase(AttributeSet->GetHealthAttribute(), MobData->Health);
 
-	// 2. 경험치 보상 설정
+	// 경험치 보상 설정
 	ASC->SetNumericAttributeBase(AttributeSet->GetExpRewardAttribute(), MobData->Experience);
 
 	ASC->SetNumericAttributeBase(AttributeSet->GetMoveSpeedAttribute(), MobData->WalkSpeed);
 
-	// 3. 이동 속도 설정
+	// 이동 속도 설정
 	WalkSpeed = MobData->WalkSpeed;
 	RunSpeed = MobData->RunSpeed;
 	SetWalkingState();
@@ -54,8 +54,6 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	ASC->InitAbilityActorInfo(this, this);
-
-
 
 	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 	//AttributeSet->SetExpReward(ExpReward);
@@ -72,14 +70,12 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 }
 void ANonPlayerGASCharacter::OnMovementSpeedChanged(const FOnAttributeChangeData& Data)
 {
-	// 변경된 새 값(Data.NewValue)을 캐릭터의 실제 이동 속도(MaxWalkSpeed)에 적용
 	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }
 void ANonPlayerGASCharacter::SetChasingState()
 {
 	if (!ASC || !MovementStateEffectClass) return;
 
-	// GE 블루프린트가 State.Running 태그를 부여하므로, 해당 태그로 중복 적용을 방지
 	if (ASC->HasMatchingGameplayTag(BRTAG_CHARACTER_ISCHASING)) return;
 
 	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
@@ -91,10 +87,9 @@ void ANonPlayerGASCharacter::SetChasingState()
 		// SetByCaller로 뛰는 속도 값을 주입하는 것은 동일
 		SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_SPEED, RunSpeed);
 
-
 		ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
-}
+}	
 void ANonPlayerGASCharacter::SetWalkingState()
 {
 	if (!ASC) return;
