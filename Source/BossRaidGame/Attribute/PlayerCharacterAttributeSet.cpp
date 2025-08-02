@@ -50,17 +50,17 @@ void UPlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 				SetSkillPoint(GetSkillPoint() + 1);
 				if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 				{
-					// AvatarActor를 우리의 플레이어 캐릭터 클래스로 캐스팅합니다.
+					// AvatarActor를 우리의 플레이어 캐릭터 클래스로 캐스팅
 					AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(Data.Target.AbilityActorInfo->AvatarActor.Get());
 					APlayerController* PC = PlayerCharacter ? PlayerCharacter->GetController<APlayerController>() : nullptr;
 					ULocalPlayer* LocalPlayer = PC ? PC->GetLocalPlayer() : nullptr;
 
 					if (LocalPlayer && PlayerCharacter)
 					{
-						// 로컬 플레이어로부터 서브시스템을 가져옵니다.
+						// 로컬 플레이어로부터 서브시스템을 가져옴
 						if (ULevelUpSubsystem* LevelUpSubsystem = LocalPlayer->GetSubsystem<ULevelUpSubsystem>())
 						{
-							// 서브시스템의 함수를 호출합니다!
+							// 서브시스템의 함수를 호출
 							LevelUpSubsystem->ShowLevelUpChoices(PlayerCharacter, NewLevel);
 						}
 					}
