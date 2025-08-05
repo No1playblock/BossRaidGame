@@ -4,17 +4,17 @@
 #include "SkillTreeEdGraphNode.h"
 #include "Widgets/Text/STextBlock.h"
 #include "SGraphPanel.h"
-#include "Widgets/Text/SInlineEditableTextBlock.h" // [추가] 인라인 편집 가능 텍스트 블록 헤더
-#include "Widgets/Images/SImage.h" // SImage 추가
-#include "Widgets/Input/SNumericEntryBox.h" // SNumericEntryBox 추가
-#include "ScopedTransaction.h" // FScopedTransaction 추가
-#include "Styling/SlateBrush.h" // FSlateBrush
+#include "Widgets/Text/SInlineEditableTextBlock.h"
+#include "Widgets/Images/SImage.h"
+#include "Widgets/Input/SNumericEntryBox.h" 
+#include "ScopedTransaction.h"
+#include "Styling/SlateBrush.h"
 
 
 void SSkillTreeGraphNode::Construct(const FArguments& InArgs, USkillTreeEdGraphNode* InNode)
 {
-	GraphNode = InNode; // SGraphNode의 멤버 변수인 GraphNode에 우리 데이터 노드를 저장
-	UpdateGraphNode();  // 노드 위젯의 내용을 채우는 함수 호출
+	GraphNode = InNode; 
+	UpdateGraphNode();  
 
 
 }
@@ -34,11 +34,11 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 	InputPins.Empty();
 	OutputPins.Empty();
 
-	// 핀들을 담을 좌/우 박스를 먼저 비워줍니다.
+	// 핀들을 담을 좌/우 박스를 먼저 비움
 	RightNodeBox.Reset();
 	LeftNodeBox.Reset();
 
-	// 아이콘 표시를 위한 브러시를 데이터로부터 업데이트합니다.
+	// 아이콘 표시를 위한 브러시를 데이터로부터 업데이트
 	IconBrush = MakeShareable(new FSlateBrush());
 	if (USkillTreeEdGraphNode* SkillNode = Cast<USkillTreeEdGraphNode>(GraphNode))
 	{
@@ -51,7 +51,7 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 
 	TSharedPtr<SVerticalBox> MainContentBox = SNew(SVerticalBox)
 
-		// 1. 아이콘 + 타이틀
+		//아이콘 + 타이틀
 		+ SVerticalBox::Slot().AutoHeight().Padding(8)
 		[
 			SNew(SHorizontalBox)
@@ -76,7 +76,7 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 				]
 		]
 
-		// 2. 설명
+		//설명
 		+ SVerticalBox::Slot().AutoHeight().Padding(8)
 		[
 			SNew(SInlineEditableTextBlock)
@@ -88,7 +88,7 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 				.Font(DescriptionFont)
 				.ColorAndOpacity(FLinearColor(0.8f, 0.8f, 0.8f, 1.0f))
 		]
-		// 3. 구분선
+		//구분선
 		+ SVerticalBox::Slot().AutoHeight().Padding(5)
 		[
 			SNew(SBox).HeightOverride(1.0f)
@@ -97,7 +97,7 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 				]
 		]
 
-		// 4. Cost & Damage
+		//Cost & Damage
 		+ SVerticalBox::Slot().AutoHeight().Padding(8)
 		[
 			SNew(SVerticalBox)
@@ -157,7 +157,7 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 		[
 			SNew(SBorder)
 				.BorderImage(FAppStyle::GetBrush("Graph.StateNode.Body"))
-				.BorderBackgroundColor(FLinearColor(0.001f, 0.001f, 0.001f, 1.0f)) // 너가 지정한 배경색
+				.BorderBackgroundColor(FLinearColor(0.001f, 0.001f, 0.001f, 1.0f)) // 지정한 배경색
 				.Padding(0)
 				[
 					SNew(SHorizontalBox)
@@ -169,9 +169,6 @@ void SSkillTreeGraphNode::UpdateGraphNode()
 
 	CreatePinWidgets();
 }
-
-
-// --- Getter 함수들 ---
 
 FText SSkillTreeGraphNode::GetTitle() const
 {

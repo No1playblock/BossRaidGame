@@ -93,10 +93,10 @@ void ARaserOrb::FireLaser()
 
 				const float BaseDamage = DamageAmount;
 
-				// 2. 플레이어(Instigator)의 SkillPower 어트리뷰트 값을 가져옵니다.
+				//플레이어의 SkillPower 어트리뷰트 값
 				const float SkillPower = SourceASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetSkillPowerAttribute());
 
-				// 3. 최종 데미지를 계산합니다. SkillPower가 0이면 데미지가 없으므로, 1을 기본값으로 간주할 수 있습니다.
+				//최종 데미지를 계산,  SkillPower가 0이면 데미지가 없으므로, 1을 기본값으로 간주
 				const float FinalDamage = BaseDamage * FMath::Max(1.f, SkillPower);
 				UE_LOG(LogTemp, Warning, TEXT("Final Damage: %f"), FinalDamage);
 				if (FinalDamage > 0.f)

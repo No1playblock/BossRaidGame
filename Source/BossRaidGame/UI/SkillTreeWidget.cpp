@@ -9,7 +9,7 @@
 #include "SkillTreeNodeWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
-#include "Blueprint/WidgetTree.h" // WidgetTree를 사용하기 위해 필요합니다.
+#include "Blueprint/WidgetTree.h"
 #include "SkillInfoWidget.h"
 #include "SkillSimpleBuyWidget.h"
 #include "Character/GASCharacterPlayer.h"
@@ -55,7 +55,7 @@ void USkillTreeWidget::NativeConstruct()
 		if (SkillTreeComp)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("SkillTreeWidget: Found SkillTreeComponent for player %s"), *PlayerCharacter->GetName());
-			// 스킬 습득 성공 시 HandleSkillAcquired 함수가 호출되도록 연결합니다.
+			// 스킬 습득 성공 시 HandleSkillAcquired 함수가 호출되도록 연결
 			SkillTreeComp->OnSkillAcquired.AddDynamic(this, &USkillTreeWidget::RefreshNodeStates);
 		}
 	}
@@ -66,7 +66,7 @@ void USkillTreeWidget::NativeConstruct()
 void USkillTreeWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
-	// 모든 노드 위젯의 이벤트 바인딩을 해제합니다.
+	// 모든 노드 위젯의 이벤트 바인딩을 해제
 	for (USkillTreeNodeWidget* NodeWidget : AllSkillNodes)
 	{
 		if (NodeWidget)
@@ -112,7 +112,7 @@ void USkillTreeWidget::HandleNodeSelection(USkillTreeNodeWidget* ClickedNode)
 		return;
 	}
 
-	// 이미 타이머가 실행 중이면 (빠르게 여러 번 클릭), 새로운 타이머를 시작하지 않습니다.
+	// 이미 타이머가 실행 중이면 (빠르게 여러 번 클릭), 새로운 타이머를 시작 안함
 	if (World->GetTimerManager().IsTimerActive(SelectionTimerHandle))
 	{
 		return;
@@ -120,7 +120,7 @@ void USkillTreeWidget::HandleNodeSelection(USkillTreeNodeWidget* ClickedNode)
 
 	PendingSelectionNode = ClickedNode;
 
-	// 0.25초 뒤에 ProcessSingleClick 함수를 호출하는 타이머를 설정합니다.
+	// 0.25초 뒤에 ProcessSingleClick 함수를 호출하는 타이머 설정
 	World->GetTimerManager().SetTimer(SelectionTimerHandle, this, &USkillTreeWidget::ProcessSingleClick, 0.25f, false);
 }
 
@@ -129,9 +129,9 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	// 더블클릭이 발생했으므로, 대기 중이던 단일 클릭 타이머를 취소합니다.
+	// 더블클릭이 발생했으므로, 대기 중이던 단일 클릭 타이머 취소
 	World->GetTimerManager().ClearTimer(SelectionTimerHandle);
-	PendingSelectionNode = nullptr; // 대기 중인 노드도 비웁니다.
+	PendingSelectionNode = nullptr; // 대기 중인 노드도 비움
 	
 	UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Double clicked on node %s"), *DoubleClickedNode->GetName());
 	if (CurrentlySelectedNode)
@@ -157,7 +157,7 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 	}
 }
 
-//스킬을 배우거나 최초 생성시 노드를 갱신
+//스킬을 배우거나 최초 생성시 노드 갱신
 void USkillTreeWidget::RefreshNodeStates()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Refreshing all skill nodes"));

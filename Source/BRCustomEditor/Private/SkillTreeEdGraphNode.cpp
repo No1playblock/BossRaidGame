@@ -5,7 +5,7 @@
 
 FText USkillTreeEdGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-    // SkillData에 이름이 있으면 그 이름을, 없으면 기본 제목을 반환
+    // SkillData에 이름이 있으면 그 이름을, 없으면 기본 제목 반환
     return SkillData.SkillName.IsEmpty() ? FText::FromString(TEXT("New Skill")) : SkillData.SkillName;
 }
 
@@ -13,15 +13,13 @@ void USkillTreeEdGraphNode::AllocateDefaultPins()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Allocate"));
 
-	// 이 노드의 입력 핀과 출력 핀을 생성합니다.
+	// 이 노드의 입력 핀과 출력 핀을 생성
 	FEdGraphPinType PinType;
-	PinType.PinCategory = FName(TEXT("Skill")); // 우리 핀의 카테고리는 "Skill" 입니다.
+	PinType.PinCategory = FName(TEXT("Skill")); // 카테고리는 "Skill" 
 
-	// 2. 생성한 핀 타입을 사용하여 핀을 생성합니다.
-	//    노드의 선행 조건이 있을 수 있으므로 입력 핀을 만듭니다.
+	//생성한 핀 타입을 사용하여 핀을 생성
 	CreatePin(EGPD_Input, PinType, FName("In"));
 
-	//    노드가 다음 스킬로 이어질 수 있으므로 출력 핀을 만듭니다.
 	CreatePin(EGPD_Output, PinType, FName("Out"));
 }
 

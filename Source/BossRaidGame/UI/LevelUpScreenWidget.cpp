@@ -58,7 +58,7 @@ void ULevelUpScreenWidget::OnCardSelected(const FStatChoiceInfo& SelectedChoice)
 				ULevelUpSubsystem* LevelUpSubsystem = LocalPlayer->GetSubsystem<ULevelUpSubsystem>();
 				if (LevelUpSubsystem)
 				{
-					// 서브시스템의 함수를 호출합니다.
+					// 서브시스템 함수 호출
 					LevelUpSubsystem->ApplyStatChoice(SelectedChoice);
 				}
 			}

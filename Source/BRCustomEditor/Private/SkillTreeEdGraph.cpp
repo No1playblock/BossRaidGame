@@ -2,9 +2,7 @@
 
 
 #include "SkillTreeEdGraph.h"
-
-#include "SkillTreeEdGraph.h"
-#include "SkillTreeEdGraphSchema.h" // 우리 커스텀 스키마 헤더 포함
+#include "SkillTreeEdGraphSchema.h"
 
 USkillTreeEdGraph::USkillTreeEdGraph()
 {

@@ -29,7 +29,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill Node")
 	FDataTableRowHandle SkillRowHandle;
 
-	// 외부에서 이 노드의 스킬 데이터를 가져갈 수 있도록 Getter를 제공합니다.
 	FORCEINLINE const FSkillTreeDataRow* GetNodeData() const { return CachedSkillData; }
 
 	void SetSelected(bool bIsSelected);

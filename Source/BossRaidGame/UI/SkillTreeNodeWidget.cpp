@@ -67,14 +67,14 @@ void USkillTreeNodeWidget::UpdateNodeState(USkillTreeComponent* SkillTreeComp)
 {
 	if (!SkillTreeComp || !NodeBorder || !SkillCostText) return;
 
-	// 데이터 테이블 핸들에서 스킬 데이터를 가져옵니다.
+	// 데이터 테이블 핸들에서 스킬 데이터 가져옴
 	if (!CachedSkillData && SkillRowHandle.DataTable && SkillRowHandle.RowName != NAME_None)
 	{
 		CachedSkillData = SkillRowHandle.GetRow<FSkillTreeDataRow>(TEXT(""));
 	}
 	if (!CachedSkillData) return;
 
-	// 1. 선행 스킬 조건 확인
+	//선행 스킬 조건 확인
 	bool bPrerequisiteMet = true;
 	if (CachedSkillData->PrerequisiteSkillID != NAME_None)
 	{
@@ -94,10 +94,7 @@ void USkillTreeNodeWidget::UpdateNodeState(USkillTreeComponent* SkillTreeComp)
 	//SetIsEnabled(true);
 	NodeBorder->SetContentColorAndOpacity(UnlockedColor);
 
-	//NodeBorder->SetBrushColor(UnlockedColor);
-
-	//
-		// 2. 스킬 포인트 조건 확인
+		//스킬 포인트 조건 확인
 	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	FGameplayAttribute SkillPointAttribute = UPlayerCharacterAttributeSet::GetSkillPointAttribute();
 
@@ -168,11 +165,11 @@ void USkillTreeNodeWidget::UpdateNodeVisuals()
 		CachedSkillData = nullptr;
 		return;
 	}
-	// 데이터 테이블에서 RowName에 해당하는 데이터를 찾아 로드합니다.
+	// 데이터 테이블에서 RowName에 해당하는 데이터를 찾아 로드
 	const FString ContextString(TEXT("USkillNodeWidget::UpdateNodeVisuals"));
 	CachedSkillData = SkillRowHandle.GetRow<FSkillTreeDataRow>(ContextString);
-	SkillData = *CachedSkillData; // 캐시된 데이터를 현재 SkillData에 저장
-	SetSkillData(*CachedSkillData); // UI 위젯들을 업데이트합니다.
+	SkillData = *CachedSkillData; 
+	SetSkillData(*CachedSkillData); // UI 위젯들을 업데이트
 
 }
 

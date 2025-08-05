@@ -3,7 +3,7 @@
 
 #include "Manager/MobSpawnManager.h"
 //#include "YourGameMode.h" // 프로젝트의 GameMode 클래스 헤더
-#include "Character/NonPlayerGASCharacter.h" // 프로젝트의 Monster 캐릭터 클래스 헤더
+#include "Character/MobGASCharacter.h" // 프로젝트의 Monster 캐릭터 클래스 헤더
 #include "NavigationSystem.h"
 #include "NavMesh/NavMeshBoundsVolume.h"
 #include "Kismet/GameplayStatics.h"
@@ -79,21 +79,21 @@ void AMobSpawnManager::RequestSpawnWave(const FName& WaveDataRowName)
 
     if (SpawnInfo)  // && GameMode
     {
-        // 1. 웨이브가 생성될 중심 위치를 먼저 찾음
+        // 웨이브가 생성될 중심 위치
         FVector WaveCenterLocation;
         if (FindSpawnLocation(WaveCenterLocation))
         {
-            // 2. 현재 난이도 배수를 가져옴 (한 번만 호출)
+            // 난이도 배수를 가져옴
             const float DifficultyMultiplier = 1.0f;//GameMode->GetCurrentDifficultyMultiplier();
 
-            // 3. SpawnCount만큼 몬스터를 중심점 주변에 스폰
+            //SpawnCount만큼 몬스터를 중심점 주변에 스폰
             for (int32 i = 0; i < SpawnInfo->SpawnCount; ++i)
             {
                 UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
                 if (NavSys)
                 {
                     FNavLocation SpawnLocation;
-                    // 중심점 주변 반경(SpawnRadius) 내에서 네비게이션 가능한 위치를 찾음
+                    // 중심점 주변 반경 내에서 네비게이션 가능한 위치를 찾음
                     if (NavSys->GetRandomPointInNavigableRadius(WaveCenterLocation, 500.0f, SpawnLocation))     //500.0f 반경
                     {
                         // 실제 몬스터 스폰
@@ -141,7 +141,7 @@ void AMobSpawnManager::SpawnSingleMonster(const FMobSpawnInfo* SpawnInfo, const 
 
 	FVector SpawnLocation = Location;
 	SpawnLocation.Z += 200.0f; // 약간 위로 스폰 위치 조정 (지면에서 떨어뜨리기)
-    ANonPlayerGASCharacter* NewMonster = GetWorld()->SpawnActor<ANonPlayerGASCharacter>(SpawnInfo->MonsterClass, Location, FRotator::ZeroRotator);
+    AMobGASCharacter* NewMonster = GetWorld()->SpawnActor<AMobGASCharacter>(SpawnInfo->MonsterClass, Location, FRotator::ZeroRotator);
 
     if (NewMonster)
     {

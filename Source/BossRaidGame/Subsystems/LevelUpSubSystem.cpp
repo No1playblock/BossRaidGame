@@ -14,7 +14,7 @@ void ULevelUpSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	
 	UE_LOG(LogTemp, Warning, TEXT("LevelUpSubsystem: Initializing LevelUpSubsystem."));
-	// .ini 에서 설정한 경로의 애셋들을 비동기 로드합니다.
+
 	FStreamableManager& Streamable = UAssetManager::Get().GetStreamableManager();
 	if (!LevelStatDataTablePath.IsNull())
 	{
@@ -91,7 +91,7 @@ void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter,
 		FLevelStatRow* StatData = nullptr;
 		FText LevelText;
 
-		// switch 문을 사용해 선택된 enum에 따라 각기 다른 로직을 처리합니다.
+		// switch 문을 사용해 선택된 enum에 따라 각기 다른 로직을 처리
 		switch (SelectedStatType)						//나중에 좀 더 확장성 있게 짤것. (스탯이 추가될때마다 코드를 추가해야됨)
 		{
 		case EStatChoiceType::AttackPower:

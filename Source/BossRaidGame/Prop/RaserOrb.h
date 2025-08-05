@@ -18,14 +18,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FireLaser();
 
-	// 플레이어(소환자)를 설정합니다.
 	void Initialize(AActor* InInstigator, float InDamage);
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	// 마우스 위치를 통해 조준 위치를 가져옵니다.
 	FHitResult LineTrace() const;
 
 	void SelfDestroy();

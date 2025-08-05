@@ -102,7 +102,7 @@ void AStoneStatue::Interact(AActor* InstigatorActor)
 		Payload.Instigator = InstigatorActor;
 		Payload.Target = this;
 
-		// UPROPERTY 변수를 사용하여 이벤트를 전송합니다.
+		//이벤트 전송
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(InstigatorActor, InteractionEventTag, Payload);
 		
 	}

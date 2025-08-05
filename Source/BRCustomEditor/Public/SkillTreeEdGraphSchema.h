@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "EdGraph/EdGraphSchema.h"
-#include "SkillTreeEdGraphNode.h"   // UEdGraphNode 대신 우리 노드 클래스
-#include "EdGraph/EdGraph.h"        // UEdGraph
-#include "ScopedTransaction.h"      // FScopedTransaction
+#include "SkillTreeEdGraphNode.h"
+#include "EdGraph/EdGraph.h"
+#include "ScopedTransaction.h"
 #include "SkillTreeEdGraphSchema.generated.h"
 
 
@@ -37,7 +37,7 @@ public:
 
 	virtual bool TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const override;
 
-	// [추가] 연결선을 그리는 방식을 정의하는 함수
+	//연결선을 그리는 방식을 정의하는 함수
 	virtual FConnectionDrawingPolicy* CreateConnectionDrawingPolicy(int32 InBackLayerID, int32 InFrontLayerID, float InZoomFactor, const FSlateRect& InClippingRect, FSlateWindowElementList& InDrawElements, UEdGraph* InGraphObj) const override;
 
 	//virtual void BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const override;

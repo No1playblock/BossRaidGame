@@ -2,27 +2,27 @@
 
 
 #include "Player/BRPlayerController.h"
-#include "Blueprint/UserWidget.h" // CreateWidget 사용
-#include "UI/SkillTreeWidget.h"      // SkillTreeWidget 참조 (수정한 부분입니다)
+#include "Blueprint/UserWidget.h" 
+#include "UI/SkillTreeWidget.h"      
 #include "Kismet/GameplayStatics.h" 
 ABRPlayerController::ABRPlayerController()
 {
 	static ConstructorHelpers::FClassFinder<USkillTreeWidget> SkillTreeWidgetBPClass(TEXT("/Game/UI/WBP_SkillTree.WBP_SkillTree_C"));
 	if (SkillTreeWidgetBPClass.Succeeded())
 	{
-		SkillTreeWidgetClass = SkillTreeWidgetBPClass.Class; // 수정한 부분입니다.
+		SkillTreeWidgetClass = SkillTreeWidgetBPClass.Class;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleSkillTreeAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_ToggleSkillUI.IA_ToggleSkillUI'"));
 	if (ToggleSkillTreeAction.Succeeded())
 	{
-		IA_ToggleSkillTree = ToggleSkillTreeAction.Object; // 수정한 부분입니다.
+		IA_ToggleSkillTree = ToggleSkillTreeAction.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> MappingContext(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
 	if (MappingContext.Succeeded())
 	{
-		DefaultMappingContext = MappingContext.Object; // 수정한 부분입니다.
+		DefaultMappingContext = MappingContext.Object;
 	}
 }
 
@@ -30,7 +30,7 @@ void ABRPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 수정한 부분입니다. EnhancedInputSubsystem에 Mapping 추가
+	// EnhancedInputSubsystem에 Mapping 추가
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);

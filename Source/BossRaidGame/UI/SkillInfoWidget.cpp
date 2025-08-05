@@ -88,10 +88,10 @@ void USkillInfoWidget::OpenSkillInfo(const FSkillTreeDataRow& SkillData)
 
 void USkillInfoWidget::NativeDestruct()
 {
-	// NativeConstruct에서 했던 바인딩을 여기서 해제합니다.
+	// NativeConstruct에서 했던 바인딩을 여기서 해제
 	if (CloseButton)
 	{
-		CloseButton->OnClicked.Clear(); // Clear()를 사용하여 바인딩을 완전히 제거합니다.
+		CloseButton->OnClicked.Clear(); // Clear()를 사용하여 바인딩을 완전히 제거
 	}
 	if (BuyButton)
 	{

@@ -12,17 +12,17 @@ void UGA_SpawnActor::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	// 스폰할 액터 클래스가 지정되었는지, 이벤트 데이터가 유효한지 확인합니다.
+	// 스폰할 액터 클래스가 지정되었는지, 이벤트 데이터가 유효한지 확인
 	if (SpawnActorClass && TriggerEventData)
 	{
-		// 이벤트 데이터로부터 석상 액터를 가져옵니다.
+		// 이벤트 데이터로부터 석상 액터 가져옴
 		const AActor* StatueActor = TriggerEventData->Target;
 		if (StatueActor)
 		{
 			UWorld* World = GetWorld();
 			if (World)
 			{
-				// 석상의 위치에 액터를 스폰합니다.
+				// 석상의 위치에 액터를 스폰
 				FVector SpawnLocation = StatueActor->GetActorLocation();
 				SpawnLocation.Z -= 125.0f; // 석상 위에 스폰하도록 Z축 위치를 조정
 				FRotator SpawnRotation = StatueActor->GetActorRotation();

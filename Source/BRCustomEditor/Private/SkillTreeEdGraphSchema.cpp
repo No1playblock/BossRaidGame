@@ -2,33 +2,32 @@
 
 
 #include "SkillTreeEdGraphSchema.h"
-#include "SkillTreeConnectionDrawingPolicy.h" // [추가] 방금 만든 헤더
-#include "EdGraph/EdGraph.h" // BreakPinLinks를 위해 추가
-#include "Framework/Commands/GenericCommands.h" // FGraphContextMenuBuilder를 위해 필요할 수 있음
-#include "SkillTreeEdGraphNode.h" // USkillTreeEdGraphNode를 사용하기 위해 추가
+#include "SkillTreeConnectionDrawingPolicy.h"
+#include "EdGraph/EdGraph.h"
+#include "Framework/Commands/GenericCommands.h"
+#include "SkillTreeEdGraphNode.h"
 
 const FPinConnectionResponse USkillTreeEdGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
 {
 
-	// 1. 같은 노드에 연결하는 것을 방지합니다.
+	//같은 노드에 연결하는 것을 방지
 	if (A->GetOwningNode() == B->GetOwningNode())
 	{
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Don't Connect SamePin"));
 	}
 
-	// 2. 같은 방향의 핀끼리 연결하는 것을 방지합니다.
+	//같은 방향의 핀끼리 연결하는 것을 방지
 	if (A->Direction == B->Direction)
 	{
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Don't Connect SameDirectionPin"));
 	}
 
-	// 3. 핀의 카테고리가 다르면 연결을 막습니다.
+	//핀의 카테고리가 다르면 연결을 막음
 	if (A->PinType.PinCategory != B->PinType.PinCategory)
 	{
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Don't Connect AnotherType Pin"));
 	}
 
-	// 4. 모든 규칙을 통과했다면 연결을 허용합니다.
 	return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, TEXT("Connect"));
 }
 
@@ -40,8 +39,8 @@ bool USkillTreeEdGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B
 	//	
 	//if (bMadeConnection)
 	//{
-	//	// [정리] 연결에 성공했다면, 소스 노드의 분기 상태를 업데이트합니다.
-	//	// 모든 데이터 업데이트 로직은 UpdateNodeBranchingState 함수로 중앙화되었습니다.
+	//	연결에 성공했다면, 소스 노드의 분기 상태를 업데이트
+	//	// 모든 데이터 업데이트 로직은 UpdateNodeBranchingState 함수로 중앙화
 	//	UEdGraphPin* OutputPin = (A->Direction == EGPD_Output) ? A : B;
 	//	if (USkillTreeEdGraphNode* SourceNode = Cast<USkillTreeEdGraphNode>(OutputPin->GetOwningNode()))
 	//	{
@@ -53,7 +52,7 @@ bool USkillTreeEdGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B
 
 	if (bMadeConnection)
 	{
-		// 연결된 두 핀에서 SourceNode와 TargetNode를 모두 가져옵니다.
+		// 연결된 두 핀에서 SourceNode와 TargetNode를 모두 가져옴.
 		UEdGraphPin* OutputPin = (A->Direction == EGPD_Output) ? A : B;
 		UEdGraphPin* InputPin = (A->Direction == EGPD_Input) ? A : B;
 		USkillTreeEdGraphNode* SourceNode = Cast<USkillTreeEdGraphNode>(OutputPin->GetOwningNode());
@@ -61,11 +60,11 @@ bool USkillTreeEdGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B
 
 		if (SourceNode && TargetNode) // 두 노드가 모두 유효한지 확인
 		{
-			// [추가] TargetNode의 선행 스킬 ID를 설정합니다.
+			//TargetNode의 선행 스킬 ID를 설정
 			TargetNode->Modify();
 			TargetNode->SkillData.PrerequisiteSkillID = SourceNode->SkillData.SkillID;
 
-			// 기존에 있던 SourceNode의 분기점 상태 업데이트는 그대로 유지합니다.
+			// 기존에 있던 SourceNode의 분기점 상태 업데이트는 그대로 유지
 			UpdateNodeBranchingState(SourceNode);
 		}
 	}
@@ -73,7 +72,7 @@ bool USkillTreeEdGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B
 	return bMadeConnection;
 }
 
-// [추가] CreateConnectionDrawingPolicy 함수 구현
+//CreateConnectionDrawingPolicy 함수 구현
 FConnectionDrawingPolicy* USkillTreeEdGraphSchema::CreateConnectionDrawingPolicy(int32 InBackLayerID, int32 InFrontLayerID, float InZoomFactor, const FSlateRect& InClippingRect, FSlateWindowElementList& InDrawElements, UEdGraph* InGraphObj) const
 {
 	return new FSkillTreeConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, InZoomFactor, InClippingRect, InDrawElements, InGraphObj);
@@ -96,7 +95,7 @@ void USkillTreeEdGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsN
 	const FScopedTransaction Transaction(FText::FromString(TEXT("Break Pin Links")));
 	UE_LOG(LogTemp, Warning, TEXT("--- BreakPinLinks CALLED! This is the REAL function! ---"));
 
-	// 1. 링크가 실제로 끊어지기 전에, 영향을 받을 반대편 노드들을 미리 찾아둡니다.
+	//링크가 실제로 끊어지기 전에, 영향을 받을 반대편 노드들을 미리 찾아둠
 	TSet<USkillTreeEdGraphNode*> NodesToUpdate;
 	for (UEdGraphPin* OtherPin : TargetPin.LinkedTo)
 	{
@@ -113,16 +112,16 @@ void USkillTreeEdGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsN
 			NodeToClear->SkillData.PrerequisiteSkillID = NAME_None;
 		}
 	}
-	// 2. 부모의 함수를 호출하여 실제 링크 끊기 작업을 수행합니다.
+	//부모의 함수를 호출하여 실제 링크 끊기 작업을 수행
 	Super::BreakPinLinks(TargetPin, bSendsNodeNotifcation);
 
-	// 3. 링크가 모두 끊어진 후, 미리 찾아두었던 반대편 노드들의 상태를 업데이트합니다.
+	//링크가 모두 끊어진 후, 미리 찾아두었던 반대편 노드들의 상태를 업데이트
 	for (USkillTreeEdGraphNode* NodeToUpdate : NodesToUpdate)
 	{
 		UpdateNodeBranchingState(NodeToUpdate);
 	}
 
-	// 4. TargetPin을 소유한 노드의 상태도 업데이트합니다.
+	//TargetPin을 소유한 노드의 상태도 업데이트
 	if (USkillTreeEdGraphNode* TargetNode = Cast<USkillTreeEdGraphNode>(TargetPin.GetOwningNode()))
 	{
 		UpdateNodeBranchingState(TargetNode);
@@ -147,9 +146,9 @@ FLinearColor USkillTreeEdGraphSchema::GetPinTypeColor(const FEdGraphPinType& Pin
 //	if (SourceNode && TargetNode)
 //	{
 //
-//		SourceNode->Modify(); // [추가] SourceNode의 상태를 변경할 것이라고 엔진에 알립니다.
+//		SourceNode->Modify(); 
 //
-//		// 소스 노드가 분기점이 아니라면 NextLevelSkillID를 비웁니다.
+//		// 소스 노드가 분기점이 아니라면 NextLevelSkillID를 비움
 //		if (!SourceNode->SkillData.bIsBranchingPoint)
 //		{
 //			if (SourceNode->SkillData.NextLevelSkillID == TargetNode->SkillData.SkillID)
@@ -157,13 +156,13 @@ FLinearColor USkillTreeEdGraphSchema::GetPinTypeColor(const FEdGraphPinType& Pin
 //				SourceNode->SkillData.NextLevelSkillID = NAME_None;
 //			}
 //		}
-//		// 소스 노드가 분기점이라면 BranchChoices 배열에서 해당 ID를 제거합니다.
+//		// 소스 노드가 분기점이라면 BranchChoices 배열에서 해당 ID를 제거
 //		else
 //		{
 //			SourceNode->SkillData.BranchChoices.Remove(TargetNode->SkillData.SkillID);
 //		}
 //
-//		// 그래프가 변경되었음을 에디터에 알립니다.
+//		// 그래프가 변경되었음을 에디터에 알림
 //		SourceNode->GetGraph()->NotifyGraphChanged();
 //	}
 //}
@@ -181,23 +180,22 @@ void USkillTreeEdGraphSchema::UpdateNodeBranchingState(USkillTreeEdGraphNode* No
 		return;
 	}
 
-	// 변경 사항을 Undo/Redo에 기록하기 위해 Modify()를 호출합니다.
 	Node->Modify();
 
-	// 현재 노드의 출력 핀에 연결된 링크의 개수를 가져옵니다.
+	// 현재 노드의 출력 핀에 연결된 링크의 개수를 가져옴
 	const int32 ConnectionCount = OutputPin->LinkedTo.Num();
 
-	// 데이터 불일치를 막기 위해, 일단 기존 연결 정보를 모두 초기화합니다.
+	// 데이터 불일치를 막기 위해, 일단 기존 연결 정보를 모두 초기화.
 	Node->SkillData.NextLevelSkillID = NAME_None;
 	Node->SkillData.BranchChoices.Empty();
 
-	// 연결 개수에 따라 분기 상태와 데이터를 새로 설정합니다.
+	// 연결 개수에 따라 분기 상태와 데이터를 새로 설정
 	if (ConnectionCount >= 2)
 	{
-		// [분기점] 연결이 2개 이상일 경우
+		//연결이 2개 이상일 경우
 		Node->SkillData.bIsBranchingPoint = true;
 
-		// 연결된 모든 노드의 ID를 BranchChoices 배열에 추가합니다.
+		// 연결된 모든 노드의 ID를 BranchChoices 배열에 추가
 		for (UEdGraphPin* LinkedPin : OutputPin->LinkedTo)
 		{
 			if (USkillTreeEdGraphNode* TargetNode = Cast<USkillTreeEdGraphNode>(LinkedPin->GetOwningNode()))
@@ -208,10 +206,10 @@ void USkillTreeEdGraphSchema::UpdateNodeBranchingState(USkillTreeEdGraphNode* No
 	}
 	else if (ConnectionCount == 1)
 	{
-		// [단일 연결] 연결이 1개일 경우
+		//연결이 1개일 경우
 		Node->SkillData.bIsBranchingPoint = false;
 
-		// 연결된 노드의 ID를 NextLevelSkillID에 저장합니다.
+		// 연결된 노드의 ID를 NextLevelSkillID에 저장
 		if (UEdGraphPin* LinkedPin = OutputPin->LinkedTo[0])
 		{
 			if (USkillTreeEdGraphNode* TargetNode = Cast<USkillTreeEdGraphNode>(LinkedPin->GetOwningNode()))
@@ -222,9 +220,9 @@ void USkillTreeEdGraphSchema::UpdateNodeBranchingState(USkillTreeEdGraphNode* No
 	}
 	else // ConnectionCount == 0
 	{
-		// [연결 없음] 연결이 하나도 없을 경우
+		//연결이 하나도 없을 경우
 		Node->SkillData.bIsBranchingPoint = false;
-		// (데이터는 이미 위에서 초기화되었으므로 추가 작업이 필요 없습니다.)
+
 	}
 }
 USkillTreeEdGraphNode* USkillTreeEdGraphSchema::CreateNewSkillNode(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)

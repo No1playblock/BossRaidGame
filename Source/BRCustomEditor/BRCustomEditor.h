@@ -23,6 +23,5 @@ private:
 
     TSharedRef<SDockTab> OnSpawnPluginTab_SkillTree(const FSpawnTabArgs& Args);
 
-    // [추가] 스킬 트리 에디터 메뉴 클릭 핸들러
     
 };

@@ -10,7 +10,7 @@ UENUM(BlueprintType)
 enum class EAbilityInputID : uint8
 {
 	None		UMETA(DisplayName = "None"),
-	// GASCharacterPlayer의 InputID와 값을 일치시켜야 합니다.
+	// GASCharacterPlayer의 InputID와 값을 일치시켜야 함.
 	Q_Skill = 2	UMETA(DisplayName = "Q Skill"),      // 2
 	E_Skill			UMETA(DisplayName = "E Skill"),      // 3
 	R_Skill			UMETA(DisplayName = "R Skill"),      // 4
@@ -23,13 +23,10 @@ struct FSkillTreeDataRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	// 이 스킬의 고유 ID (예: "Player.Skill.Fireball.Tier1")
+	// 이 스킬의 고유 ID
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName SkillID;
 
-	// 이 스킬이 속한 슬롯 (예: Gameplay.Skill.Q) - 스킬을 구분하기 위한 태그
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag SkillSlotTag;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName PrerequisiteSkillID;
@@ -56,7 +53,7 @@ struct FSkillTreeDataRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayAbility> GrantedAbility;
 
-	// --- 진화 및 분기 정보 ---
+
 
 	// 이 업그레이드가 분기점인지 여부
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

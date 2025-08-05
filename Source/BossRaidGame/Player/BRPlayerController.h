@@ -28,7 +28,6 @@ protected:
 	void ToggleSkillTreeUI(); // UI를 여닫는 함수
 
 protected:
-	// 수정한 부분입니다.
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 
