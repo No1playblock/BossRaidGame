@@ -16,6 +16,8 @@ class BOSSRAIDGAME_API ACharacterPlayer : public ABaseCharacter
 	GENERATED_BODY()
 	
 
+public:
+	FORCEINLINE UAnimMontage* GetAttackMontage() const { return AttackMontage; }
 protected:
 
 	ACharacterPlayer();
@@ -63,6 +65,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, Category = Animation)
+	TObjectPtr<class UAnimMontage> AttackMontage;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);

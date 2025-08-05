@@ -16,19 +16,18 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
 
-	FORCEINLINE UAnimMontage* GetAttackMontage() const { return AttackMontage; }
-	FORCEINLINE UComboActionData* GetComboActionData() const { return ComboActionData; }
+
+	//FORCEINLINE UComboActionData* GetComboActionData() const { return ComboActionData; }
 protected:
 
 	UFUNCTION()
 	virtual void OnOutOfHealth();
 
 protected:
-	UPROPERTY(EditAnywhere, Category = Animation)
-	TObjectPtr<class UAnimMontage> AttackMontage;
+	
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UComboActionData> ComboActionData;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UComboActionData> ComboActionData;*/
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	TObjectPtr<class UAnimMontage> DeadMontage;
