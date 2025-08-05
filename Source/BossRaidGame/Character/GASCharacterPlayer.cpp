@@ -174,7 +174,7 @@ void AGASCharacterPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (ASC)
 	{
-		// 등록했던 델리게이트를 핸들을 사용해 안전하게 해제합니다.
+		// 등록했던 델리게이트를 핸들을 사용해 안전하게 해제
 		ASC->GetGameplayAttributeValueChangeDelegate(UPlayerCharacterAttributeSet::GetMoveSpeedAttribute()).Remove(MoveSpeedChangedDelegateHandle);
 	}
 
