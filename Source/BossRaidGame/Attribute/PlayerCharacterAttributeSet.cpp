@@ -50,7 +50,6 @@ void UPlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 				SetSkillPoint(GetSkillPoint() + 1);
 				if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 				{
-					// AvatarActor를 우리의 플레이어 캐릭터 클래스로 캐스팅
 					AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(Data.Target.AbilityActorInfo->AvatarActor.Get());
 					APlayerController* PC = PlayerCharacter ? PlayerCharacter->GetController<APlayerController>() : nullptr;
 					ULocalPlayer* LocalPlayer = PC ? PC->GetLocalPlayer() : nullptr;
