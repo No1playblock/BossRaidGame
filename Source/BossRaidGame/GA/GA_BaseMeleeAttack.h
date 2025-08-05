@@ -40,25 +40,22 @@ protected:
 	void OnInterruptedCallback();
 
 protected:
-	// --- 블루프린트에서 설정할 프로퍼티들 ---
-
-	// 1. 공격 애니메이션 몽타주
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
-	// 2. 데미지를 가할 게임플레이 이펙트 (데미지량, 계산식 등을 담음)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
-	//// 3. 쿨다운을 적용할 게임플레이 이펙트
+	//// 쿨다운을 적용할 게임플레이 이펙트
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
 	//TSubclassOf<UGameplayEffect> CooldownEffectClass;
 
-	// 4. 애니메이션에서 데미지 판정이 일어나는 시점을 알려줄 태그
+	// 애니메이션에서 데미지 판정이 일어나는 시점을 알려줄 태그
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
 	FGameplayTag DamageEventTag;
 
-	// 5. 공격 판정 범위 (반지름)
+	// 공격 판정 범위 (반지름)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
 	float AttackRadius = 50.0f;
 
