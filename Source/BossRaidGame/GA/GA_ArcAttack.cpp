@@ -107,7 +107,6 @@ void UGA_ArcAttack::OnDamageEvent(FGameplayEventData Payload)
 
 	if (ArcTraceTask)
 	{
-		// 태스크의 OnTargetsFound 델리게이트에 우리의 처리 함수를 바인딩
 		ArcTraceTask->OnTargetsFound.AddDynamic(this, &UGA_ArcAttack::OnTargetsHit);
 		ArcTraceTask->ReadyForActivation();
 	}

@@ -30,10 +30,8 @@ void UAT_MultiHitAtLocation::Activate()
 	APawn* AvatarPawn = Cast<APawn>(GetAvatarActor());
 	if (AvatarPawn)
 	{
-		// 2. 폰을 소유하고 있는 컨트롤러를 가져옵니다.
 		AController* Controller = AvatarPawn->GetController();
 
-		// 3. AI 컨트롤러로 캐스팅하고 블랙보드를 가져와 저장합니다.
 		if (AAIController* AIController = Cast<AAIController>(Controller))
 		{
 			BlackboardComp = AIController->GetBlackboardComponent();

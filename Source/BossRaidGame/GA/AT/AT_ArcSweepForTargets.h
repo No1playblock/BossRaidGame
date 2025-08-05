@@ -26,7 +26,7 @@ public:
 		int32 SphereNum,
 		float ArcStartYaw,
 		bool bIsClockwise,
-		float DelayBetweenSpheres, // << 새로 추가된 파라미터
+		float DelayBetweenSpheres, 
 		ECollisionChannel TraceChannel,
 		bool bDrawDebug
 	);
@@ -35,7 +35,6 @@ public:
 	FArcSweepDelegate OnTargetsFound;
 
 protected:
-	// 태스크가 실제로 활성화될 때 호출되는 함수입니다.
 	virtual void Activate() override;
 
 	virtual void OnDestroy(bool bInOwnerFinished) override;

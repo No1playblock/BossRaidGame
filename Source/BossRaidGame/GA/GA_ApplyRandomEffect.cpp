@@ -13,7 +13,7 @@ void UGA_ApplyRandomEffect::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	UE_LOG(LogTemp, Warning, TEXT("Random Effect Ability Activated Successfully!"));
-	// 이펙트 배열이 비어있지 않은지, 이벤트 데이터가 유효한지 확인합니다.
+	// 이펙트 배열이 비어있지 않은지, 이벤트 데이터가 유효한지 확인
 	if (BuffEffects.Num() > 0 && TriggerEventData)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Applying Random Effect..."));

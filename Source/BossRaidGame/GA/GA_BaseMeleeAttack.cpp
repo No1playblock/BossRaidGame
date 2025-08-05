@@ -8,9 +8,6 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
-// ... 생성자, ActivateAbility, OnAbilityCancelled, OnAbilityEnded 함수는 이전과 거의 동일 ...
-// ActivateAbility 함수는 그대로 두시면 됩니다.
-
 UGA_BaseMeleeAttack::UGA_BaseMeleeAttack()
 {
 	// 어빌리티의 기본적인 속성 설정
@@ -118,7 +115,6 @@ void UGA_BaseMeleeAttack::OnDamageEvent(FGameplayEventData Payload)
 
 	if (TraceTask)
 	{
-		// 태스크의 OnTargetsFound 델리게이트에 우리의 처리 함수를 바인딩
 		TraceTask->OnTargetsFound.AddDynamic(this, &UGA_BaseMeleeAttack::OnTargetsHit);
 		TraceTask->ReadyForActivation();
 	}
@@ -126,30 +122,26 @@ void UGA_BaseMeleeAttack::OnDamageEvent(FGameplayEventData Payload)
 
 void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<AActor*>& HitActors)
 {
-	// 이전에 멤버 변수로 옮긴 HitActors Set을 사용합니다.
 	TArray<TWeakObjectPtr<AActor>> ActorsToApplyEffect;
 
-	// 먼저 피해를 줄 고유한 액터 목록을 만듭니다.
 	for (AActor* Character : HitActors)
 	{
 		if (Character && !ActorsToApplyEffect.Contains(Character))
 		{
-			// 이 공격으로 처음 맞는 액터라면, 목록에 추가하고 HitActors Set에도 기록합니다.
 			ActorsToApplyEffect.Add(Character);
 		}
 	}
 
 	if (ActorsToApplyEffect.Num() > 0)
 	{
-		// 1. 액터 배열을 담을 수 있는 TargetData 객체를 생성합니다.
+		//액터 배열을 담을 수 있는 TargetData 객체를 생성
 		FGameplayAbilityTargetData_ActorArray* NewTargetData = new FGameplayAbilityTargetData_ActorArray();
 		NewTargetData->TargetActorArray = ActorsToApplyEffect;
 
-		// 2. 위에서 만든 TargetData 객체를 TargetDataHandle '상자'에 넣습니다.
+		// TargetData 객체를 TargetDataHandle에 넣음
 		FGameplayAbilityTargetDataHandle TargetDataHandle;
 		TargetDataHandle.Add(NewTargetData);
 
-		// 3. 올바른 타입의 TargetDataHandle을 사용하여 이펙트를 한 번에 적용합니다.
 		ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetDataHandle, DamageEffectClass, 1.0f);
 	}
 }
