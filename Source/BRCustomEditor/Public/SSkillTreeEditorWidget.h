@@ -9,12 +9,12 @@
  * 
  */
 class FUICommandList;
-class USkillTreeEdGraph; // AddReferencedObjects를 위해 전방선언
+class USkillTreeEdGraph;
 
-class SGraphEditor; // 전방 선언
-class USkillTreeEdGraph; // UEdGraph 대신 우리가 만든 클래스로 변경
-class USkillTreeEdGraphNode; // 노드 클래스 전방 선언
-class IDetailsView; // 전방 선언
+class SGraphEditor;
+class USkillTreeEdGraph; 
+class USkillTreeEdGraphNode;
+class IDetailsView;
 class BRCUSTOMEDITOR_API SSkillTreeEditorWidget : public SCompoundWidget, public FEditorUndoClient
 {
 public:
@@ -43,10 +43,8 @@ private:
 
     void OnDeleteNodes();
 
-    /** [추가] 노드를 삭제할 수 있는지 확인하는 함수 (선택된 노드가 있을 때만 true) */
     bool CanDeleteNodes() const;
 
-    /** [추가] 그래프에서 선택된 노드들의 집합을 가져오는 헬퍼 함수 */
     TSet<UEdGraphNode*> GetSelectedNodes() const;
 private:
     // 그래프를 표시할 위젯
