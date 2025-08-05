@@ -10,6 +10,7 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/OverlapResult.h"
+#include "Character/MobGASCharacter.h"
 
 UBTService_TargetToFind::UBTService_TargetToFind()
 {
@@ -72,9 +73,12 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			CachedBlackboard->SetValueAsObject(TEXT("Target"), FoundTarget);
 			CachedBlackboard->SetValueAsFloat(TEXT("Distance"), Distance);
 			CachedBlackboard->SetValueAsVector(TEXT("TargetLocation"), FoundTarget->GetActorLocation());
-
-			CachedMobCharacter->SetChasingState();
-
+			
+			if(AMobGASCharacter* MobCharacter = Cast<AMobGASCharacter>(CachedMobCharacter))
+			{
+				MobCharacter->SetChasingState();
+			}
+		
 		}
 	}
 	else
@@ -83,8 +87,10 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		CachedBlackboard->ClearValue(TEXT("Distance"));
 		CachedBlackboard->ClearValue(TEXT("TargetLocation"));
 
-		CachedMobCharacter->SetWalkingState();
-
+		if (AMobGASCharacter* MobCharacter = Cast<AMobGASCharacter>(CachedMobCharacter))
+		{
+			MobCharacter->SetWalkingState();
+		}
 	}
 }
 
