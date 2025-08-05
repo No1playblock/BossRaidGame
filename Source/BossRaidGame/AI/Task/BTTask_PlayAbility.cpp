@@ -91,10 +91,9 @@ void UBTTask_PlayAbility::OnAbilityEnded(const FAbilityEndedData& EndedData)
 	// EndedData에서 받은 핸들(Handle)을 사용하여 어빌리티 스펙(Spec)을 찾음.
 	const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(EndedData.AbilitySpecHandle);
 
-	// 스펙에서 실제 어빌리티(Ability) 객체를 가져옵니다.
+	// 스펙에서 실제 어빌리티(Ability) 객체를 가져옴
 	const UGameplayAbility* EndedAbility = AbilitySpec ? AbilitySpec->Ability : nullptr;
 
-	//종료된 어빌리티가 우리가 실행한 어빌리티가 맞는지 태그로 확인
 	if (EndedAbility && EndedAbility->AbilityTags.HasTag(AbilityTag))
 	{
 		// 델리게이트를 반드시 정리
