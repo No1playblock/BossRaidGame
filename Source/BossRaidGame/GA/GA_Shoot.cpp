@@ -2,7 +2,7 @@
 
 
 #include "GA/GA_Shoot.h"
-#include "Character/BaseCharacter.h"
+#include "Character/CharacterPlayer.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GA/GA_Shoot.h"
@@ -23,8 +23,8 @@ void UGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 
-	ABaseCharacter* Character = CastChecked<ABaseCharacter>(ActorInfo->AvatarActor.Get());
-	CurrentComboData = Character->GetComboActionData();
+	ACharacterPlayer* Character = CastChecked<ACharacterPlayer>(ActorInfo->AvatarActor.Get());
+	//CurrentComboData = Character->GetComboActionData();
 
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 	if (!ASC)
