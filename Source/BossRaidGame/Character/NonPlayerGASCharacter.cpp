@@ -8,7 +8,7 @@
 #include "Character/GASCharacterPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tag/BRGameplayTag.h"
-#include "GameData/MobSpawnInfo.h"
+
 ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
@@ -17,37 +17,14 @@ ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // AI가 스폰되거나 월드에 배치될 때 자동으로 소유됨
 
-	static ConstructorHelpers::FClassFinder<UGameplayEffect> MovementEffectFinder(TEXT("/Game/Blueprints/GE/BPGE_SetStateMovement.BPGE_SetStateMovement_C"));
-	if (MovementEffectFinder.Succeeded())
-	{
-		MovementStateEffectClass = MovementEffectFinder.Class;
-	}
+	
 }
 
 UAbilitySystemComponent* ANonPlayerGASCharacter::GetAbilitySystemComponent() const
 {
 	return ASC;
 }
-void ANonPlayerGASCharacter::InitializeFromData(const FMobSpawnInfo* MobData)
-{
-	if (!MobData || !AttributeSet || !GetCharacterMovement()) return;
 
-	// 체력 설정
-	// AttributeSet의 부모인 UCharacterAttributeSet에 Health, MaxHealth가 있다고 가정
-	ASC->SetNumericAttributeBase(AttributeSet->GetMaxHealthAttribute(), MobData->Health);
-	ASC->SetNumericAttributeBase(AttributeSet->GetHealthAttribute(), MobData->Health);
-
-	// 경험치 보상 설정
-	ASC->SetNumericAttributeBase(AttributeSet->GetExpRewardAttribute(), MobData->Experience);
-
-	ASC->SetNumericAttributeBase(AttributeSet->GetMoveSpeedAttribute(), MobData->WalkSpeed);
-
-	// 이동 속도 설정
-	WalkSpeed = MobData->WalkSpeed;
-	RunSpeed = MobData->RunSpeed;
-	SetWalkingState();
-
-}
 
 void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 {
@@ -58,47 +35,14 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 	//AttributeSet->SetExpReward(ExpReward);
 
-	if (ASC)
-	{
-		ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMoveSpeedAttribute()).AddUObject(this, &ANonPlayerGASCharacter::OnMovementSpeedChanged);
-	}
+	
 	for (const auto& StartAbility : StartAbilities)
 	{
 		FGameplayAbilitySpec StartSpec(StartAbility);
 		ASC->GiveAbility(StartSpec);
 	}
 }
-void ANonPlayerGASCharacter::OnMovementSpeedChanged(const FOnAttributeChangeData& Data)
-{
-	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
-}
-void ANonPlayerGASCharacter::SetChasingState()
-{
-	if (!ASC || !MovementStateEffectClass) return;
 
-	if (ASC->HasMatchingGameplayTag(BRTAG_CHARACTER_ISCHASING)) return;
-
-	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(MovementStateEffectClass, 1.f, EffectContext);
-	if (SpecHandle.IsValid())
-	{
-		// SetByCaller로 뛰는 속도 값을 주입하는 것은 동일
-		SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_SPEED, RunSpeed);
-
-		ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	}
-}	
-void ANonPlayerGASCharacter::SetWalkingState()
-{
-	if (!ASC) return;
-
-	// "State.Running" 태그를 부여하는 모든 활성화된 이펙트를 찾아서 제거
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(BRTAG_CHARACTER_ISCHASING);
-	ASC->RemoveActiveEffectsWithGrantedTags(TagContainer);
-}
 void ANonPlayerGASCharacter::OnOutOfHealth()
 {
 	Super::OnOutOfHealth();

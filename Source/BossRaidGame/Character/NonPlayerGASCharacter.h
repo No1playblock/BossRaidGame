@@ -23,23 +23,18 @@ public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 
-	void InitializeFromData(const FMobSpawnInfo* MobData);
-
-	virtual void OnMovementSpeedChanged(const FOnAttributeChangeData& Data);
-
-	FORCEINLINE float GetWalkSpeed() const { return WalkSpeed; }
-	FORCEINLINE float GetRunSpeed() const { return RunSpeed; }
-
-	void SetChasingState();
-	void SetWalkingState();
-
+	
 	virtual void OnOutOfHealth() override;
 
 	FORCEINLINE class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<class UGameplayEffect> MovementStateEffectClass;
+
+	UPROPERTY(EditAnywhere)
+	float ExpReward = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UGameplayEffect> GainExpEffectClass;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
@@ -50,17 +45,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
 
-	UPROPERTY(EditAnywhere)
-	float ExpReward = 0.0f;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UGameplayEffect> GainExpEffectClass;
-
 	UPROPERTY(EditAnywhere, Category = Pawn)
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
-
-	float WalkSpeed;
-
-	float RunSpeed;
 	
 };
