@@ -19,9 +19,10 @@ UCLASS()
 class BOSSRAIDGAME_API ABRPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
 	ABRPlayerController();
 
+	FORCEINLINE class UPlayerHUDWidget* GetPlayerHUDWidgetInstance() const { return PlayerHUDWidgetInstance; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -35,6 +36,11 @@ protected:
 	TObjectPtr<UInputAction> IA_ToggleSkillTree;
 
 	
+	UPROPERTY()
+	class UPlayerHUDWidget* PlayerHUDWidgetInstance;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY()
 	USkillTreeWidget* SkillTreeWidgetInstance;

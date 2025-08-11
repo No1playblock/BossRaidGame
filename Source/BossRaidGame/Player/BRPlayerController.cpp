@@ -4,6 +4,7 @@
 #include "Player/BRPlayerController.h"
 #include "Blueprint/UserWidget.h" 
 #include "UI/SkillTreeWidget.h"      
+#include "UI/PlayerHUDWidget.h"	
 #include "Kismet/GameplayStatics.h" 
 ABRPlayerController::ABRPlayerController()
 {
@@ -11,6 +12,12 @@ ABRPlayerController::ABRPlayerController()
 	if (SkillTreeWidgetBPClass.Succeeded())
 	{
 		SkillTreeWidgetClass = SkillTreeWidgetBPClass.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBPClass(TEXT("/Game/UI/WBP_PlayerHUDWidget.WBP_PlayerHUDWidget_C"));
+	if (PlayerHUDWidgetBPClass.Succeeded())
+	{
+		PlayerHUDWidgetClass = PlayerHUDWidgetBPClass.Class;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleSkillTreeAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_ToggleSkillUI.IA_ToggleSkillUI'"));
@@ -35,6 +42,15 @@ void ABRPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+	if (!PlayerHUDWidgetInstance && PlayerHUDWidgetClass)
+	{
+		PlayerHUDWidgetInstance = CreateWidget<UPlayerHUDWidget>(this, PlayerHUDWidgetClass);
+	}
+	if (PlayerHUDWidgetInstance)
+	{
+		PlayerHUDWidgetInstance->AddToViewport();
+	}
+
 }
 
 void ABRPlayerController::SetupInputComponent()
