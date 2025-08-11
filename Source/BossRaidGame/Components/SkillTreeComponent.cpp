@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "Attribute/PlayerCharacterAttributeSet.h"
 #include "Character/GASCharacterPlayer.h"
+#include "Player/BRPlayerController.h"
+#include "UI/PlayerHUDWidget.h"
 USkillTreeComponent::USkillTreeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -42,6 +44,7 @@ void USkillTreeComponent::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("SkillTreeComponent: Failed to get Owner's ASC or AttributeSet!"));
 	}
+	TryAcquireSkill(FName("Player.Skill.AutoRaser.Tier1")); // Q
 }
 
 bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
@@ -81,6 +84,8 @@ bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
 	// AttributeSet의 스킬 포인트를 차감
 
 	OwnerAttributeSet->SetSkillPoint(CurrentSkillPoints - SkillData->SkillPointCost);
+
+	Cast<ABRPlayerController>(Cast<APawn>(GetOwner())->GetController())->GetPlayerHUDWidgetInstance()->SetSkillUI(SkillData->InputID, SkillData);
 	AcquiredSkills.Add(SkillID);
 
 
