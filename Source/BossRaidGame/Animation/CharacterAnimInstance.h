@@ -27,6 +27,8 @@ public:
 	UCharacterAnimInstance();
 
 protected:
+	virtual void NativeInitializeAnimation() override;
+
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	
@@ -38,4 +40,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	EDirectionState CharacterDirection;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	bool IsRotating;
+private:
+
+	float CurrentYaw;
+
+	float PreviousYaw;
 };
