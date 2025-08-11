@@ -7,11 +7,14 @@
 #include "GameFramework/Character.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Tag/BRGameplayTag.h"
 
 UGA_BaseMeleeAttack::UGA_BaseMeleeAttack()
 {
 	// 어빌리티의 기본적인 속성 설정
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ActivationBlockedTags.AddTag(BRTAG_CHARACTER_ISDEAD);
+
 }
 
 void UGA_BaseMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
