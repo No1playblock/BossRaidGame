@@ -13,6 +13,8 @@
 UGA_AutoRaser::UGA_AutoRaser()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ActivationBlockedTags.AddTag(CooldownTag);
+
 }
 
 void UGA_AutoRaser::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -26,6 +28,7 @@ void UGA_AutoRaser::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 	// 기본 데미지 값
 	float Damage = 100.f;
+	float CooldownTime = 1.0f; // 기본 쿨타임
 
 	// SkillTreeData로부터 Damage 값 추출
 	if (USkillTreeComponent* SkillComp = OwnerCharacter->FindComponentByClass<USkillTreeComponent>())
@@ -34,9 +37,18 @@ void UGA_AutoRaser::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		if (SkillData)
 		{
 			Damage = SkillData->SkillDamage;
+			CooldownTime = SkillData->SkillCoolTime;
+			//UE_LOG(LogTemp, Warning, TEXT("AutoRaser Damage: %f, CooldownTime: %f"), Damage, CooldownTime);
 		}
 	}
-
+	if (CooldownEffectClass)
+	{
+		// 쿨다운 이펙트의 지속시간을 SkillData에서 가져온 값으로 설정하여 적용
+		FGameplayEffectSpecHandle CooldownSpecHandle = MakeOutgoingGameplayEffectSpec(CooldownEffectClass);
+		CooldownSpecHandle.Data->SetDuration(CooldownTime, true);
+		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, CooldownSpecHandle);
+		//UE_LOG(LogTemp, Warning, TEXT("Applied Cooldown Effect: %s with Duration: %f"), *CooldownEffectClass->GetName(), CooldownTime);
+	}
 	SpawnOrbsAndFire(OwnerCharacter, Damage);
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

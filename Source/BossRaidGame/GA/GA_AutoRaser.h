@@ -20,6 +20,10 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 protected:
+
+	void SpawnOrbsAndFire(ACharacter* OwnerCharacter, float Damage);
+
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AutoRaser")
 	TSubclassOf<class ARaserOrb> OrbActorClass;
 
@@ -29,7 +33,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AutoRaser")
 	float FireDelay = 0.5f;
 
-	void SpawnOrbsAndFire(ACharacter* OwnerCharacter, float Damage);
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	TSubclassOf<UGameplayEffect> CooldownEffectClass;
+
+	// 이 어빌리티의 쿨다운을 나타내는 태그 (HUD와 연동하기 위함)
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FGameplayTag CooldownTag;
 
 	UPROPERTY(EditAnywhere)
 	float OrbCount;
