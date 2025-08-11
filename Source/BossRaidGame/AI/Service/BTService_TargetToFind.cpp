@@ -28,8 +28,7 @@ void UBTService_TargetToFind::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp
 	{
 		CachedMobCharacter = Cast<ANonPlayerGASCharacter>(CachedController->GetPawn());
 		CachedBlackboard = CachedController->GetBlackboardComponent();
-		UE_LOG(LogTemp, Warning, TEXT("BTService_TargetToFind OnBecomeRelevant called. Controller: %s, Character: %s"), 
-			*CachedController->GetName(), *CachedMobCharacter->GetName());
+
 	}
 }
 
