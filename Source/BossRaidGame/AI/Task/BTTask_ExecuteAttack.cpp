@@ -79,9 +79,20 @@ void UBTTask_ExecuteAttack::OnAbilityEnded(const FAbilityEndedData& EndedData)
 
 EBTNodeResult::Type UBTTask_ExecuteAttack::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	if (UAbilitySystemComponent* ASC = OwnerComp.GetAIOwner()->GetPawn()->FindComponentByClass<UAbilitySystemComponent>())
+	//여기서도 Crash 뜸. 공격도중에 게임을 끄니까 Crash 뜸.
+	if (AAIController* AIController = OwnerComp.GetAIOwner())
 	{
-		ASC->OnAbilityEnded.Remove(AbilityEndedDelegateHandle);
+		if (APawn* OwnerPawn = AIController->GetPawn())
+		{
+			if (UAbilitySystemComponent* ASC = OwnerPawn->FindComponentByClass<UAbilitySystemComponent>())
+			{
+				// 모든 포인터가 유효할 때만 델리게이트를 해제
+				ASC->OnAbilityEnded.Remove(AbilityEndedDelegateHandle);
+			}
+		}
 	}
+
+	Super::AbortTask(OwnerComp, NodeMemory);
+
 	return EBTNodeResult::Aborted;
 }
