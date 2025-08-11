@@ -2,8 +2,7 @@
 
 
 #include "Manager/MobSpawnManager.h"
-//#include "YourGameMode.h" // 프로젝트의 GameMode 클래스 헤더
-#include "Character/MobGASCharacter.h" // 프로젝트의 Monster 캐릭터 클래스 헤더
+#include "Character/MobGASCharacter.h"
 #include "NavigationSystem.h"
 #include "NavMesh/NavMeshBoundsVolume.h"
 #include "Kismet/GameplayStatics.h"
@@ -24,20 +23,19 @@ void AMobSpawnManager::BeginPlay()
     Super::BeginPlay();
 
     RequestRandomSpawnWave();
-    // 테스트용: 게임 시작 5초 후 "InitialWave" 라는 이름의 웨이브 스폰
     FTimerHandle SpawnTimer;
     GetWorld()->GetTimerManager().SetTimer(SpawnTimer, this, &AMobSpawnManager::RequestRandomSpawnWave, 10.0f, true);
     
     if (FindSpawnLocation(BossSpawnLocation))
     {
-        // 3. 해당 위치에 상징 구조물을 먼저 스폰 (설정된 경우)
+        //해당 위치에 상징 구조물을 먼저 스폰 (설정된 경우)
         if (BossSymbolicStructureClass)
         {
             GetWorld()->SpawnActor<AActor>(BossSymbolicStructureClass, BossSpawnLocation, FRotator::ZeroRotator);
         }
     }
 
-    // 4. 5분(BossSpawnTime) 후에 보스를 스폰하도록 타이머 설정
+    //5분(BossSpawnTime) 후에 보스를 스폰하도록 타이머 설정
     FTimerHandle BossSpawnTimer;
     GetWorld()->GetTimerManager().SetTimer(BossSpawnTimer, this, &AMobSpawnManager::SpawnBoss, BossSpawnTime, false);
 }
@@ -48,7 +46,6 @@ void AMobSpawnManager::SpawnBoss()
 
     FString ContextString;
     FBossSpawnInfo* BossInfo = BossSpawnTable->FindRow<FBossSpawnInfo>(BossDataRowName, ContextString);
-    //ABRGGameMode* GameMode = GetWorld()->GetAuthGameMode<ABRGGameMode>();
 
     if (BossInfo)   // && GameMode
     {
