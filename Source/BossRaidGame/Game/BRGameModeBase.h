@@ -14,5 +14,14 @@ class BOSSRAIDGAME_API ABRGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
 	ABRGameModeBase();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	void TickTimer();
+
+	//FTimerHandle GameTimerHandle;
 };
