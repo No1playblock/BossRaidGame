@@ -47,6 +47,14 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
 {
 	Super::OnOutOfHealth();
 
+	if (ASC)
+	{
+		ASC->CancelAllAbilities();
+
+		ASC->AddLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
+	}
+
+
 	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	if (!Player)
@@ -71,7 +79,9 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
 
 			// SetByCaller 값 세팅
 			//const FGameplayTag XPTag = FGameplayTag::RequestGameplayTag(FName("Data.Experience"));
-			SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_EXPERIENCE, ExpReward);
+			SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_EXPERIENCE, AttributeSet->GetExpReward());
+
+			//SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_EXPERIENCE, ExpReward);
 
 			// 적용
 			PlayerASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);

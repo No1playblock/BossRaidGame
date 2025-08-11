@@ -29,10 +29,6 @@ public:
 	FORCEINLINE class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 protected:
 
-
-	UPROPERTY(EditAnywhere)
-	float ExpReward = 0.0f;
-
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UGameplayEffect> GainExpEffectClass;
 
