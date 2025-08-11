@@ -32,6 +32,7 @@ public:
 	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
+	float GetTotalExpForLevel(int32 Level) const;
 
 protected:
 

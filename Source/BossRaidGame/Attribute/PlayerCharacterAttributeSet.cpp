@@ -6,10 +6,11 @@
 #include "Character/GASCharacterPlayer.h"
 #include "Engine/CurveTable.h"
 #include "SubSystems/LevelUpSubSystem.h"
+#include "Curves/RichCurve.h"
 
 UPlayerCharacterAttributeSet::UPlayerCharacterAttributeSet() :
 	CurrentExp(0.0f),
-	CurrentLevel(0.0f),
+	CurrentLevel(1.0f),
 	SkillPower(10.0f),
 	SkillCooldownRate(1.0f)
 {
@@ -24,7 +25,38 @@ UPlayerCharacterAttributeSet::UPlayerCharacterAttributeSet() :
 
 	}
 }
+float UPlayerCharacterAttributeSet::GetTotalExpForLevel(int32 Level) const
+{
+	if (Level <= 0)
+	{
+		return 0.f;
+	}
+	if (!LevelTable)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("LevelTable is not set"));
+		return 0.f;
+	}
+	const FSimpleCurve* SimpleCurve = LevelTable->FindSimpleCurve(
+		FName(TEXT("CriterionLevelValue")),
+		TEXT("GetTotalExpForLevel")
+	);
 
+	if (!SimpleCurve)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Curve row 'CriterionLevelValue' not found in LevelTable"));
+		return 0.f;
+	}
+
+	for (const FSimpleCurveKey& Key : SimpleCurve->Keys)
+	{
+		if (FMath::RoundToInt(Key.Value) == Level)
+		{
+			return Key.Time;
+		}
+	}
+
+	return 0.f;
+}
 void UPlayerCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
