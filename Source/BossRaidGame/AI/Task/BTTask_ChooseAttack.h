@@ -17,6 +17,7 @@ enum class EAttackSelectionPolicy : uint8
 	RangedOnly,
 	All
 };
+//일반몹은 공격 하나, 보스는 여러개 이므로 보스만 해당되는 Task
 UCLASS()
 class BOSSRAIDGAME_API UBTTask_ChooseAttack : public UBTTaskNode
 {
