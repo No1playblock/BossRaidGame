@@ -75,7 +75,21 @@ ACharacterPlayer::ACharacterPlayer()
 	{
 		QSkillAction = QSkillActionRef.Object;
 	}
-
+	static ConstructorHelpers::FObjectFinder<UInputAction> ESkillActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_ESkill.IA_ESkill'"));
+	if (ESkillActionRef.Object)
+	{
+		ESkillAction = ESkillActionRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> RSkillActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_RSkill.IA_RSkill'"));
+	if (RSkillActionRef.Object)
+	{
+		RSkillAction = RSkillActionRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> ShiftSkillActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_ShiftSkill.IA_ShiftSkill'"));
+	if (ShiftSkillActionRef.Object)
+	{
+		ShiftSkillAction = ShiftSkillActionRef.Object;
+	}
 	static ConstructorHelpers::FObjectFinder<UInputAction> InteractActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Interact.IA_Interact'"));
 	if (InteractActionRef.Object)
 	{
