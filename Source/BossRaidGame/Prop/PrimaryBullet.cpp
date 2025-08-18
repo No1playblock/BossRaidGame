@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Tag/BRGameplayTag.h"
 
 APrimaryBullet::APrimaryBullet()
 {
@@ -34,21 +35,32 @@ void APrimaryBullet::BeginPlay()
 	CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &APrimaryBullet::OnBeginOverlap);
 
 }
+
+void APrimaryBullet::InitializeBullet(float InDamage, TSubclassOf<class UGameplayEffect> InDamageEffectClass)
+{
+	Damage = InDamage;
+	DamageEffectClass = InDamageEffectClass;
+}
 void APrimaryBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this && OtherActor != GetOwner())
 	{
 		
 		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *OtherActor->GetFName().ToString());
-		if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			if (DamageEffectClass)
 			{
-				FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
-				FGameplayEffectSpecHandle Spec = ASC->MakeOutgoingSpec(DamageEffectClass, 1.f, Context);
-				if (Spec.IsValid())
+				FGameplayEffectContextHandle Context = TargetASC->MakeEffectContext();
+				// 데미지 가해자를 이 발사체를 쏜 캐릭터(GetOwner())로 설정
+				Context.AddInstigator(GetOwner(), this);
+
+				FGameplayEffectSpecHandle SpecHandle = TargetASC->MakeOutgoingSpec(DamageEffectClass, 1.f, Context);
+				if (SpecHandle.IsValid())
 				{
-					ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
+					SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE, Damage);
+
+					TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 				}
 			}
 		}
