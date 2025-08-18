@@ -45,6 +45,7 @@ void USkillTreeComponent::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("SkillTreeComponent: Failed to get Owner's ASC or AttributeSet!"));
 	}
 	TryAcquireSkill(FName("Player.Skill.AutoRaser.Tier1")); // Q
+	TryAcquireSkill(FName("Player.Skill.Grenade.Tier1")); // E
 }
 
 bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
