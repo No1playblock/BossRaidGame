@@ -23,7 +23,7 @@ void UGA_ShootHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	InvokeGameplayCue();
 
 	UAT_ShootProjectile* ShootTask = UAT_ShootProjectile::CreateTask(this, FName("ShootTask"));
-	ShootTask->Initialize(BulletClass);
+	ShootTask->Initialize(BulletClass, DamageEffectClass);
 
 	ShootTask->ReadyForActivation();
 

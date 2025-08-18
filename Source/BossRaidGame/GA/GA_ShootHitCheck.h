@@ -33,4 +33,5 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<class APrimaryBullet> BulletClass;
+
 };
