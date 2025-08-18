@@ -9,6 +9,8 @@
 /**
  * 
  */
+struct FMobSpawnInfo;
+
 UCLASS()
 class BOSSRAIDGAME_API AMobGASCharacter : public ANonPlayerGASCharacter
 {

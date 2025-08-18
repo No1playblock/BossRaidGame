@@ -26,9 +26,8 @@ void AMobGASCharacter::InitializeFromData(const FMobSpawnInfo* MobData)
 
 	// 경험치 보상 설정
 	ASC->SetNumericAttributeBase(AttributeSet->GetExpRewardAttribute(), MobData->Experience);
-
 	ASC->SetNumericAttributeBase(AttributeSet->GetMoveSpeedAttribute(), MobData->WalkSpeed);
-
+	ASC->SetNumericAttributeBase(AttributeSet->GetAttackPowerAttribute(), MobData->AttackPower);
 	// 이동 속도 설정
 	WalkSpeed = MobData->WalkSpeed;
 	RunSpeed = MobData->RunSpeed;
