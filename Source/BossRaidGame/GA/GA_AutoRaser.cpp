@@ -46,8 +46,9 @@ void UGA_AutoRaser::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		// 쿨다운 이펙트의 지속시간을 SkillData에서 가져온 값으로 설정하여 적용
 		FGameplayEffectSpecHandle CooldownSpecHandle = MakeOutgoingGameplayEffectSpec(CooldownEffectClass);
 		CooldownSpecHandle.Data->SetDuration(CooldownTime, true);
+		CooldownSpecHandle.Data->DynamicGrantedTags.AddTag(CooldownTag);
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, CooldownSpecHandle);
-		//UE_LOG(LogTemp, Warning, TEXT("Applied Cooldown Effect: %s with Duration: %f"), *CooldownEffectClass->GetName(), CooldownTime);
+		UE_LOG(LogTemp, Warning, TEXT("Applied Cooldown Effect: %s with Duration: %f"), *CooldownEffectClass->GetName(), CooldownTime);
 	}
 	SpawnOrbsAndFire(OwnerCharacter, Damage);
 
@@ -86,7 +87,7 @@ void UGA_AutoRaser::SpawnOrbsAndFire(ACharacter* OwnerCharacter, float Damage)
 		ARaserOrb* Orb = World->SpawnActor<ARaserOrb>(OrbActorClass, SpawnLocation, SpawnRotation);
 		if (Orb)
 		{
-			Orb->Initialize(OwnerCharacter, Damage);
+			Orb->Initialize(OwnerCharacter, Damage, DamageEffectClass, TargetChannel);
 
 			FTimerHandle TimerHandle;
 			World->GetTimerManager().SetTimer(TimerHandle, [Orb]()
