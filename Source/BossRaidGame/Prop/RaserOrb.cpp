@@ -25,10 +25,12 @@ void ARaserOrb::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ARaserOrb::Initialize(AActor* InInstigator, float InDamage)
+void ARaserOrb::Initialize(AActor* InInstigator, float InDamage, TSubclassOf<UGameplayEffect> NewDamageEffectClass, TEnumAsByte<ECollisionChannel> NewTargetChannel)
 {
 	InstigatorActor = InInstigator;
 	DamageAmount = InDamage;
+	DamageEffectClass = NewDamageEffectClass;
+	TargetChannel = NewTargetChannel;
 }
 
 FHitResult ARaserOrb::LineTrace() const
@@ -55,7 +57,7 @@ FHitResult ARaserOrb::LineTrace() const
 		Params.AddIgnoredActor(this);
 		Params.AddIgnoredActor(InstigatorActor);
 
-		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, WorldOrigin, TraceEnd, ECC_Pawn, Params);
+		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, WorldOrigin, TraceEnd, TargetChannel, Params);
 
 		DrawDebugLine(GetWorld(), GetActorLocation(), bHit ? Hit.Location : TraceEnd, bHit ? FColor::Green : FColor::Red, false, 1.0f, 0, 1.0f);
 
@@ -67,8 +69,6 @@ FHitResult ARaserOrb::LineTrace() const
 
 void ARaserOrb::SelfDestroy()
 {
-	UE_LOG(LogTemp, Warning, TEXT("RaserOrb SelfDestroy called"));
-
 	Destroy();
 }
 
@@ -97,19 +97,19 @@ void ARaserOrb::FireLaser()
 				const float SkillPower = SourceASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetSkillPowerAttribute());
 
 				//최종 데미지를 계산,  SkillPower가 0이면 데미지가 없으므로, 1을 기본값으로 간주
-				const float FinalDamage = BaseDamage * FMath::Max(1.f, SkillPower);
-				UE_LOG(LogTemp, Warning, TEXT("Final Damage: %f"), FinalDamage);
-				if (FinalDamage > 0.f)
+				//const float FinalDamage = BaseDamage * FMath::Max(1.f, SkillPower);
+				//UE_LOG(LogTemp, Warning, TEXT("Final Damage: %f"), FinalDamage);
+				if (BaseDamage > 0.f)
 				{
 					if (DamageEffectClass)
 					{
 						FGameplayEffectContextHandle ContextHandle = TargetASC->MakeEffectContext();
 						ContextHandle.AddSourceObject(this);
-
+						ContextHandle.AddInstigator(InstigatorActor, this);
 						FGameplayEffectSpecHandle SpecHandle = TargetASC->MakeOutgoingSpec(DamageEffectClass, 1.0f, ContextHandle);
 						if (SpecHandle.IsValid())
 						{
-							SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE_QSKILL, -1.0f * FinalDamage);		//여기서 음수로 줌
+							SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE, BaseDamage);
 							TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
 						}
 					}
