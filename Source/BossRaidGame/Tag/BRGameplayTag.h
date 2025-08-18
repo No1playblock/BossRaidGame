@@ -5,7 +5,9 @@
 #include "GameplayTagContainer.h"
 
 #define BRTAG_DATA_DAMAGE_QSKILL FGameplayTag::RequestGameplayTag(FName("Data.Damage.QSkill"))
+#define BRTAG_DATA_DAMAGE_BASICATTACK FGameplayTag::RequestGameplayTag(FName("Data.Damage.BasicAttack"))
 #define BRTAG_CHARACTER_ISDEAD FGameplayTag::RequestGameplayTag(FName("Character.State.IsDead"))
 #define BRTAG_DATA_EXPERIENCE FGameplayTag::RequestGameplayTag(FName("Data.Experience"))
 #define BRTAG_CHARACTER_ISCHASING FGameplayTag::RequestGameplayTag(FName("Character.State.IsChasing"))
 #define BRTAG_DATA_SPEED FGameplayTag::RequestGameplayTag(FName("Data.Speed"))
+#define BRTAG_DATA_DAMAGE FGameplayTag::RequestGameplayTag(FName("Data.Damage"))
