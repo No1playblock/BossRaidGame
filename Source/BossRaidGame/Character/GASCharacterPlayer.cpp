@@ -72,6 +72,8 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
 		//PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+		//PlayerController->ConsoleCommand(TEXT("stat fps"));
+		//PlayerController->ConsoleCommand(TEXT("stat unit"));
 
 		if (ASC)
 		{
@@ -111,6 +113,17 @@ void AGASCharacterPlayer::ClearInteractableActor(AActor* Interactable)
 	}
 }
 
+//BossCharacter는 스킬에 따라 데미지가 달라 만들어진 메소드
+float AGASCharacterPlayer::GetDamageByAttackTag(const FGameplayTag& AttackTag) const
+{
+	if (AttributeSet)
+	{
+		// 플레이어는 항상 자신의 AttackPower를 데미지로 사용
+		return AttributeSet->GetAttackPower();
+	}
+	return 0.0f;
+}
+
 void AGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -131,6 +144,7 @@ void AGASCharacterPlayer::SetupGASInputComponent()
 		
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 1);
 		EnhancedInputComponent->BindAction(QSkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 2);
+		EnhancedInputComponent->BindAction(ESkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 3);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 6);
 
 	}

@@ -6,6 +6,7 @@
 #include "Character/BaseCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "CharacterPlayer.h"
+#include "Interface/DamageDataProvider.h"
 #include "GASCharacterPlayer.generated.h"
 
 
@@ -16,7 +17,7 @@ class UUserWidget;
  * 
  */
 UCLASS()
-class BOSSRAIDGAME_API AGASCharacterPlayer : public ACharacterPlayer, public IAbilitySystemInterface
+class BOSSRAIDGAME_API AGASCharacterPlayer : public ACharacterPlayer, public IAbilitySystemInterface, public IDamageDataProvider
 {
 	GENERATED_BODY()
 	
@@ -34,6 +35,11 @@ public:
 
 	void SetInteractableActor(AActor* Interactable);
 	void ClearInteractableActor(AActor* Interactable);
+
+	//BossCharacter를 위해 스킬에 따라 데미지를 다르게 하기 위해 만들어진 메소드
+	//플레이어는 AttackPower
+	virtual float GetDamageByAttackTag(const FGameplayTag& AttackTag) const override;
+
 protected:
 
 	void SetupGASInputComponent();
