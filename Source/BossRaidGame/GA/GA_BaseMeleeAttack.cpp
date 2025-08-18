@@ -4,17 +4,24 @@
 #include "GA/GA_BaseMeleeAttack.h"
 #include "AT/AT_SphereTraceForTargets.h" // 새로 만든 태스크 헤더 포함
 #include "AbilitySystemComponent.h"
-#include "GameFramework/Character.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Tag/BRGameplayTag.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "Attribute/CharacterAttributeSet.h"
+#include "Character/GASCharacterPlayer.h"
+#include "Components/SkillTreeComponent.h"
+#include "Engine/OverlapResult.h"
+
 
 UGA_BaseMeleeAttack::UGA_BaseMeleeAttack()
 {
 	// 어빌리티의 기본적인 속성 설정
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	ActivationBlockedTags.AddTag(BRTAG_CHARACTER_ISDEAD);
+	ActivationBlockedTags.AddTag(CooldownTag);
 
+	TargetChannel = ECollisionChannel::ECC_GameTraceChannel4; // 기본적으로 GameTraceChannel4(BossAttackCollision) 사용
 }
 
 void UGA_BaseMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -26,6 +33,37 @@ void UGA_BaseMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
+	if (AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(ActorInfo->AvatarActor.Get()))
+	{
+		float CooldownTime = 1.0f; // 기본 쿨타임
+
+		// SkillTreeData로부터 Damage 값 추출
+		if (USkillTreeComponent* SkillComp = Player->FindComponentByClass<USkillTreeComponent>())
+		{
+			const FSkillTreeDataRow* SkillData = SkillComp->FindSkillDataByGrantedAbility(GetClass());
+			if (SkillData)
+			{
+				Damage = SkillData->SkillDamage;
+				CooldownTime = SkillData->SkillCoolTime;
+				//UE_LOG(LogTemp, Warning, TEXT("AutoRaser Damage: %f, CooldownTime: %f"), Damage, CooldownTime);
+			}
+		}
+		if (CooldownEffectClass)
+		{
+			// 쿨다운 이펙트의 지속시간을 SkillData에서 가져온 값으로 설정하여 적용
+			FGameplayEffectSpecHandle CooldownSpecHandle = MakeOutgoingGameplayEffectSpec(CooldownEffectClass);
+			CooldownSpecHandle.Data->SetDuration(CooldownTime, true);
+			CooldownSpecHandle.Data->DynamicGrantedTags.AddTag(CooldownTag);
+			ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, CooldownSpecHandle);
+			UE_LOG(LogTemp, Warning, TEXT("Applied Cooldown Effect: %s with Duration: %f"), *CooldownEffectClass->GetName(), CooldownTime);
+		}
+	}
+	else
+	{
+		Damage = GetAbilitySystemComponentFromActorInfo()->GetNumericAttribute(UCharacterAttributeSet::GetAttackPowerAttribute());
+	}
+
+
 	//HitActors.Empty();
 	// 몽타주 재생 태스크 생성
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, AttackMontage);
@@ -66,6 +104,7 @@ void UGA_BaseMeleeAttack::OnInterruptedCallback()
 }
 void UGA_BaseMeleeAttack::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
 {
+
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 	// 어빌리티 취소 시 쿨다운 적용 없이 종료
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
@@ -93,22 +132,11 @@ void UGA_BaseMeleeAttack::OnDamageEvent(FGameplayEventData Payload)
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
 	if (!OwnerCharacter) return;
 
-	// --- 기존의 충돌 검사 로직을 아래 태스크 호출로 대체 ---
 	FVector WorldOffset = OwnerCharacter->GetActorTransform().TransformVector(AttackLocationOffset);
 
 	const FVector TraceStart = OwnerCharacter->GetActorLocation() + WorldOffset;
-	//const FVector TraceEnd = TraceStart;	// + (OwnerCharacter->GetActorForwardVector() * AttackRadius)
+	
 
-
-	// 충돌 검사 태스크 생성 및 활성화
-	//UAT_SphereTraceForTargets* TraceTask = UAT_SphereTraceForTargets::SphereTraceForTargets(
-	//	this,
-	//	TraceStart,
-	//	TraceEnd,
-	//	AttackRadius,
-	//	true // 디버깅 시각화 활성화
-	//	, TargetChannel
-	//);
 	UAT_SphereTraceForTargets* TraceTask = UAT_SphereTraceForTargets::SphereTraceForTargets(
 		this,
 		TraceStart, // 공격 위치에 오프셋 적용
@@ -123,28 +151,43 @@ void UGA_BaseMeleeAttack::OnDamageEvent(FGameplayEventData Payload)
 	}
 }
 
-void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<AActor*>& HitActors)
+void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<FOverlapResult>& OverlapResults)
 {
-	TArray<TWeakObjectPtr<AActor>> ActorsToApplyEffect;
+	TArray<TWeakObjectPtr<AActor>> HitActors;
+	TArray<AActor*> HitActorArray;
+	AActor* OwnerActor = GetAvatarActorFromActorInfo();
 
-	for (AActor* Character : HitActors)
+	UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
+	if (!SourceASC) return;
+
+	for (const FOverlapResult& Overlap : OverlapResults)
 	{
-		if (Character && !ActorsToApplyEffect.Contains(Character))
+		AActor* HitActor = Overlap.GetActor();
+		if (HitActor && HitActor != OwnerActor && !HitActors.Contains(HitActor))
 		{
-			ActorsToApplyEffect.Add(Character);
+			HitActors.AddUnique(HitActor);
+
+			IDamageDataProvider* DamageProvider = Cast<IDamageDataProvider>(GetAvatarActorFromActorInfo());
+			if (DamageProvider)
+			{
+				//AttackTag를 ABILITY_ATTACK_BOSS__NIGHTMARE_SWIPE로 정적으로 설정할지 고민
+				//보스면 태그에 따라, 보스가 아니면 AttackPower를 사용
+				const float BaseDamage = DamageProvider->GetDamageByAttackTag(AbilityTags.First());
+
+				// Target의 ASC 가져오기
+				UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
+				if (!TargetASC) continue;
+
+				FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass);
+
+				if (SpecHandle.IsValid())
+				{
+					SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE, BaseDamage);
+
+					UE_LOG(LogTemp, Warning, TEXT("GA_AreaMultiHit::OnTargetsHit - DamageValue: %f"), BaseDamage);
+					SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+				}
+			}
 		}
-	}
-
-	if (ActorsToApplyEffect.Num() > 0)
-	{
-		//액터 배열을 담을 수 있는 TargetData 객체를 생성
-		FGameplayAbilityTargetData_ActorArray* NewTargetData = new FGameplayAbilityTargetData_ActorArray();
-		NewTargetData->TargetActorArray = ActorsToApplyEffect;
-
-		// TargetData 객체를 TargetDataHandle에 넣음
-		FGameplayAbilityTargetDataHandle TargetDataHandle;
-		TargetDataHandle.Add(NewTargetData);
-
-		ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetDataHandle, DamageEffectClass, 1.0f);
 	}
 }
