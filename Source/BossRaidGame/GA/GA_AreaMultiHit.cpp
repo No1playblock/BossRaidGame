@@ -9,10 +9,13 @@
 #include "AIController.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Actor.h"
-
+#include "Tag/BRGameplayTag.h"
+#include "Interface/DamageDataProvider.h"
+#include "AbilitySystemBlueprintLibrary.h"
 UGA_AreaMultiHit::UGA_AreaMultiHit()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	TargetChannel = ECollisionChannel::ECC_GameTraceChannel4; // 기본적으로 GameTraceChannel4(BossAttackCollision) 사용
 }
 
 void UGA_AreaMultiHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -71,7 +74,7 @@ void UGA_AreaMultiHit::OnDamageEvent(FGameplayEventData Payload)
 }
 void UGA_AreaMultiHit::OnTargetHit(const TArray<FOverlapResult>& OverlapResults)
 {
-	TArray<TWeakObjectPtr<AActor>> HitActors;
+	/*TArray<TWeakObjectPtr<AActor>> HitActors;
 	AActor* OwnerActor = GetAvatarActorFromActorInfo();
 
 	for (const FOverlapResult& Overlap : OverlapResults)
@@ -91,7 +94,40 @@ void UGA_AreaMultiHit::OnTargetHit(const TArray<FOverlapResult>& OverlapResults)
 		TargetDataHandle.Add(NewTargetData);
 
 		ApplyGameplayEffectToTarget(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), TargetDataHandle, DamageEffectClass, 1.0f);
+	}*/
+	UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
+	TArray<TWeakObjectPtr<AActor>> HitActors;
+	AActor* OwnerActor = GetAvatarActorFromActorInfo();
+	for (const FOverlapResult& Overlap : OverlapResults)
+	{
+		AActor* HitActor = Overlap.GetActor();
+		if (HitActor && HitActor != OwnerActor && !HitActors.Contains(HitActor))
+		{
+			HitActors.AddUnique(HitActor);
+
+			IDamageDataProvider* DamageProvider = Cast<IDamageDataProvider>(GetAvatarActorFromActorInfo());
+			if (DamageProvider)
+			{
+				//AttackTag를 ABILITY_ATTACK_BOSS__NIGHTMARE_SWIPE로 정적으로 설정할지 고민
+				const float BaseDamage = DamageProvider->GetDamageByAttackTag(AbilityTags.First());
+
+				// Target의 ASC 가져오기
+				UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
+				if (!TargetASC) continue;
+
+				FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass);
+
+				if (SpecHandle.IsValid())
+				{
+					SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE, BaseDamage);
+
+					UE_LOG(LogTemp, Warning, TEXT("GA_AreaMultiHit::OnTargetsHit - DamageValue: %f"), BaseDamage);
+					SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+				}
+			}
+		}
 	}
+
 }
 void UGA_AreaMultiHit::OnMontageCompleted()
 {
