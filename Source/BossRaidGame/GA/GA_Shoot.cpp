@@ -5,7 +5,6 @@
 #include "Character/CharacterPlayer.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GA/GA_Shoot.h"
 #include "AbilitySystemComponent.h"
 #include "Character/GASCharacterPlayer.h"
 #include "Character/ComboActionData.h"
@@ -33,7 +32,7 @@ void UGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 	}
 	AnimationRate = ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackSpeedAttribute());
 
-	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), Character->GetAttackMontage(), AnimationRate, TEXT(""), true);
+	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), Character->GetAttackMontage(), AnimationRate);
 	PlayAttackTask->OnCompleted.AddDynamic(this, &UGA_Shoot::OnCompleteCallback);
 	PlayAttackTask->OnInterrupted.AddDynamic(this, &UGA_Shoot::OnInterruptedCallback);
 	PlayAttackTask->ReadyForActivation();
