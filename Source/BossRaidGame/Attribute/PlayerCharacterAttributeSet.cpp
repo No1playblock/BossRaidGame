@@ -11,7 +11,7 @@
 UPlayerCharacterAttributeSet::UPlayerCharacterAttributeSet() :
 	CurrentExp(0.0f),
 	CurrentLevel(1.0f),
-	SkillPower(10.0f),
+	SkillPower(2.0f),
 	SkillCooldownRate(1.0f)
 {
 	static ConstructorHelpers::FObjectFinder<UCurveTable> LevelTableRef(TEXT("/Script/Engine.CurveTable'/Game/GameData/ExpLevelTable.ExpLevelTable'"));
@@ -80,6 +80,8 @@ void UPlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 			{
 				SetCurrentLevel(NewLevel);
 				SetSkillPoint(GetSkillPoint() + 1);
+				SetMaxHealth(GetMaxHealth() + 100.f); // 레벨업 시 체력 증가
+				SetHealth(GetMaxHealth()); // 체력 회복
 				if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 				{
 					AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(Data.Target.AbilityActorInfo->AvatarActor.Get());
