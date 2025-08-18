@@ -84,7 +84,6 @@ void ANonPlayerGASCharacter::DeactivateCharacter()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
-		Cast<UCharacterAnimInstance>(AnimInstance)->SetCharacterDeadState(true);
 		// 블렌드 아웃 시간 0.0f로 모든 몽타주를 즉시 정지
 		AnimInstance->Montage_Stop(0.0f);
 
