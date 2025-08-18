@@ -24,7 +24,6 @@ void UGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 
 	ACharacterPlayer* Character = CastChecked<ACharacterPlayer>(ActorInfo->AvatarActor.Get());
-	//CurrentComboData = Character->GetComboActionData();
 
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 	if (!ASC)
@@ -32,27 +31,14 @@ void UGA_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
-	//Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	AnimationRate = ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackSpeedAttribute());
 
-	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), Character->GetAttackMontage(), AnimationRate);
+	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), Character->GetAttackMontage(), AnimationRate, TEXT(""), true);
 	PlayAttackTask->OnCompleted.AddDynamic(this, &UGA_Shoot::OnCompleteCallback);
 	PlayAttackTask->OnInterrupted.AddDynamic(this, &UGA_Shoot::OnInterruptedCallback);
 	PlayAttackTask->ReadyForActivation();
 
-	//StartComboTimer();
-}
-
-void UGA_Shoot::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
-{
-	if (!ComboTimerHandle.IsValid())
-	{
-		HasNextComboInput = false;
-	}
-	else
-	{
-		HasNextComboInput = true;
-	}
+	
 }
 
 void UGA_Shoot::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
@@ -63,12 +49,7 @@ void UGA_Shoot::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 
 void UGA_Shoot::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
-	CurrentComboData = nullptr;
-	CurrentCombo = 0;
-	HasNextComboInput = false;
 }
 
 void UGA_Shoot::OnCompleteCallback()
