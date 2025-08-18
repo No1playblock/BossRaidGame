@@ -9,7 +9,14 @@
 /**
  * 
  */
-
+UENUM(BlueprintType)
+enum class EDirectionState : uint8
+{
+	Forward        UMETA(DisplayName = "Forward"),
+	BackWard     UMETA(DisplayName = "BackWard"),
+	Left     UMETA(DisplayName = "Left"),
+	Right   UMETA(DisplayName = "Right")
+};
 UCLASS()
 class BOSSRAIDGAME_API UCharacterAnimInstance : public UAnimInstance
 {
@@ -22,9 +29,14 @@ protected:
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	
+
 protected:
 
+	float DotNum;
+	float CrossNum;
+
+	UPROPERTY(BlueprintReadWrite)
+	EDirectionState CharacterDirection;
 	class ACharacter* Character;
 
 
