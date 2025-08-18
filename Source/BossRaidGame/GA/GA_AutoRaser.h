@@ -24,17 +24,23 @@ protected:
 	void SpawnOrbsAndFire(ACharacter* OwnerCharacter, float Damage);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "AutoRaser")
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<class ARaserOrb> OrbActorClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AutoRaser")
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	float OrbSpawnRadius = 100.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AutoRaser")
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	float FireDelay = 0.5f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
 	TSubclassOf<UGameplayEffect> CooldownEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
+
+	UPROPERTY(EditAnyWhere, Category = "Attack")
+	TEnumAsByte<ECollisionChannel> TargetChannel;
 
 	// 이 어빌리티의 쿨다운을 나타내는 태그 (HUD와 연동하기 위함)
 	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
@@ -42,4 +48,5 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float OrbCount;
+
 };
