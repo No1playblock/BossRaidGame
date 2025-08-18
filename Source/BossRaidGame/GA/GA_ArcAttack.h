@@ -39,18 +39,21 @@ protected:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	TObjectPtr<UAnimMontage> AttackMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
-	//// 쿨다운을 적용할 게임플레이 이펙트
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
-	//TSubclassOf<UGameplayEffect> CooldownEffectClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	TSubclassOf<UGameplayEffect> CooldownEffectClass;
+
+	// 이 어빌리티의 쿨다운을 나타내는 태그 (HUD와 연동하기 위함)
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	FGameplayTag CooldownTag;
 
 	// 애니메이션에서 데미지 판정이 일어나는 시점을 알려줄 태그
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	FGameplayTag DamageEventTag;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack|Arc Sweep")
