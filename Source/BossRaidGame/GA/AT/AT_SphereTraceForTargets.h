@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const TArray<AActor*>&, HitResults);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const TArray<FOverlapResult>&, HitResults);
 
 
 UCLASS()

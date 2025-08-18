@@ -3,6 +3,7 @@
 
 #include "GA/AT/AT_SphereTraceForTargets.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Engine/OverlapResult.h"
 #include "GameFramework/Actor.h"
 
 UAT_SphereTraceForTargets* UAT_SphereTraceForTargets::SphereTraceForTargets(UGameplayAbility* OwningAbility, FVector TraceSpherePos, float Radius, ECollisionChannel Channel)
@@ -22,19 +23,19 @@ void UAT_SphereTraceForTargets::Activate()
 	ActorsToIgnore.Add(GetAvatarActor()); // 자신의 캐릭터는 검사에서 제외
 
 	TArray<AActor*> HitResults;
-	/*UE_LOG(LogTemp, Warning, TEXT("SphereTraceForTargets: Channel=%d")
-		, static_cast<int32>(TargetChannel));*/
+	TArray<FOverlapResult> OverlapResults;
 
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(TargetChannel)); // Pawn 채널과 충돌하는지 확인
-	UKismetSystemLibrary::SphereOverlapActors(
-		this,
-		SpherePos,        // 구의 중심 위치
-		SphereRadius,     // 구의 반지름
-		ObjectTypes,      // 검사할 오브젝트 타입들 (Pawn)
-		nullptr,          // 특정 클래스 필터
-		ActorsToIgnore,
-		HitResults         // 결과가 저장될 액터 배열
+	FCollisionShape SphereShape = FCollisionShape::MakeSphere(SphereRadius);
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActors(ActorsToIgnore);
+
+	GetWorld()->OverlapMultiByChannel(
+		OverlapResults,
+		SpherePos,
+		FQuat::Identity,
+		TargetChannel, 
+		SphereShape,
+		QueryParams
 	);
 
 	const FColor DebugColor = HitResults.Num() > 0 ? FColor::Green : FColor::Red;
@@ -48,7 +49,7 @@ void UAT_SphereTraceForTargets::Activate()
 		0.2f            // 표시될 시간 (초)
 	);
 
-	OnTargetsFound.Broadcast(HitResults);
+	OnTargetsFound.Broadcast(OverlapResults);
 
 	EndTask();
 }
