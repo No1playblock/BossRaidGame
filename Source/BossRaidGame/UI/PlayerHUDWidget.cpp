@@ -32,13 +32,13 @@ void UPlayerHUDWidget::NativeConstruct()
 
 		// 쿨다운 태그 이벤트 바인딩
 		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Q")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
-		//AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
 		//AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Shift")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
 		//AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.R")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
 
 		// 동적 머티리얼 인스턴스 생성 및 맵에 저장
 		if (QSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Q")), QSkillMaskImage->GetDynamicMaterial());
-		//if (ESkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")), ESkillMaskImage->GetDynamicMaterial());
+		if (ESkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")), ESkillMaskImage->GetDynamicMaterial());
 		//if (ShiftSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Shift")), ShiftSkillMaskImage->GetDynamicMaterial());
 		//if (RSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.R")), RSkillMaskImage->GetDynamicMaterial());
 
@@ -105,6 +105,7 @@ void UPlayerHUDWidget::SetSkillUI(EAbilityInputID InputID, const FSkillTreeDataR
 {
 	if (!AbilitySystemComponent.IsValid() || Data==nullptr) return;
 
+	UE_LOG(LogTemp, Warning, TEXT("SetSkillUI called with InputID: %s, SkillIcon: %s"), *UEnum::GetValueAsString(InputID), *Data->SkillIcon.ToString());
 	FGameplayTag CooldownTag;
 	UImage* TargetSkillIcon = nullptr;
 	switch (InputID)
@@ -243,13 +244,29 @@ void UPlayerHUDWidget::UpdateCooldownUI(const FGameplayTag& CooldownTag)
 
 	UImage* TargetMaskImage = nullptr;
 	UTextBlock* TargetTextBlock = nullptr;
-
+	//UE_LOG(LogTemp, Warning, TEXT("UpdateCooldownUI called for CooldownTag: %s"), *CooldownTag.ToString());
 	if (CooldownTag == FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Q")))
 	{
 		TargetMaskImage = QSkillMaskImage;
 		TargetTextBlock = QSkillCooldownText;
 	}
-	// ... E, Shift, R 스킬에 대한 else if 블록 ...
+	else if (CooldownTag == FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")))
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("UpdateCooldownUI called for E Skill with CooldownTag: %s"), *CooldownTag.ToString());
+		TargetMaskImage = ESkillMaskImage;
+		TargetTextBlock = ESkillCooldownText;
+	}
+	else if (CooldownTag == FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.R")))
+	{
+		TargetMaskImage = RSkillMaskImage;
+		TargetTextBlock = RSkillCooldownText;
+	}
+	else if (CooldownTag == FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Shift")))
+	{
+		TargetMaskImage = ShiftSkillMaskImage;
+		TargetTextBlock = ShiftSkillCooldownText;
+	}
+
 
 	if (TargetTextBlock && TargetMaskImage && CooldownMaterials.Contains(CooldownTag))
 	{
