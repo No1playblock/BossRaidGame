@@ -36,5 +36,5 @@ private:
 
 	FReply OnClick_DeleteRow(TSharedPtr<FLevelStatRow> ItemToDelete); // <<< [Ãß°¡]
 
-
+	bool ShouldFilterDataTable(const FAssetData& AssetData) const;
 };

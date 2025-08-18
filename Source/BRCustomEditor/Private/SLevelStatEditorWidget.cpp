@@ -28,6 +28,8 @@ void SLevelStatEditorWidget::Construct(const FArguments& InArgs)
 								.OnObjectChanged(this, &SLevelStatEditorWidget::OnDataTableChanged)
 								.DisplayBrowse(true)
 								.DisplayUseSelected(true)
+								.OnShouldFilterAsset(this, &SLevelStatEditorWidget::ShouldFilterDataTable)
+								//숨기고 싶으면 true
 						]
 
 						+ SHorizontalBox::Slot()
@@ -205,4 +207,20 @@ FReply SLevelStatEditorWidget::OnClick_Save()
 	UE_LOG(LogTemp, Log, TEXT("DataTable saved successfully: %s"), *TargetDataTable->GetName());
 
 	return FReply::Handled();
+}
+bool SLevelStatEditorWidget::ShouldFilterDataTable(const FAssetData& AssetData) const
+{
+	//숨기고 싶은가를 묻는 
+	// 데이터 테이블 에셋의 'RowStruct' 태그 값을 가져옴
+	const FString RowStructName = AssetData.GetTagValueRef<FString>(TEXT("RowStructure"));
+	if (!RowStructName.IsEmpty())
+	{
+
+		if (RowStructName == FLevelStatRow::StaticStruct()->GetPathName())
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
