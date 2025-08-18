@@ -38,4 +38,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
     float Experience;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+    float AttackPower;
 };
