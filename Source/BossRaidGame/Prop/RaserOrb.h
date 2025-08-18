@@ -18,7 +18,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FireLaser();
 
-	void Initialize(AActor* InInstigator, float InDamage);
+	void Initialize(AActor* InInstigator, float InDamage, TSubclassOf<class UGameplayEffect> NewDamageEffectClass, TEnumAsByte<ECollisionChannel> NewTargetChannel);
 
 protected:
 	virtual void BeginPlay() override;
@@ -31,10 +31,9 @@ private:
 	UPROPERTY()
 	AActor* InstigatorActor;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<class UGameplayEffect> DamageEffectClass;
 
-	UPROPERTY()
 	float DamageAmount = 0.0f;
 
+	TEnumAsByte<ECollisionChannel> TargetChannel;
 };
