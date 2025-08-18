@@ -8,6 +8,11 @@
 #include "Character/GASCharacterPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tag/BRGameplayTag.h"
+#include "Manager/MobSpawnManager.h"
+#include "AIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "Animation/CharacterAnimInstance.h"
 
 ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
@@ -42,7 +47,64 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 		ASC->GiveAbility(StartSpec);
 	}
 }
+void ANonPlayerGASCharacter::ActivateCharacter()
+{
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+	SetActorTickEnabled(true);
 
+	if (ASC)
+	{
+		//죽으면 OutOfHealth, 5초뒤에 pool로 돌아갈때 태그 때기
+		UE_LOG(LogTemp, Warning, TEXT("Activating Character: %s"), *GetName());
+		ASC->RemoveLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
+	}
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	AAIController* AIController = Cast<AAIController>(GetController());
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AIController && BehaviorTree)
+	{
+		AIController->RunBehaviorTree(BehaviorTree);
+	}
+}
+
+//죽고나서 5초뒤에 실행되는 함수
+void ANonPlayerGASCharacter::DeactivateCharacter()
+{
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	SetActorTickEnabled(false);
+
+	if (AttributeSet)
+	{
+		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+	}
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		Cast<UCharacterAnimInstance>(AnimInstance)->SetCharacterDeadState(true);
+		// 블렌드 아웃 시간 0.0f로 모든 몽타주를 즉시 정지
+		AnimInstance->Montage_Stop(0.0f);
+
+	}
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController)
+	{
+		UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(AIController->GetBrainComponent());
+		if (BehaviorTreeComponent)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Deactivating Character: %s"), *GetName());
+			BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
+		}
+	}
+}
+
+void ANonPlayerGASCharacter::SetOwningSpawnManager(AMobSpawnManager* InManager)
+{
+	OwningSpawnManager = InManager;
+}
 void ANonPlayerGASCharacter::OnOutOfHealth()
 {
 	Super::OnOutOfHealth();
@@ -93,7 +155,24 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
 	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
 		[&]()
 		{
-			Destroy();
+			if (OwningSpawnManager.IsValid())
+			{
+				OwningSpawnManager->ReturnMonsterToPool(this);
+			}
+			else
+			{
+				// 스폰 매니저가 없는 경우에만 파괴 (안전장치)
+				Destroy();
+			}
 		}
 	), 5.0f, false);
+}
+
+float ANonPlayerGASCharacter::GetDamageByAttackTag(const FGameplayTag& AttackTag) const
+{
+	if (AttributeSet)
+	{
+		return AttributeSet->GetAttackPower();
+	}
+	return 0.0f;
 }
