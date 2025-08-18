@@ -24,9 +24,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class APrimaryBullet> BulletClass;
 
-	void Initialize(TSubclassOf<class APrimaryBullet> InBulletClass);
+	void Initialize(TSubclassOf<class APrimaryBullet> InBulletClass, TSubclassOf<class UGameplayEffect> InAttackEffectClass);
 	
 protected:
 
 	void DoShoot();
+
+private:
+	TSubclassOf<class UGameplayEffect> AttackEffectClass;
 };
