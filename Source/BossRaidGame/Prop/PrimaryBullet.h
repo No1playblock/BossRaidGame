@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "PrimaryBullet.generated.h"
 
 
@@ -16,9 +17,7 @@ public:
 	// Sets default values for this actor's properties
 	APrimaryBullet();
 
-	UPROPERTY(VisibleAnywhere)
-	class UProjectileMovementComponent* ProjectileMovement;
-
+	void InitializeBullet(float InDamage, TSubclassOf<class UGameplayEffect> InDamageEffectClass);
 protected:
 
 	virtual void BeginPlay() override;
@@ -28,8 +27,12 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(VisibleAnywhere)
+	class UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* CollisionComp;
 
-	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UGameplayEffect> DamageEffectClass;
+
+	float Damage = 0.0f;
 };
