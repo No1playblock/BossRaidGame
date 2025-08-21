@@ -13,7 +13,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Animation/CharacterAnimInstance.h"
-
+#include "Components/CapsuleComponent.h"
+#include "NavigationSystem.h"
 ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
@@ -22,7 +23,18 @@ ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // AI가 스폰되거나 월드에 배치될 때 자동으로 소유됨
 
-	
+	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향으로 회전
+	GetCharacterMovement()->bUseRVOAvoidance = false;
+
+	GetMesh()->SetCollisionObjectType(ECC_Pawn);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel3);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	//TODO:
+	//BPAICOntroller 적용
+	//GainExp클래스 적용
 }
 
 UAbilitySystemComponent* ANonPlayerGASCharacter::GetAbilitySystemComponent() const
@@ -37,69 +49,123 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 
 	ASC->InitAbilityActorInfo(this, this);
 
-	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-	//AttributeSet->SetExpReward(ExpReward);
+	if (AttributeSet)
+	{
+		// OnOutOfHealth 델리게이트에 이 클래스의 OnOutOfHealth 함수가 바인딩 되어있는지 확인
+		if (!AttributeSet->OnOutOfHealth.IsAlreadyBound(this, &ThisClass::OnOutOfHealth))
+		{
+			// 바인딩 되어있지 않으면 추가함
+			AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+		}
+	}
 
-	
 	for (const auto& StartAbility : StartAbilities)
 	{
 		FGameplayAbilitySpec StartSpec(StartAbility);
 		ASC->GiveAbility(StartSpec);
 	}
+	CheckNavMeshAndStartAI();
+
 }
+
 void ANonPlayerGASCharacter::ActivateCharacter()
 {
+
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	SetActorTickEnabled(true);
 
-	if (ASC)
+	if (GetMesh())
 	{
-		//죽으면 OutOfHealth, 5초뒤에 pool로 돌아갈때 태그 때기
-		UE_LOG(LogTemp, Warning, TEXT("Activating Character: %s"), *GetName());
-		ASC->RemoveLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
+		GetMesh()->SetComponentTickEnabled(true);
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	}
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
-	AAIController* AIController = Cast<AAIController>(GetController());
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-	if (AIController && BehaviorTree)
+	if (GetCharacterMovement())
 	{
-		AIController->RunBehaviorTree(BehaviorTree);
+		GetCharacterMovement()->Deactivate();
+		GetCharacterMovement()->Activate();
+		GetCharacterMovement()->SetComponentTickEnabled(true);
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
+	SpawnDefaultController();
+
+	if (AAIController* AIController = Cast<AAIController>(GetController()))
+	{
+		if (BehaviorTree)
+		{
+			AIController->RunBehaviorTree(BehaviorTree);
+		}
 	}
 }
+void ANonPlayerGASCharacter::CheckNavMeshAndStartAI()
+{
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+	AAIController* AIController = Cast<AAIController>(GetController());
 
+	if (!AIController || !BehaviorTree || !NavSys)
+	{
+		return;
+	}
+
+	FNavLocation RandomLocation;
+	const bool bIsNavMeshReady = NavSys->GetRandomPointInNavigableRadius(GetActorLocation(), 1.0f, RandomLocation);
+
+	if (bIsNavMeshReady)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(AIStartTimerHandle);
+		AIController->SetActorTickEnabled(true);
+		AIController->RunBehaviorTree(BehaviorTree);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimer(AIStartTimerHandle, this, &ANonPlayerGASCharacter::CheckNavMeshAndStartAI, 0.2f, false);
+	}
+}
 //죽고나서 5초뒤에 실행되는 함수
 void ANonPlayerGASCharacter::DeactivateCharacter()
 {
+	AController* CurrentController = GetController();
+	if (CurrentController)
+	{
+		AAIController* AIController = Cast<AAIController>(CurrentController);
+		if (AIController && AIController->GetBrainComponent())
+		{
+			AIController->GetBrainComponent()->StopLogic(TEXT("Pooled"));
+		}
+		CurrentController->UnPossess();
+		CurrentController->Destroy();
+	}
+
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	SetActorTickEnabled(false);
 
-	if (AttributeSet)
+	if (GetMesh())
 	{
-		AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
-	}
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
-	{
-		// 블렌드 아웃 시간 0.0f로 모든 몽타주를 즉시 정지
-		AnimInstance->Montage_Stop(0.0f);
-
-	}
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (AIController)
-	{
-		UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(AIController->GetBrainComponent());
-		if (BehaviorTreeComponent)
+		GetMesh()->SetComponentTickEnabled(false);
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Deactivating Character: %s"), *GetName());
-			BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
+			AnimInstance->Montage_Stop(0.0f);
 		}
 	}
-}
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+		GetCharacterMovement()->SetComponentTickEnabled(false);
+	}
 
+	if (AttributeSet)
+	{
+
+		AttributeSet->Reset();
+	}
+	if (ASC)
+	{
+		ASC->RemoveLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
+	}
+}
 void ANonPlayerGASCharacter::SetOwningSpawnManager(AMobSpawnManager* InManager)
 {
 	OwningSpawnManager = InManager;
@@ -107,11 +173,9 @@ void ANonPlayerGASCharacter::SetOwningSpawnManager(AMobSpawnManager* InManager)
 void ANonPlayerGASCharacter::OnOutOfHealth()
 {
 	Super::OnOutOfHealth();
-
 	if (ASC)
 	{
 		ASC->CancelAllAbilities();
-
 		ASC->AddLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
 	}
 
