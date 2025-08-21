@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Math/Vector.h"
+#include "GameFramework/CharacterMovementComponent.h"
 UCharacterAnimInstance::UCharacterAnimInstance()
 {
 	//Character = Cast<ACharacter>(GetOwningActor());
@@ -31,6 +32,11 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     {
         return;
     }
+
+	Speed = PawnOwner->GetVelocity().Size(); // Pawn의 속도를 가져옵니다.
+
+	IsInAir = PawnOwner->GetMovementComponent()->IsFalling();
+
     FVector ForwardVector = PawnOwner->GetActorForwardVector();
     FVector Velocity = PawnOwner->GetVelocity().GetSafeNormal();
 

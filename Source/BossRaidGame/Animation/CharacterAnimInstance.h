@@ -37,8 +37,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	EDirectionState CharacterDirection;
-	class ACharacter* Character;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float Speed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsInAir;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State")
 	bool IsRotating;
