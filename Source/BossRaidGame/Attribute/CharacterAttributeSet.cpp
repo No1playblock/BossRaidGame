@@ -32,23 +32,18 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Direct Health Access : %f"), GetHealth());
 		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Direct Health Access : %f"), GetHealth());
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
-
 	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
 	{
-		Data.Target.AddLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
 		OnOutOfHealth.Broadcast();
 	}
 
 	bOutOfHealth = (GetHealth() <= 0.0f);
-
 
 }
