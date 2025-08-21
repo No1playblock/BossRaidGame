@@ -18,3 +18,11 @@ void UMobCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectM
 {
 	Super::PostGameplayEffectExecute(Data);
 }
+void UMobCharacterAttributeSet::Reset()
+{
+	// 체력을 최대로 설정함
+	SetHealth(GetMaxHealth());
+
+	// 사망 상태 플래그를 false로 초기화함
+	bOutOfHealth = false;
+}

@@ -19,8 +19,7 @@ public:
 
 	ATTRIBUTE_ACCESSORS(UMobCharacterAttributeSet, ExpReward);
 
-
-
+	void Reset();
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
@@ -28,8 +27,6 @@ public:
 
 protected:
 
-
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Reward", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData ExpReward;
-
 };
