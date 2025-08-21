@@ -56,4 +56,10 @@ protected:
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	
 	TWeakObjectPtr<AMobSpawnManager> OwningSpawnManager;
+
+	/*NavMesh 체크를 위한 변수들*/
+	FTimerHandle AIStartTimerHandle;
+
+	// NavMesh 준비 상태를 주기적으로 확인하고 AI를 시작하는 함수
+	void CheckNavMeshAndStartAI();
 };
