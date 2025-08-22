@@ -35,6 +35,7 @@ public:
 
 	const FSkillTreeDataRow* GetSkillData(const FName& SkillID) const;
 	const FSkillTreeDataRow* FindSkillDataByGrantedAbility(TSubclassOf<class UGameplayAbility> AbilityClass) const;
+	const FSkillTreeDataRow* FindAcquiredSkillByInputID(EAbilityInputID InputID) const;
 
 protected:
 

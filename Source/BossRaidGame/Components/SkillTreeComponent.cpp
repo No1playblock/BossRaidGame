@@ -47,7 +47,19 @@ void USkillTreeComponent::BeginPlay()
 	TryAcquireSkill(FName("Player.Skill.AutoRaser.Tier1")); // Q
 	TryAcquireSkill(FName("Player.Skill.Grenade.Tier1")); // E
 }
+const FSkillTreeDataRow* USkillTreeComponent::FindAcquiredSkillByInputID(EAbilityInputID InputID) const
+{
+	for (const FName& SkillID : AcquiredSkills)
+	{
+		const FSkillTreeDataRow* SkillData = GetSkillData(SkillID);
 
+		if (SkillData && SkillData->InputID == InputID)
+		{
+			return SkillData;
+		}
+	}
+	return nullptr;
+}
 bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
 {
 	// 필요한 컴포넌트와 데이터 테이블이 유효한지 확인
