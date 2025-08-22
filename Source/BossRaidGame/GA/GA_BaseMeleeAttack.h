@@ -6,6 +6,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "Abilities/GameplayAbilityTypes.h" // 이 줄을 추가해주세요.
 #include "Engine/EngineTypes.h"
+#include "GameData/SkillTreeData.h"
 #include "GA_BaseMeleeAttack.generated.h"
 
 /**
@@ -66,11 +67,13 @@ protected:
 
 	UPROPERTY(EditAnyWhere, Category = "Melee Attack")
 	TEnumAsByte<ECollisionChannel> TargetChannel;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
+	EAbilityInputID AbilityInputID = EAbilityInputID::None;
+
 private:
 	FDelegateHandle CancelledHandle;
 	FDelegateHandle EndedHandle;
-
-	//TSet<TObjectPtr<AActor>> HitActors;
 
 	float Damage;
 
