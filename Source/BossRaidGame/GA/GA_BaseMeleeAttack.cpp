@@ -170,10 +170,25 @@ void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<FOverlapResult>& OverlapResu
 			IDamageDataProvider* DamageProvider = Cast<IDamageDataProvider>(GetAvatarActorFromActorInfo());
 			if (DamageProvider)
 			{
+				//TODO:
 				//AttackTag를 ABILITY_ATTACK_BOSS__NIGHTMARE_SWIPE로 정적으로 설정할지 고민
 				//보스면 태그에 따라, 보스가 아니면 AttackPower를 사용
-				const float BaseDamage = DamageProvider->GetDamageByAttackTag(AbilityTags.First());
-
+				/*보완 필요함 보스, 몹, 플레이어일 때 어떻게 할 것 인지*/
+				/*보스는 Tag가 필요 몹은 AttackPower, 플레이어는 EAbilityInputID가 필요*/
+				float BaseDamage = DamageProvider->GetDamageByAttackTag(AbilityTags.First());
+				if (AbilityInputID!=EAbilityInputID::None)
+				{
+					AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(GetAvatarActorFromActorInfo());
+					if (Player)
+					{
+						// 플레이어의 스킬 트리 컴포넌트에서 데미지 값을 가져옴
+						if (USkillTreeComponent* SkillComp = Player->GetSkillTreeComponent())
+						{
+							const FSkillTreeDataRow* SkillData = SkillComp->FindAcquiredSkillByInputID(AbilityInputID);
+							BaseDamage = SkillData ? SkillData->SkillDamage : BaseDamage;
+						}
+					}
+				}
 				// Target의 ASC 가져오기
 				UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
 				if (!TargetASC) continue;
@@ -184,7 +199,6 @@ void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<FOverlapResult>& OverlapResu
 				{
 					SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE, BaseDamage);
 
-					UE_LOG(LogTemp, Warning, TEXT("GA_AreaMultiHit::OnTargetsHit - DamageValue: %f"), BaseDamage);
 					SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 				}
 			}
