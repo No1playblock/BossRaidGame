@@ -13,20 +13,21 @@ struct FMobSpawnInfo;
 struct FBossSpawnInfo;
 class ANonPlayerGASCharacter;
 
-USTRUCT()
-struct FSpawnQueueItem
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FMobSpawnInfo SpawnInfo;
-
-	UPROPERTY()
-	FVector Location;
-
-	UPROPERTY()
-	float DifficultyMultiplier = 1.0f;
-};
+/*TImeSlicing 구조체*/
+//USTRUCT()
+//struct FSpawnQueueItem
+//{
+//	GENERATED_BODY()
+//
+//	UPROPERTY()
+//	FMobSpawnInfo SpawnInfo;
+//
+//	UPROPERTY()
+//	FVector Location;
+//
+//	UPROPERTY()
+//	float DifficultyMultiplier = 1.0f;
+//};
 USTRUCT()
 struct FMonsterPool
 {
@@ -50,6 +51,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/*UFUNCTION()
+	void ProcessSpawnQueue();*/
+
 private:
 
 	void InitializePool();
@@ -57,7 +61,7 @@ private:
 
 	void ChooseRandomMob();
 	void RequestSpawnWave(const FName& WaveDataRowName);
-	void ProcessSpawnQueue();
+	//void ProcessSpawnQueue();
 
 	UFUNCTION()
 	void SpawnBoss();
@@ -105,9 +109,11 @@ private:
 	UPROPERTY()
 	TMap<TSubclassOf<ACharacter>, FMonsterPool> InactiveMonsterPool;
 
-	// 스폰 요청을 저장할 큐 (이제 포인터 대신 실제 데이터를 복사)
-	TQueue<TPair<const FMobSpawnInfo*, FVector>> SpawnQueue;
+	
+	/*TimeSlicing을 사용하기 위한 변수*/
+	//TQueue<TPair<const FMobSpawnInfo*, FVector>> SpawnQueue;
 
-	// 큐를 처리할 타이머 핸들
-	FTimerHandle SpawnQueueTimerHandle;
+	//// 큐를 처리할 타이머 핸들
+	//FTimerHandle SpawnQueueTimerHandle;
+
 };
