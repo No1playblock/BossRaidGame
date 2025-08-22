@@ -93,7 +93,7 @@ void UPlayerHUDWidget::UpdateExperienceWidgets()
 		const float ExpNeededForThisLevel = ExpForNextLevelStart - ExpForCurrentLevelStart;
 
 		ExpBar->SetPercent(ExpInThisLevel / ExpNeededForThisLevel);
-		UE_LOG(LogTemp, Warning, TEXT("ExpInThisLevel: %f, ExpNeededForThisLevel: %f"), ExpInThisLevel, ExpNeededForThisLevel);
+		//UE_LOG(LogTemp, Warning, TEXT("ExpInThisLevel: %f, ExpNeededForThisLevel: %f"), ExpInThisLevel, ExpNeededForThisLevel);
 	}
 	else
 	{
@@ -105,7 +105,7 @@ void UPlayerHUDWidget::SetSkillUI(EAbilityInputID InputID, const FSkillTreeDataR
 {
 	if (!AbilitySystemComponent.IsValid() || Data==nullptr) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("SetSkillUI called with InputID: %s, SkillIcon: %s"), *UEnum::GetValueAsString(InputID), *Data->SkillIcon.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("SetSkillUI called with InputID: %s, SkillIcon: %s"), *UEnum::GetValueAsString(InputID), *Data->SkillIcon.ToString());
 	FGameplayTag CooldownTag;
 	UImage* TargetSkillIcon = nullptr;
 	switch (InputID)
@@ -199,7 +199,7 @@ void UPlayerHUDWidget::HandleMaxHealthChanged(const FOnAttributeChangeData& Data
 void UPlayerHUDWidget::HandleExperienceChanged(const FOnAttributeChangeData& Data)
 {
 	UpdateExperienceWidgets();
-	UE_LOG(LogTemp, Warning, TEXT("Experience changed: New Value = %.2f"), Data.NewValue);
+	//UE_LOG(LogTemp, Warning, TEXT("Experience changed: New Value = %.2f"), Data.NewValue);
 }
 
 void UPlayerHUDWidget::HandleLevelChanged(const FOnAttributeChangeData& Data)
