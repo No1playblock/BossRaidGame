@@ -41,36 +41,40 @@ UAbilitySystemComponent* ANonPlayerGASCharacter::GetAbilitySystemComponent() con
 {
 	return ASC;
 }
+void ANonPlayerGASCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 
+	if (AttributeSet)
+	{
+		AttributeSet->OnOutOfHealth.AddDynamic(this, &ANonPlayerGASCharacter::OnOutOfHealth);
+	}
+}
 
 void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	MyAIController = NewController;
+
 	ASC->InitAbilityActorInfo(this, this);
 
-	if (AttributeSet)
-	{
-		// OnOutOfHealth 델리게이트에 이 클래스의 OnOutOfHealth 함수가 바인딩 되어있는지 확인
-		if (!AttributeSet->OnOutOfHealth.IsAlreadyBound(this, &ThisClass::OnOutOfHealth))
-		{
-			// 바인딩 되어있지 않으면 추가함
-			AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-		}
-	}
 
 	for (const auto& StartAbility : StartAbilities)
 	{
 		FGameplayAbilitySpec StartSpec(StartAbility);
 		ASC->GiveAbility(StartSpec);
 	}
-	CheckNavMeshAndStartAI();
 
 }
 
 void ANonPlayerGASCharacter::ActivateCharacter()
 {
-
+	if (ASC)
+	{
+		ASC->CancelAbilities();
+		ASC->RemoveLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
+	}
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	SetActorTickEnabled(true);
@@ -87,38 +91,23 @@ void ANonPlayerGASCharacter::ActivateCharacter()
 		GetCharacterMovement()->SetComponentTickEnabled(true);
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
-	SpawnDefaultController();
+	if (MyAIController)
+	{
+		MyAIController->Possess(this);
+	}
+	else
+	{
+		// 컨트롤러가 없는 예외적인 경우에만 새로 생성
+		SpawnDefaultController();
+	}
 
 	if (AAIController* AIController = Cast<AAIController>(GetController()))
 	{
 		if (BehaviorTree)
 		{
+			AIController->SetActorTickEnabled(true);
 			AIController->RunBehaviorTree(BehaviorTree);
 		}
-	}
-}
-void ANonPlayerGASCharacter::CheckNavMeshAndStartAI()
-{
-	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
-	AAIController* AIController = Cast<AAIController>(GetController());
-
-	if (!AIController || !BehaviorTree || !NavSys)
-	{
-		return;
-	}
-
-	FNavLocation RandomLocation;
-	const bool bIsNavMeshReady = NavSys->GetRandomPointInNavigableRadius(GetActorLocation(), 1.0f, RandomLocation);
-
-	if (bIsNavMeshReady)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(AIStartTimerHandle);
-		AIController->SetActorTickEnabled(true);
-		AIController->RunBehaviorTree(BehaviorTree);
-	}
-	else
-	{
-		GetWorld()->GetTimerManager().SetTimer(AIStartTimerHandle, this, &ANonPlayerGASCharacter::CheckNavMeshAndStartAI, 0.2f, false);
 	}
 }
 //죽고나서 5초뒤에 실행되는 함수
@@ -133,7 +122,6 @@ void ANonPlayerGASCharacter::DeactivateCharacter()
 			AIController->GetBrainComponent()->StopLogic(TEXT("Pooled"));
 		}
 		CurrentController->UnPossess();
-		CurrentController->Destroy();
 	}
 
 	SetActorHiddenInGame(true);
@@ -160,11 +148,7 @@ void ANonPlayerGASCharacter::DeactivateCharacter()
 	{
 
 		AttributeSet->Reset();
-	}
-	if (ASC)
-	{
-		ASC->RemoveLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
-	}
+	}	
 }
 void ANonPlayerGASCharacter::SetOwningSpawnManager(AMobSpawnManager* InManager)
 {
