@@ -38,16 +38,16 @@ void UAT_SphereTraceForTargets::Activate()
 		QueryParams
 	);
 
-	const FColor DebugColor = HitResults.Num() > 0 ? FColor::Green : FColor::Red;
-	DrawDebugSphere(
-		GetWorld(),
-		SpherePos,      // 구의 중심 위치
-		SphereRadius,   // 구의 반지름
-		24,             // 구의 부드러움 (Segment)
-		DebugColor,     // 색상
-		false,          // 계속 유지할지 여부
-		0.2f            // 표시될 시간 (초)
-	);
+	//const FColor DebugColor = HitResults.Num() > 0 ? FColor::Green : FColor::Red;
+	//DrawDebugSphere(
+	//	GetWorld(),
+	//	SpherePos,      // 구의 중심 위치
+	//	SphereRadius,   // 구의 반지름
+	//	24,             // 구의 부드러움 (Segment)
+	//	DebugColor,     // 색상
+	//	false,          // 계속 유지할지 여부
+	//	0.2f            // 표시될 시간 (초)
+	//);
 
 	OnTargetsFound.Broadcast(OverlapResults);
 
