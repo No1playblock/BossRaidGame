@@ -11,6 +11,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Character/MobGASCharacter.h"
+#include "Stats/Stats.h"
+
+DECLARE_STATS_GROUP(TEXT("AITargeting"), STATGROUP_AITargeting, STATCAT_Advanced);
+
+DECLARE_CYCLE_STAT(TEXT("BTService_SyncTargetFind"), STAT_SyncTargetFind, STATGROUP_AITargeting);
 
 UBTService_TargetToFind::UBTService_TargetToFind()
 {
@@ -34,7 +39,18 @@ void UBTService_TargetToFind::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp
 
 void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Sync_TargetFinder_Tick);
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+
+	if (!CachedController || !CachedMobCharacter || !CachedBlackboard)
+	{
+		CachedController = Cast<AAIController>(OwnerComp.GetAIOwner());
+		if (CachedController)
+		{
+			CachedMobCharacter = Cast<ANonPlayerGASCharacter>(CachedController->GetPawn());
+			CachedBlackboard = CachedController->GetBlackboardComponent();
+		}
+	}
 
 	if (!CachedController || !CachedMobCharacter || !CachedBlackboard)
 	{
@@ -64,7 +80,7 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 				break;
 			}
 		}
-
+		
 		if (FoundTarget)
 		{
 			const float Distance = CachedMobCharacter->GetDistanceTo(FoundTarget);
