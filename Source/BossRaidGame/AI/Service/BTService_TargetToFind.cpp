@@ -42,15 +42,6 @@ void UBTService_TargetToFind::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	TRACE_CPUPROFILER_EVENT_SCOPE(Sync_TargetFinder_Tick);
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	if (!CachedController || !CachedMobCharacter || !CachedBlackboard)
-	{
-		CachedController = Cast<AAIController>(OwnerComp.GetAIOwner());
-		if (CachedController)
-		{
-			CachedMobCharacter = Cast<ANonPlayerGASCharacter>(CachedController->GetPawn());
-			CachedBlackboard = CachedController->GetBlackboardComponent();
-		}
-	}
 
 	if (!CachedController || !CachedMobCharacter || !CachedBlackboard)
 	{
