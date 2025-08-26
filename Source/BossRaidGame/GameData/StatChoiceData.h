@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSet.h" // FGameplayAttribute
+#include "Attribute/PlayerCharacterAttributeSet.h"
 #include "StatChoiceData.generated.h"
 
 
@@ -47,7 +48,17 @@ struct FStatChoiceInfo
 		, TargetAttribute(InAttribute) 
 		, TargetLevelAttribute(InTargetLevelAttribute)
 	{
-		FString ValueString = FString::Printf(TEXT("%+.1f"), InValue);
+		FString ValueString;
+		if (TargetAttribute == UPlayerCharacterAttributeSet::GetSkillCooldownRateAttribute())
+		{
+			ValueString = FString::Printf(TEXT("%+.2f"), InValue);
+
+		}
+		else
+		{
+			ValueString = FString::Printf(TEXT("%+.1f"), InValue);
+
+		}
 		DisplayValue = FText::FromString(ValueString);
 	}
 };
