@@ -34,6 +34,7 @@ void AMobSpawnManager::BeginPlay()
 	ChooseRandomMob();
 	FTimerHandle RequestTimer;
 	GetWorld()->GetTimerManager().SetTimer(RequestTimer, this, &AMobSpawnManager::ChooseRandomMob, SpawnDelay, true);
+	/*TimeSlicing 할 때*/
 	//GetWorld()->GetTimerManager().SetTimer(SpawnQueueTimerHandle, this, &AMobSpawnManager::ProcessSpawnQueue, 0.1f, true); // 큐 처리 간격을 약간 늘림
 
 	UE_LOG(LogTemp, Warning, TEXT("MobSpawnManager BeginPlay: StartSpawnManager"));
@@ -48,7 +49,7 @@ void AMobSpawnManager::BeginPlay()
 
 	//5분(BossSpawnTime) 후에 보스를 스폰하도록 타이머 설정
 	FTimerHandle BossSpawnTimer;
-	//GetWorld()->GetTimerManager().SetTimer(BossSpawnTimer, this, &AMobSpawnManager::SpawnBoss, BossSpawnTime, false);
+	GetWorld()->GetTimerManager().SetTimer(BossSpawnTimer, this, &AMobSpawnManager::SpawnBoss, BossSpawnTime, false);
 
 }
 /*한점에 소환*/
@@ -192,6 +193,9 @@ void AMobSpawnManager::ChooseRandomMob()
 //실제 몹 생성
 void AMobSpawnManager::RequestSpawnWave(const FName& WaveDataRowName)
 {
+
+	TRACE_CPUPROFILER_EVENT_SCOPE(Pooling_RequestSpawnWave);
+
 	if (!MonsterSpawnTable) return;
 
 	FMobSpawnInfo* SpawnInfo = MonsterSpawnTable->FindRow<FMobSpawnInfo>(WaveDataRowName, TEXT(""));
@@ -292,6 +296,8 @@ bool AMobSpawnManager::FindSpawnLocation(TSubclassOf<AActor> ActorClass, FVector
 
 void AMobSpawnManager::SpawnSingleMonster(const FMobSpawnInfo* SpawnInfo, const FVector& Location, float DifficultyMultiplier)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(Pooling_SpawnSingleMonster);
+
 	if (!SpawnInfo) return;
 
 	if (SpawnInfo->SpawnVFX) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnInfo->SpawnVFX, Location);
