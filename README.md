@@ -26,7 +26,7 @@
 - **Language:** C++
 - **Core Systems:** Gameplay Ability System(GAS), Slate UI, Behavior Tree, Multi-threading
 
-
+---
 ## 4. 주요 구현 내용
 
 ### 1. AI 성능 최적화를 위한 멀티스레딩 적용
