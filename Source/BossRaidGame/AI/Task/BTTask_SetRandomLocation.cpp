@@ -24,14 +24,14 @@ EBTNodeResult::Type UBTTask_SetRandomLocation::ExecuteTask(UBehaviorTreeComponen
 
 	if (isRandomPoint)
 	{
-		DrawDebugPoint(
-			GetWorld(),                 // 현재 월드
-			RandomNavLocation.Location, // 점을 그릴 위치 (FNavLocation에서 FVector를 가져옴)
-			20.0f,                      // 점의 크기 (반지름)
-			FColor::Green,              // 점의 색상
-			false,                      // 한 프레임만 보일지 여부 (false = 지속)
-			5.0f                        // 몇 초 동안 보일지 (지속 시간)
-		);
+		//DrawDebugPoint(
+		//	GetWorld(),                 // 현재 월드
+		//	RandomNavLocation.Location, // 점을 그릴 위치 (FNavLocation에서 FVector를 가져옴)
+		//	20.0f,                      // 점의 크기 (반지름)
+		//	FColor::Green,              // 점의 색상
+		//	false,                      // 한 프레임만 보일지 여부 (false = 지속)
+		//	5.0f                        // 몇 초 동안 보일지 (지속 시간)
+		//);
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("RandomLocation"), RandomNavLocation.Location);
 		
 		return EBTNodeResult::Succeeded;
