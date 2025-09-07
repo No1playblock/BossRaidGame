@@ -48,7 +48,6 @@ void UGA_AutoRaser::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		CooldownSpecHandle.Data->SetDuration(CooldownTime, true);
 		CooldownSpecHandle.Data->DynamicGrantedTags.AddTag(CooldownTag);
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, CooldownSpecHandle);
-		UE_LOG(LogTemp, Warning, TEXT("Applied Cooldown Effect: %s with Duration: %f"), *CooldownEffectClass->GetName(), CooldownTime);
 	}
 	SpawnOrbsAndFire(OwnerCharacter, Damage);
 
