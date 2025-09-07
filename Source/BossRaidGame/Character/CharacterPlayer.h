@@ -15,8 +15,6 @@ class BOSSRAIDGAME_API ACharacterPlayer : public ABaseCharacter
 {
 	GENERATED_BODY()
 	
-
-public:
 	FORCEINLINE UAnimMontage* GetAttackMontage() const { return AttackMontage; }
 protected:
 
@@ -27,11 +25,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCameraComponent> FollowCamera;	
 
+	
 	//ют╥б
 
 protected:
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
