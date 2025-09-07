@@ -28,14 +28,43 @@ protected:
 	virtual void SetupInputComponent() override;
 	void ToggleSkillTreeUI(); // UI를 여닫는 함수
 
+	void Move(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
+	void Jump();
+	void StopJumping();
+
 protected:
+
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	TObjectPtr<UInputMappingContext> IMC_Desktop;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputMappingContext> IMC_Mobile;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_ToggleSkillTree;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Move;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Look;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Jump;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Attack;
+
 	
+	UPROPERTY()
+	class UJoyStickWidget* MobileHUDInstance;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UJoyStickWidget> MobileHUDWidgetClass;
+
+
 	UPROPERTY()
 	class UPlayerHUDWidget* PlayerHUDWidgetInstance;
 
@@ -48,4 +77,20 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<USkillTreeWidget> SkillTreeWidgetClass;
 
+private:
+
+	void OnTouchBegan(const ETouchIndex::Type FingerIndex, const FVector Location);
+	void OnTouchMoved(const ETouchIndex::Type FingerIndex, const FVector Location);
+	void OnTouchEnded(const ETouchIndex::Type FingerIndex, const FVector Location);
+
+
+	// -- 모바일 조이스틱 상태 변수 --
+	int32 MoveFingerIndex;
+	int32 LookFingerIndex;
+
+	bool bIsLooking = false;
+	FVector2D LastLookLocation;
+
+	//시점 감도
+	float LookSensitivity = 0.1f;
 };
