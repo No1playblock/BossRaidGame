@@ -96,6 +96,7 @@ void USkillTreeNodeWidget::UpdateNodeState(USkillTreeComponent* SkillTreeComp)
 
 		//스킬 포인트 조건 확인
 	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (!Player || !Player->GetAbilitySystemComponent()) return;
 	FGameplayAttribute SkillPointAttribute = UPlayerCharacterAttributeSet::GetSkillPointAttribute();
 
 	if (SkillPointAttribute.IsValid())

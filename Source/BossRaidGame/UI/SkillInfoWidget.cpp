@@ -68,6 +68,7 @@ void USkillInfoWidget::OpenSkillInfo(const FSkillTreeDataRow& SkillData)
 	SkillID = SkillData.SkillID;
 
 	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (!Player) return;
 	FGameplayAttribute SkillPointAttribute = UPlayerCharacterAttributeSet::GetSkillPointAttribute();
 
 	if (SkillPointAttribute.IsValid())
@@ -111,6 +112,7 @@ void USkillInfoWidget::CloseUI()
 void USkillInfoWidget::OnBuyButtonClicked()
 {
 	AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!PlayerCharacter) return;
 	if (PlayerCharacter->GetSkillTreeComponent()->TryAcquireSkill(SkillID))
 	{
 		OnSkillInfoClosed.Broadcast();

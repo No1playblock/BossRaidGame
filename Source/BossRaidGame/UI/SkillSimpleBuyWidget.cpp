@@ -60,6 +60,7 @@ void USkillSimpleBuyWidget::NativeDestruct()
 void USkillSimpleBuyWidget::OnBuyButtonClicked()
 {
 	AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (!PlayerCharacter) return;
 	if (PlayerCharacter->GetSkillTreeComponent()->TryAcquireSkill(SkillID))
 	{
 		OnSimpleBuyClosed.Broadcast();
