@@ -29,13 +29,10 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> JoystickThumb;
 
-	/*UPROPERTY(meta = (BindWidget))
-	TObjectPtr<class UCanvasPanel> JoystickCanvas;*/
 
 private:
 	// 조이스틱의 내부 상태를 저장할 변수들
 	FVector2D TouchStartLocation;
 	FVector2D CurrentMoveVector;
-	float JoystickRadius = 100.f; // 조이스틱 배경의 반경
 
 };
