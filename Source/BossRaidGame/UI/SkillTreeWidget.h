@@ -49,7 +49,12 @@ protected:
 	UFUNCTION()
 	void OnNodeUnSelected();
 
+
+	UFUNCTION()
+	void OnXButtonClicked();
 protected:
+
+
 	// 등록된 모든 스킬 노드 위젯의 목록
 	UPROPERTY()
 	TArray<USkillTreeNodeWidget*> AllSkillNodes;
@@ -71,4 +76,7 @@ protected:
 	TObjectPtr<class USkillSimpleBuyWidget> SimpleBuyWidget;
 
 	TObjectPtr<class USkillTreeComponent> SkillTreeComp;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UButton> XBtn;
 };

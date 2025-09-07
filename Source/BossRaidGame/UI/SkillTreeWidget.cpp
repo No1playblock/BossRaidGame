@@ -61,6 +61,7 @@ void USkillTreeWidget::NativeConstruct()
 	}
 	SkillInfo->OnSkillInfoClosed.AddDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
 	SimpleBuyWidget->OnSimpleBuyClosed.AddDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
+	XBtn->OnClicked.AddDynamic(this, &USkillTreeWidget::OnXButtonClicked);
 }
 
 void USkillTreeWidget::NativeDestruct()
@@ -215,4 +216,18 @@ void USkillTreeWidget::OnNodeUnSelected()
 	CurrentlySelectedNode->SetSelected(false);
 	//PendingSelectionNode = nullptr;
 	CurrentlySelectedNode = nullptr;
+}
+
+void USkillTreeWidget::OnXButtonClicked()
+{
+	RemoveFromParent();
+	//UGameplayStatics::SetGamePaused(GetWorld(), false);
+	APlayerController* PlayerController = GetOwningPlayer();
+#if !(PLATFORM_ANDROID || PLATFORM_IOS)
+	if (PlayerController)
+	{
+		PlayerController->SetShowMouseCursor(false);
+		PlayerController->SetInputMode(FInputModeGameOnly());
+	}
+#endif
 }
