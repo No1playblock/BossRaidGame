@@ -24,6 +24,14 @@ class BOSSRAIDGAME_API AGASCharacterPlayer : public ACharacterPlayer, public IAb
 public:
 
 	AGASCharacterPlayer();
+	
+	// UMG 버튼이 호출할 공격 요청 함수
+	UFUNCTION(BlueprintCallable, Category = "GAS|Input")
+	void RequestPrimaryAttackPressed();
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|Input")
+	void RequestPrimaryAttackReleased();
+
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -35,6 +43,8 @@ public:
 
 	void SetInteractableActor(AActor* Interactable);
 	void ClearInteractableActor(AActor* Interactable);
+
+	void ActivateAbilityByInputID(int32 InputId);
 
 	//BossCharacter를 위해 스킬에 따라 데미지를 다르게 하기 위해 만들어진 메소드
 	//플레이어는 AttackPower

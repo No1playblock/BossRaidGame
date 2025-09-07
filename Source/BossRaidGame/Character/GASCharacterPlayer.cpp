@@ -37,26 +37,7 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 		ASC = BRPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(BRPS, this);
 
-		//const TArray<FName> DefaultSkillIDs = {
-		//	FName("AutoMissile_T1"),    // Q
-		//	FName("Grenade_T1"),        // E
-		//	FName("OrbitalStrike_T1"),  // R
-		//	FName("Dash_T1")            // Shift
-		//};
-		//if (SkillTreeComponent && SkillTreeComponent->SkillDataTable)
-		//{
-		//	for (const FName& SkillID : DefaultSkillIDs)
-		//	{
-		//		const FSkillTreeDataRow* Row = SkillTreeComponent->GetSkillData(SkillID);
-		//		if (Row && Row->GrantedAbility)
-		//		{
-		//			SkillTreeComponent->AcquiredSkills.AddUnique(SkillID);
-
-		//			FGameplayAbilitySpec Spec(Row->GrantedAbility, 1);
-		//			ASC->GiveAbility(Spec);
-		//		}
-		//	}
-		//}
+	
 		for (const auto& StartAbility : StartAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartAbility);
@@ -72,9 +53,9 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
 		//PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
-		//PlayerController->ConsoleCommand(TEXT("stat fps"));
 		//PlayerController->ConsoleCommand(TEXT("stat unit"));
-
+		//PlayerController->ConsoleCommand(TEXT("stat fps"));
+			
 		if (ASC)
 		{
 			
@@ -111,6 +92,11 @@ void AGASCharacterPlayer::ClearInteractableActor(AActor* Interactable)
 	{
 		CurrentInteractableActor = nullptr;
 	}
+}
+
+void AGASCharacterPlayer::ActivateAbilityByInputID(int32 InputId)
+{
+	GASInputPressed(InputId);
 }
 
 //BossCharacter는 스킬에 따라 데미지가 달라 만들어진 메소드
@@ -184,6 +170,20 @@ void AGASCharacterPlayer::GASInputReleased(int32 InputId)
 	}
 	
 }
+
+// UMG의 공격 버튼이 눌리면 이 함수가 호출됨
+void AGASCharacterPlayer::RequestPrimaryAttackPressed()
+{
+	// GAS의 표준 입력 처리 함수를 호출하여 어빌리티 실행
+	GASInputPressed(1);
+}
+
+// UMG의 공격 버튼에서 손을 떼면 이 함수가 호출됨
+void AGASCharacterPlayer::RequestPrimaryAttackReleased()
+{
+	GASInputReleased(1);
+}
+
 void AGASCharacterPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (ASC)
