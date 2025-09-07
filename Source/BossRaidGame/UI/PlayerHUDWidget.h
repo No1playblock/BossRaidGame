@@ -39,6 +39,8 @@ class BOSSRAIDGAME_API UPlayerHUDWidget : public UUserWidget
 	
 public:
 
+	UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer);
+
 	void SetSkillUI(EAbilityInputID InputID, const FSkillTreeDataRow* Data);
 protected:
 
@@ -47,22 +49,16 @@ protected:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	/** HP가 변경되었을 때 블루프린트에서 호출됩니다. */
-	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
-	void OnHealthChanged(float NewHealth, float MaxHealth);
-
-	/** 경험치가 변경되었을 때 블루프린트에서 호출됩니다. */
-	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
-	void OnExperienceChanged(float NewExperience, float MaxExperience);
-
-	/** 특정 스킬의 쿨다운 상태가 변경되었을 때 블루프린트에서 호출됩니다. */
-	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
-	void OnSkillCooldownChanged(FGameplayTag SkillCooldownTag, float TimeRemaining);
-
-
 	void UpdateExperienceWidgets();
 
 protected:
+
+	UPROPERTY()
+	TSubclassOf<class USkillTreeWidget> SkillTreeWidgetClass;
+
+	UPROPERTY()
+	USkillTreeWidget* SkillTreeWidgetInstance;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UProgressBar> HpBar;
 
@@ -82,6 +78,12 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> MaxHealthText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UButton> AttackBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UButton> TabBtn;
+
 	// --- Q 스킬 위젯 ---
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> QSkillIcon;
@@ -92,6 +94,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> QSkillCooldownText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UButton> QSkillBtn;
+
 	// --- E 스킬 위젯 ---
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> ESkillIcon;
@@ -101,6 +106,10 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> ESkillCooldownText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UButton> ESkillBtn;
+
 	// --- R 스킬 위젯 ---
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> RSkillIcon;
@@ -110,6 +119,10 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> RSkillCooldownText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UButton> RSkillBtn;
+
 	// --- Shift 스킬 위젯 ---
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UImage> ShiftSkillIcon;
@@ -119,6 +132,12 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> ShiftSkillCooldownText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UButton> ShiftSkillBtn;
+
+	
+
 private:
 
 	void HandleHealthChanged(const FOnAttributeChangeData& Data);
@@ -128,6 +147,33 @@ private:
 	void OnCooldownTagChanged(const FGameplayTag CooldownTag, int32 NewCount);
 	void UpdateAllHUDValues();
 	void UpdateCooldownUI(const FGameplayTag& CooldownTag);
+
+	UFUNCTION()
+	void OnQSkillButtonClicked();
+
+	UFUNCTION()
+	void OnESkillButtonClicked();
+
+	UFUNCTION()
+	void OnRSkillButtonClicked();
+
+	UFUNCTION()
+	void OnShiftSkillButtonClicked();
+
+	UFUNCTION()
+	void OnTabButtonClicked();
+
+	/*UFUNCTION()
+	void OnAttackButtonClicked();*/
+
+	UFUNCTION()
+	void FireAttack();
+
+	UFUNCTION()
+	void OnAttackButtonPressed();
+
+	UFUNCTION()
+	void OnAttackButtonReleased();
 
 	UFUNCTION()
 	void OnTimeChanged(int32 NewTime);
@@ -144,4 +190,8 @@ private:
 
 	UPROPERTY()
 	TMap<FGameplayTag, float> SkillCooldownDurations;
+
+	FTimerHandle AttackTimerHandle;
+
+	float FireRate;
 };

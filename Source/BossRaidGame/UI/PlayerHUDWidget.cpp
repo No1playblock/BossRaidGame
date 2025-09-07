@@ -3,7 +3,7 @@
 
 #include "UI/PlayerHUDWidget.h"
 #include "AbilitySystemComponent.h"
-#include "Attribute/PlayerCharacterAttributeSet.h" // 플레이어 어트리뷰트 셋으로 변경
+#include "Attribute/PlayerCharacterAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -11,6 +11,20 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GameData/SkillTreeData.h"
 #include "Game/BRGameState.h"
+#include "Character/GASCharacterPlayer.h"
+#include "Components/Button.h"
+#include "SkillTreeWidget.h"
+
+
+UPlayerHUDWidget::UPlayerHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	static ConstructorHelpers::FClassFinder<USkillTreeWidget> SkillTreeWidgetBPClass(TEXT("/Game/UI/WBP_SkillTree.WBP_SkillTree_C"));
+	if (SkillTreeWidgetBPClass.Succeeded())
+	{
+		SkillTreeWidgetClass = SkillTreeWidgetBPClass.Class;
+	}
+}
+
 
 void UPlayerHUDWidget::NativeConstruct()
 {
@@ -28,6 +42,8 @@ void UPlayerHUDWidget::NativeConstruct()
 			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &UPlayerHUDWidget::HandleMaxHealthChanged);
 			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetCurrentExpAttribute()).AddUObject(this, &UPlayerHUDWidget::HandleExperienceChanged);
 			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetCurrentLevelAttribute()).AddUObject(this, &UPlayerHUDWidget::HandleLevelChanged);
+
+			FireRate = 1.0 / AttributeSet->GetAttackSpeedLevel();
 		}
 
 		// 쿨다운 태그 이벤트 바인딩
@@ -47,9 +63,81 @@ void UPlayerHUDWidget::NativeConstruct()
 			GS->OnTimeChanged.AddDynamic(this, &UPlayerHUDWidget::OnTimeChanged);
 		}
 
+#if PLATFORM_ANDROID || PLATFORM_IOS
+		if (AttackBtn)
+		{
+			AttackBtn->SetVisibility(ESlateVisibility::Visible);
+			AttackBtn->OnPressed.AddDynamic(this, &UPlayerHUDWidget::OnAttackButtonPressed);
+			AttackBtn->OnReleased.AddDynamic(this, &UPlayerHUDWidget::OnAttackButtonReleased);
+		}
+			
+#else
+		if(AttackBtn)
+			AttackBtn->SetVisibility(ESlateVisibility::Hidden);
 
+#endif
 		// 위젯이 처음 생성될 때 현재 스탯 값으로 UI를 즉시 업데이트
 		UpdateAllHUDValues();
+	}
+
+	//버튼마다 IsFocusalbe true로 설정함(cpp에 없어서 bp에서 함)
+	if (QSkillBtn)
+	{
+		QSkillBtn->OnClicked.AddDynamic(this, &UPlayerHUDWidget::OnQSkillButtonClicked);
+		
+	}
+	if (ESkillBtn)
+	{
+		ESkillBtn->OnClicked.AddDynamic(this, &UPlayerHUDWidget::OnESkillButtonClicked);
+	}
+	if (RSkillBtn)
+	{
+		RSkillBtn->OnClicked.AddDynamic(this, &UPlayerHUDWidget::OnRSkillButtonClicked);
+	}
+	if (ShiftSkillBtn)
+	{
+		ShiftSkillBtn->OnClicked.AddDynamic(this, &UPlayerHUDWidget::OnShiftSkillButtonClicked);
+	}
+
+	if (QSkillIcon)
+	{
+		QSkillIcon->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	if (QSkillCooldownText)
+	{
+		QSkillCooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+
+	if (ESkillIcon)
+	{
+		ESkillIcon->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	if (ESkillCooldownText)
+	{
+		ESkillCooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+
+	if (RSkillIcon)
+	{
+		RSkillIcon->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	if (RSkillCooldownText)
+	{
+		RSkillCooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+
+	if (ShiftSkillIcon)
+	{
+		ShiftSkillIcon->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	if (ShiftSkillCooldownText)
+	{
+		ShiftSkillCooldownText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+
+	if(TabBtn)
+	{
+		TabBtn->OnClicked.AddDynamic(this, &UPlayerHUDWidget::OnTabButtonClicked);
 	}
 }
 void UPlayerHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -101,6 +189,7 @@ void UPlayerHUDWidget::UpdateExperienceWidgets()
 		ExpBar->SetPercent(1.0f);
 	}
 }
+
 void UPlayerHUDWidget::SetSkillUI(EAbilityInputID InputID, const FSkillTreeDataRow* Data)
 {
 	if (!AbilitySystemComponent.IsValid() || Data==nullptr) return;
@@ -300,6 +389,7 @@ void UPlayerHUDWidget::UpdateCooldownUI(const FGameplayTag& CooldownTag)
 		}
 	}
 }
+
 void UPlayerHUDWidget::OnTimeChanged(int32 NewTime)
 {
 	if (TimerText)
@@ -310,4 +400,107 @@ void UPlayerHUDWidget::OnTimeChanged(int32 NewTime)
 		FString TimeString = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		TimerText->SetText(FText::FromString(TimeString));
 	}
+}
+
+void UPlayerHUDWidget::OnQSkillButtonClicked()
+{
+	// GetOwningPlayerPawn()을 통해 현재 위젯을 소유한 플레이어 폰을 가져옵니다.
+	if (AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(GetOwningPlayerPawn()))
+	{
+		// InputID 2번으로 스킬 발동 함수를 호출합니다.
+		PlayerCharacter->ActivateAbilityByInputID(2);;
+	}
+}
+
+// E 스킬 버튼 클릭 시 실행될 함수
+void UPlayerHUDWidget::OnESkillButtonClicked()
+{
+	if (AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(GetOwningPlayerPawn()))
+	{
+		// InputID 3번으로 스킬 발동 함수를 호출합니다.
+		PlayerCharacter->ActivateAbilityByInputID(3);
+	}
+}
+
+// R 스킬 버튼 클릭 시 실행될 함수
+void UPlayerHUDWidget::OnRSkillButtonClicked()
+{
+	if (AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(GetOwningPlayerPawn()))
+	{
+		// InputID 4번으로 스킬 발동 함수를 호출합니다.
+		PlayerCharacter->ActivateAbilityByInputID(4);
+	}
+}
+
+// Shift 스킬 버튼 클릭 시 실행될 함수
+void UPlayerHUDWidget::OnShiftSkillButtonClicked()
+{
+	if (AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(GetOwningPlayerPawn()))
+	{
+		// InputID 5번으로 스킬 발동 함수를 호출합니다.
+		PlayerCharacter->ActivateAbilityByInputID(5);
+	}
+}
+
+void UPlayerHUDWidget::OnTabButtonClicked()
+{
+	if (!SkillTreeWidgetInstance && SkillTreeWidgetClass)
+	{
+		SkillTreeWidgetInstance = CreateWidget<USkillTreeWidget>(this, SkillTreeWidgetClass);
+	}
+	if (SkillTreeWidgetInstance)
+	{
+		const bool bVisible = SkillTreeWidgetInstance->IsInViewport();
+		if (!bVisible)
+		{
+			SkillTreeWidgetInstance->AddToViewport();
+
+		}
+	}
+}
+
+void UPlayerHUDWidget::FireAttack()
+{
+	if (AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(GetOwningPlayerPawn()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FireAttack called"));
+		PlayerCharacter->ActivateAbilityByInputID(1);
+	}
+}
+
+void UPlayerHUDWidget::OnAttackButtonPressed()
+{
+	FireAttack();
+
+	AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwningPlayerPawn());
+	const UPlayerCharacterAttributeSet* AttributeSet = AbilitySystemComponent->GetSet<UPlayerCharacterAttributeSet>();
+	if (AttributeSet)
+	{
+		const float AttackSpeed = AttributeSet->GetAttackSpeedLevel();
+		if (AttackSpeed > 0.0f)
+		{
+			FireRate = 1.0f / AttackSpeed;
+			UE_LOG(LogTemp, Warning, TEXT("AttackSpeed: %f"), AttackSpeed);
+		}
+		else
+		{
+			FireRate = 1.0f; // 기본값 설정
+			UE_LOG(LogTemp, Warning, TEXT("AttackSpeed is zero or negative, setting FireRate to default 1.0f"));
+		}
+		UE_LOG(LogTemp, Warning, TEXT("FireRate: %f"), FireRate);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(
+		AttackTimerHandle,
+		this,
+		&UPlayerHUDWidget::FireAttack,
+		FireRate,
+		true  // true로 설정하여 타이머 반복
+	);
+}
+
+void UPlayerHUDWidget::OnAttackButtonReleased()
+{
+	GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
+
 }
