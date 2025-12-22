@@ -11,12 +11,15 @@
 #include "GameFramework/PlayerController.h"         // PlayerController Å¬·¡½º
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkillTreeComponent.h"
+#include "Components/InventoryComponent.h"
+#include "Components/QuickSlotComponent.h"
 AGASCharacterPlayer::AGASCharacterPlayer()
 {
 	ASC = nullptr;
 	AttributeSet = CreateDefaultSubobject<UPlayerCharacterAttributeSet>(TEXT("AttributeSet"));
 	SkillTreeComponent = CreateDefaultSubobject<USkillTreeComponent>(TEXT("SkillTreeComponent"));
-
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	QuickSlotComponent = CreateDefaultSubobject<UQuickSlotComponent>(TEXT("QuickSlotComponent"));
 }
 
 UAbilitySystemComponent* AGASCharacterPlayer::GetAbilitySystemComponent() const
@@ -78,7 +81,7 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 	}
 
 	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-
+	
 }
 
 void AGASCharacterPlayer::SetInteractableActor(AActor* Interactable)

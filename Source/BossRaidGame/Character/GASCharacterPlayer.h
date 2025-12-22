@@ -12,7 +12,8 @@
 
 class UDataTable;
 class UUserWidget;
-
+class UInventoryComponent;
+class UQuickSlotComponent;
 /**
  * 
  */
@@ -58,7 +59,13 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	// 퀵슬롯 입력 함수
+	void OnQuickSlot1();
+	void OnQuickSlot2();
+	void OnQuickSlot3();
+	void OnQuickSlot4();
 
+	
 protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
@@ -78,6 +85,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill Tree", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USkillTreeComponent> SkillTreeComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	TObjectPtr<UQuickSlotComponent> QuickSlotComponent;
+
+	// 입력 액션 (에디터에서 할당)
+	
 private:
 	// 현재 상호작용 가능한 액터를 저장할 변수
 	UPROPERTY()
