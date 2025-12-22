@@ -13,6 +13,7 @@
 /**
  * 
  */
+class UInventoryMainWidget;
 class USkillTreeWidget;
 
 UCLASS()
@@ -27,12 +28,18 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	void ToggleSkillTreeUI(); // UI를 여닫는 함수
+	void ToggleInventoryUI();
 
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
 	void Jump();
 	void StopJumping();
 
+	// 퀵슬롯 입력 함수
+	void OnQuickSlot1();
+	void OnQuickSlot2();
+	void OnQuickSlot3();
+	void OnQuickSlot4();
 protected:
 
 	
@@ -57,7 +64,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Attack;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Inventory;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IA_QuickSlot_1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IA_QuickSlot_2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IA_QuickSlot_3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IA_QuickSlot_4;
+
 	UPROPERTY()
 	class UJoyStickWidget* MobileHUDInstance;
 
@@ -77,6 +98,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<USkillTreeWidget> SkillTreeWidgetClass;
 
+	UPROPERTY()
+	UInventoryMainWidget* InventoryWidgetInstance;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UInventoryMainWidget> InventoryWidgetClass;
 private:
 
 	void OnTouchBegan(const ETouchIndex::Type FingerIndex, const FVector Location);
@@ -93,4 +119,6 @@ private:
 
 	//시점 감도
 	float LookSensitivity = 0.1f;
+
+	TObjectPtr<class UQuickSlotComponent> QuickSlotComponent;
 };

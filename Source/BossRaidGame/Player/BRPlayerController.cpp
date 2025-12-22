@@ -9,11 +9,16 @@
 #include "Components/Image.h"
 #include "Character/GASCharacterPlayer.h"
 #include "UI/JoyStickWidget.h"
+#include "HAL/IConsoleManager.h"
+#include "UI/InventoryMainWidget.h"
+#include "Components/InventoryComponent.h"
+#include "Components/QuickSlotComponent.h"
 ABRPlayerController::ABRPlayerController()
 {
 	MoveFingerIndex = -1;
 	LookFingerIndex = -1;
 
+	//InputAction
 	static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Jump.IA_Jump'"));
 	if (JumpActionRef.Object)
 	{
@@ -35,6 +40,19 @@ ABRPlayerController::ABRPlayerController()
 	if (AttackActionRef.Object)
 	{
 		IA_Attack = AttackActionRef.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Inventory.IA_Inventory'"));
+	if (ToggleInventoryAction.Object)
+	{
+		IA_Inventory = ToggleInventoryAction.Object;
+	}
+
+	//위젯
+	static ConstructorHelpers::FClassFinder<UInventoryMainWidget> InventoryWidgetBPClass(TEXT("/Game/UI/WBP_InventoryMainWidget.WBP_InventoryMainWidget_C"));
+	if (InventoryWidgetBPClass.Succeeded())
+	{
+		InventoryWidgetClass = InventoryWidgetBPClass.Class;
 	}
 
 	static ConstructorHelpers::FClassFinder<USkillTreeWidget> SkillTreeWidgetBPClass(TEXT("/Game/UI/WBP_SkillTree.WBP_SkillTree_C"));
@@ -72,12 +90,58 @@ ABRPlayerController::ABRPlayerController()
 	{
 		IMC_Mobile = MobileMappingContext.Object;
 	}
+
+	//quickslot input action
+	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot1_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot1.IA_QuickSlot1'"));
+	if (QuickSlot1_Action.Succeeded())
+	{
+		IA_QuickSlot_1 = QuickSlot1_Action.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot2_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot2.IA_QuickSlot2'"));
+	if (QuickSlot2_Action.Succeeded())
+	{
+		IA_QuickSlot_2 = QuickSlot2_Action.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot3_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot3.IA_QuickSlot3'"));
+	if (QuickSlot3_Action.Succeeded())
+	{
+		IA_QuickSlot_3 = QuickSlot3_Action.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot4_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot4.IA_QuickSlot4'"));
+	if (QuickSlot4_Action.Succeeded())
+	{
+		IA_QuickSlot_4 = QuickSlot4_Action.Object;
+	}
+	
 }
 
 void ABRPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("PlayerController BeginPlay"));
+
+	APawn* MyPawn = GetPawn();
+ 
+	UQuickSlotComponent* MyQuickSlotComponent = MyPawn->FindComponentByClass<UQuickSlotComponent>();
+	if(MyQuickSlotComponent)
+	{
+		QuickSlotComponent = MyQuickSlotComponent;
+		UE_LOG(LogTemp, Warning, TEXT("QuickSlotComponent found in PlayerController"));
+	}
+	if (IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("r.MaterialQualityLevel")))
+	{
+		// 변수를 찾았다면, 그 변수의 정수(int) 값을 가져옵니다.
+		const int32 QualityLevel = CVar->GetInt();
+
+		// 가져온 값을 Warning 레벨 로그로 출력합니다.
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@@@@@@@@@@ Current r.MaterialQualityLevel is: %d @@@@@@@@@@@@@@@@@@@@@@@@"), QualityLevel);
+	}
+	else
+	{
+		// 해당 이름의 콘솔 변수를 찾지 못한 경우
+		UE_LOG(LogTemp, Error, TEXT("@@@@@@@@@@@@@@@@@@@@@@@@ Could not find console variable r.MaterialQualityLevel @@@@@@@@@@@@@@@@@@@@@@@@"));
+	}
+
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
@@ -195,8 +259,13 @@ void ABRPlayerController::SetupInputComponent()
 		EnhancedInput->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABRPlayerController::Look);
 		EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABRPlayerController::Jump);
 		EnhancedInput->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ABRPlayerController::StopJumping);
+		EnhancedInput->BindAction(IA_Inventory, ETriggerEvent::Started, this, &ABRPlayerController::ToggleInventoryUI);
 		//EnhancedInput->BindAction(IA_Attack, ETriggerEvent::Started, this, &ABRPlayerController::Attack);
 
+		if (IA_QuickSlot_1) EnhancedInput->BindAction(IA_QuickSlot_1, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot1);
+		if (IA_QuickSlot_2) EnhancedInput->BindAction(IA_QuickSlot_2, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot2);
+		if (IA_QuickSlot_3) EnhancedInput->BindAction(IA_QuickSlot_3, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot3);
+		if (IA_QuickSlot_4) EnhancedInput->BindAction(IA_QuickSlot_4, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot4);
 		//Touch는 EnhancedInputComponent를 사용하지 않고 별도 바인딩
 		if (InputComponent)
 		{
@@ -207,6 +276,27 @@ void ABRPlayerController::SetupInputComponent()
 
 	}
 }
+
+void ABRPlayerController::OnQuickSlot1()
+{
+	if (QuickSlotComponent) QuickSlotComponent->ActivateSlot(0); // 0번 인덱스
+}
+
+void ABRPlayerController::OnQuickSlot2()
+{
+	if (QuickSlotComponent) QuickSlotComponent->ActivateSlot(1);
+}
+
+void ABRPlayerController::OnQuickSlot3()
+{
+	if (QuickSlotComponent) QuickSlotComponent->ActivateSlot(2);
+}
+
+void ABRPlayerController::OnQuickSlot4()
+{
+	if (QuickSlotComponent) QuickSlotComponent->ActivateSlot(3);
+}
+
 void ABRPlayerController::OnTouchBegan(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
 	// 뷰포트 크기 획득
@@ -300,6 +390,50 @@ void ABRPlayerController::ToggleSkillTreeUI()
 			SkillTreeWidgetInstance->SetKeyboardFocus();
 			//UGameplayStatics::SetGamePaused(GetWorld(), true);
 
+		}
+	}
+}
+void ABRPlayerController::ToggleInventoryUI()
+{
+	//없으면 Create
+	if (!InventoryWidgetInstance && InventoryWidgetClass)
+	{
+		InventoryWidgetInstance = CreateWidget<UInventoryMainWidget>(this, InventoryWidgetClass);
+	}
+
+	//있으면 여닫
+	if (InventoryWidgetInstance)
+	{
+		if (InventoryWidgetInstance->IsInViewport())	//닫기
+		{
+			InventoryWidgetInstance->RemoveFromParent();
+
+			SetShowMouseCursor(false);
+			SetInputMode(FInputModeGameOnly());
+		}
+		else			//열기
+		{
+			InventoryWidgetInstance->AddToViewport();
+
+			APawn* ControlledPawn = GetPawn();
+			if (ControlledPawn)
+			{
+				UInventoryComponent* InvComp = ControlledPawn->FindComponentByClass<UInventoryComponent>();
+				if (InvComp)
+				{
+					// 위젯에 컴포넌트 넘겨주고 초기화
+					InventoryWidgetInstance->InitInventory(InvComp);
+				}
+			}
+
+			// 마우스 보이고 UI 입력 가능하게 설정
+			SetShowMouseCursor(true);
+
+			// 드래그 앤 드롭을 하려면 GameAndUI가 좋음
+			FInputModeGameAndUI InputMode;
+			InputMode.SetWidgetToFocus(InventoryWidgetInstance->TakeWidget());
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			SetInputMode(InputMode);
 		}
 	}
 }
