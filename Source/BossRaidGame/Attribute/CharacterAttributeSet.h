@@ -15,8 +15,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthDelegate);
+DECLARE_MULTICAST_DELEGATE(FOutOfHealthDelegate);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthDelegate);
 /**
  * 
  */
@@ -65,6 +65,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Damage", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ADamageIndicatorActor> DamageIndicatorClass;
 
 	bool bOutOfHealth = false;
 };

@@ -3,6 +3,7 @@
 
 #include "Attribute/CharacterAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "Prop/DamageIndicatorActor.h"
 #include "Tag/BRGameplayTag.h"
 
 UCharacterAttributeSet::UCharacterAttributeSet() :
@@ -33,16 +34,39 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), MinimumHealth, GetMaxHealth()));
+
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinimumHealth, GetMaxHealth()));
+		
+
+		UAbilitySystemComponent* MyASC = GetOwningAbilitySystemComponent();
+		AActor* MyAvatar = MyASC ? MyASC->GetAvatarActor() : nullptr;
+
+		if (MyAvatar && MyASC)
+		{
+			FGameplayCueParameters Params;
+			Params.RawMagnitude = GetDamage();
+
+			Params.Location = MyAvatar->GetActorLocation();
+
+			Params.Location.X += FMath::FRandRange(-50.0f, 50.0f);
+			Params.Location.Y += FMath::FRandRange(-50.0f, 50.0f);
+			Params.Location.Z += FMath::FRandRange(50.0f, 70.0f);
+
+
+			MyASC->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag(FName("GameplayCue.Damage")), Params);
+		}
 		SetDamage(0.0f);
+
 	}
 	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
 	{
 		OnOutOfHealth.Broadcast();
 	}
+
+	
 
 	bOutOfHealth = (GetHealth() <= 0.0f);
 
