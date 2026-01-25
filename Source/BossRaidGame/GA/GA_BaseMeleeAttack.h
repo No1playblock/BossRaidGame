@@ -27,7 +27,7 @@ public:
 
 protected:
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnDamageEvent(FGameplayEventData Payload);
 
 	UFUNCTION()
@@ -62,7 +62,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee Attack")
 	float AttackRadius = 50.0f;
 
-	UPROPERTY(EditAnyWhere)
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly)
 	FVector AttackLocationOffset = FVector(0.0f, 0.0f, 50.0f); // 공격 위치 오프셋
 
 	UPROPERTY(EditAnyWhere, Category = "Melee Attack")
