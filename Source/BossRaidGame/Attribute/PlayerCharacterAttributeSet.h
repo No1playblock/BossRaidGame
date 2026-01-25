@@ -34,6 +34,7 @@ public:
 
 	float GetTotalExpForLevel(int32 Level) const;
 
+	void ProcessLevelUp();
 protected:
 
 
