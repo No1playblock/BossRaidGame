@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "VFX")
+	TObjectPtr<USoundBase> PlayerDialogueSound;
+
 	UPROPERTY(EditAnyWhere, Category = "Attack")
 	TEnumAsByte<ECollisionChannel> TargetChannel;
 

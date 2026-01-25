@@ -9,7 +9,7 @@
 #include "AbilitySystemComponent.h"
 #include "TimerManager.h"
 #include "Prop/RaserOrb.h"
-
+#include "Kismet/GameplayStatics.h"
 UGA_AutoRaser::UGA_AutoRaser()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
@@ -48,6 +48,11 @@ void UGA_AutoRaser::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		CooldownSpecHandle.Data->SetDuration(CooldownTime, true);
 		CooldownSpecHandle.Data->DynamicGrantedTags.AddTag(CooldownTag);
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, CooldownSpecHandle);
+	}
+
+	if (PlayerDialogueSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, PlayerDialogueSound, OwnerCharacter->GetActorLocation());
 	}
 	SpawnOrbsAndFire(OwnerCharacter, Damage);
 
