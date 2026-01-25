@@ -79,7 +79,7 @@ void UAT_ArcSweepForTargets::PerformNextSphereTrace()
 	if (bDrawDebug)
 	{
 		float DebugLifetime = DelayBetweenSpheres > 0.f ? DelayBetweenSpheres : 0.5f;
-		DrawDebugSphere(World, SphereCenter, SphereRadius, 24, SphereOverlapResults.Num() > 0 ? FColor::Green : FColor::Red, false, DebugLifetime);
+		//DrawDebugSphere(World, SphereCenter, SphereRadius, 24, SphereOverlapResults.Num() > 0 ? FColor::Green : FColor::Red, false, DebugLifetime);
 	}
 
 	for (const FOverlapResult& Overlap : SphereOverlapResults)

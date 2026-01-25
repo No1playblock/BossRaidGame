@@ -96,7 +96,7 @@ void UAT_MultiHitAtLocation::PerformNextHit()
 
 	const FColor DebugColor = OverlapResults.Num() > 0 ? FColor::Green : FColor::Red;
 	float DebugLifetime = DelayBetweenHits > 0.f ? DelayBetweenHits : 2.0f;
-	DrawDebugSphere(World, TargetLocation, AreaRadius, 24, DebugColor, false, DebugLifetime);
+	//DrawDebugSphere(World, TargetLocation, AreaRadius, 24, DebugColor, false, DebugLifetime);
 
 	if (OverlapResults.Num() > 0 && OnHit.IsBound())
 	{

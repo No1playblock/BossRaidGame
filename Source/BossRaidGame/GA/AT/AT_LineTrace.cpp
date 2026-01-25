@@ -56,7 +56,7 @@ void UAT_LineTrace::DoShoot()
 
 
 #if ENABLE_DRAW_DEBUG
-	DrawDebugLine(GetWorld(), SocketStart, bHit ? Hit.Location : End, bHit ? FColor::Green : FColor::Red, false, 2.0f, 0, 1.0f);
+	//DrawDebugLine(GetWorld(), SocketStart, bHit ? Hit.Location : End, bHit ? FColor::Green : FColor::Red, false, 2.0f, 0, 1.0f);
 #endif
 
 	if (bHit)
