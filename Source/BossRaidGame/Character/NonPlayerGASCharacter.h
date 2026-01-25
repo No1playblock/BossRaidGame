@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h" 
 #include "Interface/DamageDataProvider.h"
+#include "Interface/PoolableInterface.h"
 #include "NonPlayerGASCharacter.generated.h"
 
 /**
@@ -14,7 +15,7 @@
  */
 class AMobSpawnManager;
 UCLASS()
-class BOSSRAIDGAME_API ANonPlayerGASCharacter : public ABaseCharacter, public IAbilitySystemInterface, public IDamageDataProvider
+class BOSSRAIDGAME_API ANonPlayerGASCharacter : public ABaseCharacter, public IAbilitySystemInterface, public IDamageDataProvider, public IPoolableInterface
 {
 	GENERATED_BODY()
 	
@@ -24,6 +25,11 @@ public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void BeginPlay() override;
+
+	virtual void OnPoolSpawned() override;
+	virtual void OnPoolDespawned() override;
+
+
 	// 캐릭터가 풀에서 활성화될 때 호출할 함수
 	void ActivateCharacter();
 	// 이 캐릭터가 풀로 돌아갈 때 호출할 함수

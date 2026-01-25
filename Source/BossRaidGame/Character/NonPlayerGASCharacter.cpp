@@ -18,25 +18,44 @@
 ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
-	AttributeSet = CreateDefaultSubobject<UMobCharacterAttributeSet>(TEXT("AttributeSet"));
+	//AttributeSet = CreateDefaultSubobject<UMobCharacterAttributeSet>(TEXT("AttributeSet"));
 	GetCharacterMovement()->SetWalkableFloorAngle(5.0f);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // AI가 스폰되거나 월드에 배치될 때 자동으로 소유됨
 
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향으로 회전
 	GetCharacterMovement()->bUseRVOAvoidance = false;
+	GetCharacterMovement()->SetWalkableFloorAngle(40.0f);
+	GetCharacterMovement()->MaxStepHeight = 45.0f;
+	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
+
 
 	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel3);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Block);
+
+	
+
 
 	//TODO:
 	//BPAICOntroller 적용
 	//GainExp클래스 적용
 }
 
+void ANonPlayerGASCharacter::OnPoolSpawned()
+{
+	ActivateCharacter();
+}
+
+// 풀로 돌아갈 때
+void ANonPlayerGASCharacter::OnPoolDespawned()
+{
+	DeactivateCharacter();
+}
 UAbilitySystemComponent* ANonPlayerGASCharacter::GetAbilitySystemComponent() const
 {
 	return ASC;
@@ -45,10 +64,10 @@ void ANonPlayerGASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AttributeSet)
+	/*if (AttributeSet)
 	{
-		AttributeSet->OnOutOfHealth.AddDynamic(this, &ANonPlayerGASCharacter::OnOutOfHealth);
-	}
+		AttributeSet->OnOutOfHealth.AddUObject(this, &ANonPlayerGASCharacter::OnOutOfHealth);
+	}*/
 }
 
 void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
@@ -59,7 +78,14 @@ void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
 
 	ASC->InitAbilityActorInfo(this, this);
 
+	const UMobCharacterAttributeSet* RealAttributeSet = ASC->GetSet<UMobCharacterAttributeSet>();
 
+	if (RealAttributeSet)
+	{
+		// 내 포인터를 진짜 객체로 덮어씌움 (const_cast 필요할 수 있음)
+		AttributeSet = const_cast<UMobCharacterAttributeSet*>(RealAttributeSet);
+		AttributeSet->OnOutOfHealth.AddUObject(this, &ANonPlayerGASCharacter::OnOutOfHealth);
+	}
 	for (const auto& StartAbility : StartAbilities)
 	{
 		FGameplayAbilitySpec StartSpec(StartAbility);
