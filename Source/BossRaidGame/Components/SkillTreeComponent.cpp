@@ -46,6 +46,9 @@ void USkillTreeComponent::BeginPlay()
 	}
 	TryAcquireSkill(FName("Player.Skill.AutoRaser.Tier1")); // Q
 	TryAcquireSkill(FName("Player.Skill.Grenade.Tier1")); // E
+	TryAcquireSkill(FName("Player.Skill.OrbitalStrike.Tier1"));
+	TryAcquireSkill(FName("Player.Skill.TacticalDash.Tier1"));
+
 }
 const FSkillTreeDataRow* USkillTreeComponent::FindAcquiredSkillByInputID(EAbilityInputID InputID) const
 {
@@ -101,10 +104,8 @@ bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
 	Cast<ABRPlayerController>(Cast<APawn>(GetOwner())->GetController())->GetPlayerHUDWidgetInstance()->SetSkillUI(SkillData->InputID, SkillData);
 	AcquiredSkills.Add(SkillID);
 
-
 	if (SkillData->GrantedAbility)
 	{
-		
 		if (SkillData->InputID != EAbilityInputID::None)
 		{
 			TArray<FGameplayAbilitySpec> ActivatableAbilities = OwnerASC->GetActivatableAbilities();
@@ -119,7 +120,6 @@ bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
 					AbilitiesToRemove.Add(Spec.Handle);
 				}
 			}
-
 			// 목록에 있는 모든 어빌리티를 제거
 			for (const FGameplayAbilitySpecHandle& Handle : AbilitiesToRemove)
 			{
@@ -131,7 +131,6 @@ bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
 
 		if (SkillData->InputID != EAbilityInputID::None)
 		{
-
 			AbilitySpec.InputID = static_cast<int32>(SkillData->InputID);
 		}
 
