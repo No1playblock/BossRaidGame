@@ -23,6 +23,14 @@ void UAN_TriggerGameplayEvent::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 		AActor* OwnerActor = MeshComp->GetOwner();
 		if (OwnerActor)
 		{
+			if (!TriggerTag.IsValid()) return;
+
+
+			FGameplayEventData Payload;
+			Payload.EventTag = TriggerTag;
+			Payload.Instigator = OwnerActor;
+			Payload.Target = OwnerActor;
+
 			FGameplayEventData PayloadData;
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggerTag, PayloadData);
 
