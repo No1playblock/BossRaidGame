@@ -8,11 +8,14 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Attribute/PlayerCharacterAttributeSet.h"
-#include "GameFramework/PlayerController.h"         // PlayerController 클래스
+#include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkillTreeComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Components/QuickSlotComponent.h"
+#include "Tag/BRGameplayTag.h"
+#include "EnhancedInputSubsystems.h"
+#include "Game/BRGameModeBase.h"
 AGASCharacterPlayer::AGASCharacterPlayer()
 {
 	ASC = nullptr;
@@ -30,17 +33,22 @@ UAbilitySystemComponent* AGASCharacterPlayer::GetAbilitySystemComponent() const
 void AGASCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	UE_LOG(LogTemp, Warning, TEXT("PossessdBy"));
 	ABRPlayerState* BRPS = GetPlayerState<ABRPlayerState>();
 	if (BRPS)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BRPS"));
-
 
 		ASC = BRPS->GetAbilitySystemComponent();
 		ASC->InitAbilityActorInfo(BRPS, this);
 
-	
+		const UPlayerCharacterAttributeSet* RealAttributeSet = ASC->GetSet<UPlayerCharacterAttributeSet>();
+		if (RealAttributeSet)
+		{
+			AttributeSet = const_cast<UPlayerCharacterAttributeSet*>(RealAttributeSet);
+
+			AttributeSet->OnOutOfHealth.AddUObject(this, &AGASCharacterPlayer::OnOutOfHealth);
+
+		}
+
 		for (const auto& StartAbility : StartAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartAbility);
@@ -79,8 +87,7 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 		}
 		AttributeSet->SetMoveSpeed(700.0f);
 	}
-
-	AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+	
 	
 }
 
@@ -113,6 +120,63 @@ float AGASCharacterPlayer::GetDamageByAttackTag(const FGameplayTag& AttackTag) c
 	return 0.0f;
 }
 
+void AGASCharacterPlayer::OnOutOfHealth()
+{
+	Super::OnOutOfHealth();
+	if (ASC)
+	{
+		ASC->CancelAllAbilities();
+		ASC->AddLooseGameplayTag(BRTAG_CHARACTER_ISDEAD);
+	}
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			Subsystem->ClearAllMappings();
+		}
+	}
+
+	if (CameraBoom)		//죽는 연출
+	{
+		CameraBoom->bUsePawnControlRotation = false;
+		CameraBoom->bInheritPitch = false;
+		CameraBoom->bInheritYaw = false;
+		CameraBoom->bInheritRoll = false;
+		
+		CameraBoom->SetWorldRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		CameraBoom->TargetArmLength = 800.0f;
+
+		CameraBoom->TargetOffset = FVector::ZeroVector;
+		CameraBoom->SocketOffset = FVector::ZeroVector;
+
+		CameraBoom->SetRelativeLocation(FVector(-150.0f, 0.0f, 0.0f));
+		if (FollowCamera)
+		{
+			FollowCamera->SetRelativeLocation(FVector::ZeroVector);
+
+		}
+
+		CameraBoom->bDoCollisionTest = false;
+
+		CameraBoom->bEnableCameraLag = true;
+		CameraBoom->bEnableCameraRotationLag = true;
+
+		CameraBoom->CameraLagSpeed = 1.4f;
+		CameraBoom->CameraRotationLagSpeed = 1.4f;
+	}
+	if (ABRGameModeBase* GM = Cast<ABRGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		GM->OnPlayerDied(GetController());
+	}
+
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+
+	}
+}
+
 void AGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -120,6 +184,7 @@ void AGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	SetupGASInputComponent();
 
 }
+
 
 void AGASCharacterPlayer::SetupGASInputComponent()
 {
@@ -134,6 +199,8 @@ void AGASCharacterPlayer::SetupGASInputComponent()
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 1);
 		EnhancedInputComponent->BindAction(QSkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 2);
 		EnhancedInputComponent->BindAction(ESkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 3);
+		EnhancedInputComponent->BindAction(RSkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 4);
+		EnhancedInputComponent->BindAction(ShiftSkillAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 5);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AGASCharacterPlayer::GASInputPressed, 6);
 
 	}

@@ -33,6 +33,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GAS|Input")
 	void RequestPrimaryAttackReleased();
 
+	
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -50,6 +51,9 @@ public:
 	//BossCharacter를 위해 스킬에 따라 데미지를 다르게 하기 위해 만들어진 메소드
 	//플레이어는 AttackPower
 	virtual float GetDamageByAttackTag(const FGameplayTag& AttackTag) const override;
+
+	virtual void OnOutOfHealth() override;
+
 
 protected:
 
