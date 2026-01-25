@@ -15,6 +15,7 @@ class BOSSRAIDGAME_API ACharacterPlayer : public ABaseCharacter
 {
 	GENERATED_BODY()
 	
+public:
 	FORCEINLINE UAnimMontage* GetAttackMontage() const { return AttackMontage; }
 protected:
 
