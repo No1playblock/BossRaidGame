@@ -127,7 +127,7 @@ void UGA_BaseMeleeAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, co
 	OnGameplayAbilityCancelled.Remove(CancelledHandle);
 }
 
-void UGA_BaseMeleeAttack::OnDamageEvent_Implementation(FGameplayEventData Payload)
+void UGA_BaseMeleeAttack::OnDamageEvent(FGameplayEventData Payload)
 {
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
 	if (!OwnerCharacter) return;
