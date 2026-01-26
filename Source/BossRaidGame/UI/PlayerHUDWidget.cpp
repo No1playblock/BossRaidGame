@@ -49,14 +49,14 @@ void UPlayerHUDWidget::NativeConstruct()
 		// 쿨다운 태그 이벤트 바인딩
 		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Q")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
 		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
-		//AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Shift")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
-		//AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.R")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Shift")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.R")), EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UPlayerHUDWidget::OnCooldownTagChanged);
 
 		// 동적 머티리얼 인스턴스 생성 및 맵에 저장
 		if (QSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Q")), QSkillMaskImage->GetDynamicMaterial());
 		if (ESkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")), ESkillMaskImage->GetDynamicMaterial());
-		//if (ShiftSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Shift")), ShiftSkillMaskImage->GetDynamicMaterial());
-		//if (RSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.R")), RSkillMaskImage->GetDynamicMaterial());
+		if (ShiftSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Shift")), ShiftSkillMaskImage->GetDynamicMaterial());
+		if (RSkillMaskImage) CooldownMaterials.Add(FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.R")), RSkillMaskImage->GetDynamicMaterial());
 
 		if (ABRGameState* GS = GetWorld()->GetGameState<ABRGameState>())
 		{
