@@ -67,7 +67,7 @@ protected:
 	FTimerHandle SelectionTimerHandle;
 
 	UPROPERTY()
-	TObjectPtr<USkillTreeNodeWidget> PendingSelectionNode;
+	TWeakObjectPtr<USkillTreeNodeWidget> PendingSelectionNode;
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<class USkillInfoWidget> SkillInfo;

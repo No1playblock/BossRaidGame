@@ -22,7 +22,6 @@ void USkillTreeNodeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	UpdateNodeState(Cast<USkillTreeComponent>(Cast<AGASCharacterPlayer>(GetOwningPlayerPawn())->GetSkillTreeComponent()));
-	
 }
 
 FReply USkillTreeNodeWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -125,7 +124,6 @@ void USkillTreeNodeWidget::SetSkillData(const FSkillTreeDataRow& InData)
 	}
 	if (SkillIcon && SkillData.SkillIcon.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SkillIcon is valid for skill %s"), *SkillData.SkillID.ToString());
 		SkillIcon->SetBrushFromTexture(SkillData.SkillIcon.LoadSynchronous());
 	}
 
