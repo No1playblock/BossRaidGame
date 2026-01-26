@@ -62,7 +62,10 @@ void AGASCharacterPlayer::PossessedBy(AController* NewController)
 		}
 		SetupGASInputComponent();
 
-		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
+		APlayerController* PlayerController = Cast<APlayerController>(NewController);
+
+		if (!PlayerController)
+			return;
 		//PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
 		//PlayerController->ConsoleCommand(TEXT("stat unit"));
 		//PlayerController->ConsoleCommand(TEXT("stat fps"));
