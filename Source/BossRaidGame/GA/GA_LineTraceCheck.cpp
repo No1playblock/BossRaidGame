@@ -22,7 +22,7 @@ void UGA_LineTraceCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	InvokeGameplayCue();
 
 	UAT_LineTrace* AttackTraceTask = UAT_LineTrace::CreateTask(this, FName("LineTraceTask"));
-	AttackTraceTask->OnHit.AddDynamic(this, &UGA_LineTraceCheck::OnHitTarget);
+	AttackTraceTask->OnHit.AddUObject(this, &UGA_LineTraceCheck::OnHitTarget);
 	AttackTraceTask->ReadyForActivation();
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

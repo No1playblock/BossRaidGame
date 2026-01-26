@@ -9,14 +9,14 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTimeChangedDelegate, int32, NewTime);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTimeChangedDelegate, int32);
 
 UCLASS()
 class BOSSRAIDGAME_API ABRGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintAssignable)
+
 	FOnTimeChangedDelegate OnTimeChanged;
 
 	// 서버에서만 값을 변경하고, 클라이언트에서는 읽기만 하도록 설정

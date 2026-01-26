@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const TArray<FOverlapResult>&, HitResults);
+DECLARE_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const TArray<FOverlapResult>&);
 
 
 UCLASS()
@@ -19,13 +19,11 @@ class BOSSRAIDGAME_API UAT_SphereTraceForTargets : public UAbilityTask
 	
 public:
 	// 태스크가 성공적으로 타겟을 찾았을 때 호출될 델리게이트
-	UPROPERTY(BlueprintAssignable)
 	FTraceResultDelegate OnTargetsFound;
 
 	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility"))
 	static UAT_SphereTraceForTargets* SphereTraceForTargets(UGameplayAbility* OwningAbility, FVector TraceSpherePos, float Radius, ECollisionChannel Channel);
-private:
-	
+private:	
 
 	virtual void Activate() override;
 

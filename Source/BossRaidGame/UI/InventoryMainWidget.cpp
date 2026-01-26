@@ -12,11 +12,11 @@ void UInventoryMainWidget::InitInventory(UInventoryComponent* InInventoryComp)
 
     InventoryComp = InInventoryComp;
 
-    // ±âÁ¸ ¹ÙÀÎµù Á¦°Å ÈÄ ´Ù½Ã ¿¬°á (Áßº¹ ¹æÁö)
-    InventoryComp->OnInventoryUpdated.RemoveDynamic(this, &UInventoryMainWidget::RefreshInventory);
-    InventoryComp->OnInventoryUpdated.AddDynamic(this, &UInventoryMainWidget::RefreshInventory);
+    // ê¸°ì¡´ ë°”ì¸ë”© ì œê±° í›„ ë‹¤ì‹œ ì—°ê²°
+    InventoryComp->OnInventoryUpdated.RemoveAll(this);
+    InventoryComp->OnInventoryUpdated.AddUObject(this, &UInventoryMainWidget::RefreshInventory);
 
-    // ÃÖÃÊ 1È¸ °»½Å
+    // ìµœì´ˆ 1íšŒ ê°±ì‹ 
     RefreshInventory();
 }
 
@@ -24,36 +24,16 @@ void UInventoryMainWidget::RefreshInventory()
 {
     if (!InventoryComp || !Grid_Slots || !SlotWidgetClass) return;
 
-    // ±âÁ¸ ½½·Ô ½Ï Áö¿ì±â
+    // ê¸°ì¡´ ìŠ¬ë¡¯ ì‹¹ ì§€ìš°ê¸°
     Grid_Slots->ClearChildren();
 
-    // ÀÎº¥Åä¸® µ¥ÀÌÅÍ¸¦ ¼øÈ¸ÇÏ¸ç ½½·Ô »ı¼º
+    // ì¸ë²¤í† ë¦¬ ë°ì´í„°ë¥¼ ìˆœíšŒí•˜ë©° ìŠ¬ë¡¯ ìƒì„±
     const TArray<FInventorySlot>& Slots = InventoryComp->GetInventorySlots();
 
-    //for (const FInventorySlot& SlotData : Slots)
-    //{
-
-
-    //    // ½½·Ô À§Á¬ »ı¼º
-    //    UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, SlotWidgetClass);
-    //    if (NewSlot)
-    //    {
-    //        // µ¥ÀÌÅÍ ¾÷µ¥ÀÌÆ®
-    //        NewSlot->UpdateSlot(SlotData.ItemID, SlotData.Quantity, SlotData.SlotIndex, InventoryComp);
-
-    //        // WrapBox¿¡ Ãß°¡
-    //        Grid_Slots->AddChild(NewSlot);
-    //    
-    //}
     for (int32 i = 0; i < Slots.Num(); ++i)
     {
         const FInventorySlot& SlotData = Slots[i];
 
-        //¾ÆÀÌÅÛÀÌ ÀÖ´Â ½½·Ô È®ÀÎ
-        if (!SlotData.ItemID.IsNone())
-        {
-            //UE_LOG(LogTemp, Warning, TEXT("Slot [%d] has Item: %s"), i, *SlotData.ItemID.ToString());
-        }
         UInventorySlotWidget* NewSlot = CreateWidget<UInventorySlotWidget>(this, SlotWidgetClass);
         if (NewSlot)
         {

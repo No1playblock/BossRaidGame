@@ -7,7 +7,7 @@
 #include "GameData/SkillTreeData.h"
 #include "SkillInfoWidget.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillInfoClosed); // 스킬 정보 UI 닫힘 이벤트
+DECLARE_MULTICAST_DELEGATE(FOnSkillInfoClosed); // 스킬 정보 UI 닫힘 이벤트
 /**
  * 
  */
@@ -23,7 +23,6 @@ class BOSSRAIDGAME_API USkillInfoWidget : public UUserWidget
 public:
 	void OpenSkillInfo(const FSkillTreeDataRow& SkillData);
 
-	UPROPERTY(BlueprintAssignable)
 	FOnSkillInfoClosed OnSkillInfoClosed; // 스킬 정보 UI 닫힘 이벤트
 protected:
 

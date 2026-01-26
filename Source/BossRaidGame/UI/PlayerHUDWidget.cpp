@@ -60,7 +60,7 @@ void UPlayerHUDWidget::NativeConstruct()
 
 		if (ABRGameState* GS = GetWorld()->GetGameState<ABRGameState>())
 		{
-			GS->OnTimeChanged.AddDynamic(this, &UPlayerHUDWidget::OnTimeChanged);
+			GS->OnTimeChanged.AddUObject(this, &UPlayerHUDWidget::OnTimeChanged);
 		}
 
 #if PLATFORM_ANDROID || PLATFORM_IOS
@@ -161,7 +161,7 @@ void UPlayerHUDWidget::UpdateExperienceWidgets()
 	if (!AttributeSet) return;
 
 	const float CurrentExp = AttributeSet->GetCurrentExp();
-	UE_LOG(LogTemp, Warning, TEXT("Current Exp: %f"), CurrentExp);
+
 	const int32 CurrentLevel = FMath::FloorToInt(AttributeSet->GetCurrentLevel());
 
 	// 레벨 텍스트를 현재 레벨로 업데이트
@@ -170,7 +170,7 @@ void UPlayerHUDWidget::UpdateExperienceWidgets()
 	//경험치 바를 업데이트.
 	// 1레벨일 경우 시작 경험치는 0
 	const float ExpForCurrentLevelStart = AttributeSet->GetTotalExpForLevel(CurrentLevel);
-	// 다음 레벨의 시작 경험치 (예: 3레벨의 시작점 = 2레벨 달성에 필요한 총 경험치)
+	// 다음 레벨의 시작 경험치 (ex 3레벨의 시작점 = 2레벨 달성에 필요한 총 경험치)
 	const float ExpForNextLevelStart = AttributeSet->GetTotalExpForLevel(CurrentLevel+1);
 
 	//1레벨 0 2레벨 30	
@@ -181,7 +181,6 @@ void UPlayerHUDWidget::UpdateExperienceWidgets()
 		const float ExpNeededForThisLevel = ExpForNextLevelStart - ExpForCurrentLevelStart;
 
 		ExpBar->SetPercent(ExpInThisLevel / ExpNeededForThisLevel);
-		//UE_LOG(LogTemp, Warning, TEXT("ExpInThisLevel: %f, ExpNeededForThisLevel: %f"), ExpInThisLevel, ExpNeededForThisLevel);
 	}
 	else
 	{
@@ -194,7 +193,6 @@ void UPlayerHUDWidget::SetSkillUI(EAbilityInputID InputID, const FSkillTreeDataR
 {
 	if (!AbilitySystemComponent.IsValid() || Data==nullptr) return;
 
-	//UE_LOG(LogTemp, Warning, TEXT("SetSkillUI called with InputID: %s, SkillIcon: %s"), *UEnum::GetValueAsString(InputID), *Data->SkillIcon.ToString());
 	FGameplayTag CooldownTag;
 	UImage* TargetSkillIcon = nullptr;
 	switch (InputID)
@@ -288,7 +286,6 @@ void UPlayerHUDWidget::HandleMaxHealthChanged(const FOnAttributeChangeData& Data
 void UPlayerHUDWidget::HandleExperienceChanged(const FOnAttributeChangeData& Data)
 {
 	UpdateExperienceWidgets();
-	//UE_LOG(LogTemp, Warning, TEXT("Experience changed: New Value = %.2f"), Data.NewValue);
 }
 
 void UPlayerHUDWidget::HandleLevelChanged(const FOnAttributeChangeData& Data)
@@ -333,7 +330,6 @@ void UPlayerHUDWidget::UpdateCooldownUI(const FGameplayTag& CooldownTag)
 
 	UImage* TargetMaskImage = nullptr;
 	UTextBlock* TargetTextBlock = nullptr;
-	//UE_LOG(LogTemp, Warning, TEXT("UpdateCooldownUI called for CooldownTag: %s"), *CooldownTag.ToString());
 	if (CooldownTag == FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.Q")))
 	{
 		TargetMaskImage = QSkillMaskImage;
@@ -341,7 +337,6 @@ void UPlayerHUDWidget::UpdateCooldownUI(const FGameplayTag& CooldownTag)
 	}
 	else if (CooldownTag == FGameplayTag::RequestGameplayTag(FName("Data.Cooldown.Skill.E")))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("UpdateCooldownUI called for E Skill with CooldownTag: %s"), *CooldownTag.ToString());
 		TargetMaskImage = ESkillMaskImage;
 		TargetTextBlock = ESkillCooldownText;
 	}

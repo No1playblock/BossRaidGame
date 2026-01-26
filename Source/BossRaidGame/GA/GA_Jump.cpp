@@ -7,7 +7,6 @@
 UGA_Jump::UGA_Jump()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-
 }
 
 bool UGA_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
@@ -26,7 +25,7 @@ void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FG
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	UAT_JumpAndWaitForLanding* JumpAndWaitingForLandingTask = UAT_JumpAndWaitForLanding::CreateTask(this);
-	JumpAndWaitingForLandingTask->OnComplete.AddDynamic(this, &UGA_Jump::OnLandedCallback);
+	JumpAndWaitingForLandingTask->OnComplete.AddUObject(this, &UGA_Jump::OnLandedCallback);
 	JumpAndWaitingForLandingTask->ReadyForActivation();
 
 }

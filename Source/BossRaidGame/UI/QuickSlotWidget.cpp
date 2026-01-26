@@ -14,33 +14,33 @@ void UQuickSlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	//«÷≈∞ ≈ÿΩ∫∆Æ º≥¡§ (0π¯ ¿Œµ¶Ω∫ -> 1π¯ ≈∞)
+	//Ìï´ÌÇ§ ÌÖçÏä§Ìä∏ ÏÑ§Ï†ï (0Î≤à Ïù∏Îç±Ïä§ -> 1Î≤à ÌÇ§)
 	if (HotKeyText)
 	{
 		HotKeyText->SetText(FText::AsNumber(SlotIndex + 1));
 	}
 
-	// º“¿Ø«œ∞Ì ¿÷¥¬ ∆˘(ƒ≥∏Ø≈Õ) √£±‚
+	// ÏÜåÏú†ÌïòÍ≥† ÏûàÎäî Ìè∞(Ï∫êÎ¶≠ÌÑ∞) Ï∞æÍ∏∞
 	APawn* OwningPawn = GetOwningPlayerPawn();
 	if (OwningPawn)
 	{
-		//ƒƒ∆˜≥Õ∆Æ ∞°¡Æø¿±‚
+		//Ïª¥Ìè¨ÎÑåÌä∏ Í∞ÄÏ†∏Ïò§Í∏∞
 		QuickSlotComp = OwningPawn->FindComponentByClass<UQuickSlotComponent>();
 		InventoryComp = OwningPawn->FindComponentByClass<UInventoryComponent>();
 
-		// µ®∏Æ∞‘¿Ã∆Æ ø¨∞· (µ•¿Ã≈Õ ∫Ø∞Ê ∞®¡ˆ)
+		// Îç∏Î¶¨Í≤åÏù¥Ìä∏ Ïó∞Í≤∞ (Îç∞Ïù¥ÌÑ∞ Î≥ÄÍ≤Ω Í∞êÏßÄ)
 		if (QuickSlotComp)
 		{
-			// æ»¿¸«œ∞‘ ±‚¡∏ ø¨∞· «ÿ¡¶ »ƒ ¥ŸΩ√ ø¨∞·
-			QuickSlotComp->OnQuickSlotUpdated.RemoveDynamic(this, &UQuickSlotWidget::RefreshUI);
-			QuickSlotComp->OnQuickSlotUpdated.AddDynamic(this, &UQuickSlotWidget::RefreshUI);
+			// ÏïàÏ†ÑÌïòÍ≤å Í∏∞Ï°¥ Ïó∞Í≤∞ Ìï¥Ï†ú ÌõÑ Îã§Ïãú Ïó∞Í≤∞
+			QuickSlotComp->OnQuickSlotUpdated.RemoveAll(this);
+			QuickSlotComp->OnQuickSlotUpdated.AddUObject(this, &UQuickSlotWidget::RefreshUI);
 		}
 
-		//¿Œ∫•≈‰∏Æ∞° πŸ≤Ó∏È QuickSlotµµ ∞ªΩ≈
+		//Ïù∏Î≤§ÌÜ†Î¶¨Í∞Ä Î∞îÎÄåÎ©¥ QuickSlotÎèÑ Í∞±Ïã†
 		if (InventoryComp)
 		{
-			InventoryComp->OnInventoryUpdated.RemoveDynamic(this, &UQuickSlotWidget::RefreshUI);
-			InventoryComp->OnInventoryUpdated.AddDynamic(this, &UQuickSlotWidget::RefreshUI);
+			InventoryComp->OnInventoryUpdated.RemoveAll(this);
+			InventoryComp->OnInventoryUpdated.AddUObject(this, &UQuickSlotWidget::RefreshUI);
 		}
 	}
 	else
@@ -48,16 +48,16 @@ void UQuickSlotWidget::NativeConstruct()
 		UE_LOG(LogTemp, Error, TEXT("[QuickSlot] Could not find Owning Pawn!"));
 	}
 
-	// √÷√  ∞ªΩ≈
+	// ÏµúÏ¥à Í∞±Ïã†
 	RefreshUI();
 }
 
 void UQuickSlotWidget::RefreshUI()
 {
-	// ƒƒ∆˜≥Õ∆Æ∞° æ¯¿∏∏È æ∆π´∞Õµµ ∏¯«‘
+	// Ïª¥Ìè¨ÎÑåÌä∏Í∞Ä ÏóÜÏúºÎ©¥ ÏïÑÎ¨¥Í≤ÉÎèÑ Î™ªÌï®
 	if (!QuickSlotComp || !InventoryComp) return;
 
-	// µÓ∑œµ» ItemID ∞°¡Æø¿±‚
+	// Îì±Î°ùÎêú ItemID Í∞ÄÏ†∏Ïò§Í∏∞
 	FName ItemID = QuickSlotComp->GetItemInSlot(SlotIndex);
 
 	if (ItemID.IsNone())
@@ -66,7 +66,7 @@ void UQuickSlotWidget::RefreshUI()
 		if (QuantityText) QuantityText->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
-	// æ∆¿Ã≈€ ¡§∫∏ ∑ŒµÂ π◊ «•Ω√
+	// ÏïÑÏù¥ÌÖú Ï†ïÎ≥¥ Î°úÎìú Î∞è ÌëúÏãú
 	const FItemData* Info = InventoryComp->GetItemData(ItemID);
 	if (Info)
 	{
@@ -78,7 +78,7 @@ void UQuickSlotWidget::RefreshUI()
 			IconImage->SetColorAndOpacity(FLinearColor::White);
 		}
 	}
-	// ºˆ∑Æ «•Ω√
+	// ÏàòÎüâ ÌëúÏãú
 	if (QuantityText)
 	{
 		int32 TotalCount = InventoryComp->GetTotalQuantity(ItemID);
@@ -93,7 +93,7 @@ void UQuickSlotWidget::RefreshUI()
 			QuantityText->SetText(FText::FromString("0"));
 			QuantityText->SetVisibility(ESlateVisibility::Visible);
 
-			// ºˆ∑Æ æ¯¿∏∏È æÓµ”∞‘
+			// ÏàòÎüâ ÏóÜÏúºÎ©¥ Ïñ¥Îë°Í≤å
 			if (IconImage) IconImage->SetColorAndOpacity(FLinearColor(0.5f, 0.5f, 0.5f, 1.0f));
 		}
 	}
@@ -101,21 +101,19 @@ void UQuickSlotWidget::RefreshUI()
 bool UQuickSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	//Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
-	// 
-	// 
-	//ƒ≥Ω∫∆Æ
+
+	//Ï∫êÏä§Ìä∏
 	UBRDragDropOperation* BRDragOperation = Cast<UBRDragDropOperation>(InOperation);
 
-	// æ∆¿Ã≈€¿Œ¡ˆ »Æ¿Œ
+	// ÏïÑÏù¥ÌÖúÏù∏ÏßÄ ÌôïÏù∏
 	if (BRDragOperation && BRDragOperation->DragType == EDragType::Item)
 	{
-		//ƒ¸ΩΩ∑‘ ƒƒ∆˜≥Õ∆Æø° ø‰√ª
+		//ÌÄµÏä¨Î°Ø Ïª¥Ìè¨ÎÑåÌä∏Ïóê ÏöîÏ≤≠
 		if (QuickSlotComp)
 		{
 			QuickSlotComp->RegisterItemToSlot(SlotIndex, BRDragOperation->DataID);
-			//UE_LOG(LogTemp, Warning, TEXT("UQuickSlotWidget::NativeOnDrop - Registered ItemID: %s to SlotIndex: %d"), *BRDragOperation->DataID.ToString(), SlotIndex);
 			RefreshUI();
-			return true; // º∫∞¯
+			return true; // ÏÑ±Í≥µ
 		}
 	}
 

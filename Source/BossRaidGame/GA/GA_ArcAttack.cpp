@@ -47,7 +47,6 @@ void UGA_ArcAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			{
 				Damage = SkillData->SkillDamage;
 				CooldownTime = SkillData->SkillCoolTime;
-				//UE_LOG(LogTemp, Warning, TEXT("AutoRaser Damage: %f, CooldownTime: %f"), Damage, CooldownTime);
 			}
 		}
 		if (CooldownEffectClass)
@@ -56,7 +55,6 @@ void UGA_ArcAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			FGameplayEffectSpecHandle CooldownSpecHandle = MakeOutgoingGameplayEffectSpec(CooldownEffectClass);
 			CooldownSpecHandle.Data->SetDuration(CooldownTime, true);
 			ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, CooldownSpecHandle);
-			//UE_LOG(LogTemp, Warning, TEXT("Applied Cooldown Effect: %s with Duration: %f"), *CooldownEffectClass->GetName(), CooldownTime);
 		}
 	}
 	
@@ -113,6 +111,7 @@ void UGA_ArcAttack::CancelAbility(const FGameplayAbilitySpecHandle Handle, const
 void UGA_ArcAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	
 	// 어빌리티가 취소되지 않았다면 쿨다운 적용
 	if (!bWasCancelled && CurrentActorInfo)
 	{
@@ -143,7 +142,7 @@ void UGA_ArcAttack::OnDamageEvent(FGameplayEventData Payload)
 
 	if (ArcTraceTask)
 	{
-		ArcTraceTask->OnTargetsFound.AddDynamic(this, &UGA_ArcAttack::OnTargetsHit);
+		ArcTraceTask->OnTargetsFound.AddUObject(this, &UGA_ArcAttack::OnTargetsHit);
 		ArcTraceTask->ReadyForActivation();
 	}
 }

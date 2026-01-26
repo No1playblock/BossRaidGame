@@ -45,7 +45,6 @@ void UGA_BaseMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 			{
 				Damage = SkillData->SkillDamage;
 				CooldownTime = SkillData->SkillCoolTime;
-				//UE_LOG(LogTemp, Warning, TEXT("AutoRaser Damage: %f, CooldownTime: %f"), Damage, CooldownTime);
 			}
 		}
 		if (CooldownEffectClass)
@@ -146,7 +145,7 @@ void UGA_BaseMeleeAttack::OnDamageEvent_Implementation(FGameplayEventData Payloa
 
 	if (TraceTask)
 	{
-		TraceTask->OnTargetsFound.AddDynamic(this, &UGA_BaseMeleeAttack::OnTargetsHit);
+		TraceTask->OnTargetsFound.AddUObject(this, &UGA_BaseMeleeAttack::OnTargetsHit);
 		TraceTask->ReadyForActivation();
 	}
 }
@@ -171,7 +170,7 @@ void UGA_BaseMeleeAttack::OnTargetsHit(const TArray<FOverlapResult>& OverlapResu
 			if (DamageProvider)
 			{
 				//TODO:
-				//AttackTag를 ABILITY_ATTACK_BOSS__NIGHTMARE_SWIPE로 정적으로 설정할지 고민
+				//AttackTag를 ABILITY_ATTACK_BOSS__NIGHTMARE_BITE로 정적으로 설정할지 고민
 				//보스면 태그에 따라, 보스가 아니면 AttackPower를 사용
 				/*보완 필요함 보스, 몹, 플레이어일 때 어떻게 할 것 인지*/
 				/*보스는 Tag가 필요 몹은 AttackPower, 플레이어는 EAbilityInputID가 필요*/

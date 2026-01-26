@@ -9,9 +9,9 @@
 #include "AT_MultiHitAtLocation.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiHitHitDelegate, const TArray<FOverlapResult>&, OverlapResults);
+DECLARE_MULTICAST_DELEGATE_OneParam(FMultiHitHitDelegate, const TArray<FOverlapResult>&);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMultiHitFinishedDelegate);
+DECLARE_MULTICAST_DELEGATE(FMultiHitFinishedDelegate);
 
 /**
  * 
@@ -33,10 +33,8 @@ public:
 		USoundBase* AreaSFX
 	);
 
-	UPROPERTY(BlueprintAssignable)
 	FMultiHitHitDelegate OnHit;
 
-	UPROPERTY(BlueprintAssignable)
 	FMultiHitFinishedDelegate OnFinished;
 
 protected:

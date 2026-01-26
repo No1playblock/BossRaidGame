@@ -18,7 +18,7 @@
 void USkillTreeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	bIsFocusable = true; // À§Á¬ÀÌ Æ÷Ä¿½º¸¦ ¹ÞÀ» ¼ö ÀÖµµ·Ï ¼³Á¤
+	bIsFocusable = true;
 
 	if (WidgetTree)
 	{
@@ -33,19 +33,16 @@ void USkillTreeWidget::NativeConstruct()
 			}
 		}
 	}
-	//RefreshNodeStates();
+
 	for (USkillTreeNodeWidget* NodeWidget : AllSkillNodes)
 	{
 		if (NodeWidget)
 		{
-			if (!NodeWidget->OnNodeClicked.IsAlreadyBound(this, &USkillTreeWidget::HandleNodeSelection))
-			{
-				NodeWidget->OnNodeClicked.AddDynamic(this, &USkillTreeWidget::HandleNodeSelection);
-			}
-			if (!NodeWidget->OnNodeDoubleClicked.IsAlreadyBound(this, &USkillTreeWidget::HandleNodeDoubleClick))
-			{
-				NodeWidget->OnNodeDoubleClicked.AddDynamic(this, &USkillTreeWidget::HandleNodeDoubleClick);
-			}
+			NodeWidget->OnNodeClicked.RemoveAll(this);
+			NodeWidget->OnNodeClicked.AddUObject(this, &USkillTreeWidget::HandleNodeSelection);
+
+			NodeWidget->OnNodeDoubleClicked.RemoveAll(this);
+			NodeWidget->OnNodeDoubleClicked.AddUObject(this, &USkillTreeWidget::HandleNodeDoubleClick);
 		}
 	}
 	AGASCharacterPlayer* PlayerCharacter = Cast<AGASCharacterPlayer>(GetOwningPlayerPawn());
@@ -54,20 +51,19 @@ void USkillTreeWidget::NativeConstruct()
 		SkillTreeComp = PlayerCharacter->GetSkillTreeComponent();
 		if (SkillTreeComp)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("SkillTreeWidget: Found SkillTreeComponent for player %s"), *PlayerCharacter->GetName());
-			// ½ºÅ³ ½Àµæ ¼º°ø ½Ã HandleSkillAcquired ÇÔ¼ö°¡ È£ÃâµÇµµ·Ï ¿¬°á
-			SkillTreeComp->OnSkillAcquired.AddDynamic(this, &USkillTreeWidget::RefreshNodeStates);
+			// ìŠ¤í‚¬ ìŠµë“ ì„±ê³µ ì‹œ HandleSkillAcquired í•¨ìˆ˜ê°€ í˜¸ì¶œë˜ë„ë¡ ì—°ê²°
+			SkillTreeComp->OnSkillAcquired.AddUObject(this, &USkillTreeWidget::RefreshNodeStates);
 		}
 	}
-	SkillInfo->OnSkillInfoClosed.AddDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
-	SimpleBuyWidget->OnSimpleBuyClosed.AddDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
+	SkillInfo->OnSkillInfoClosed.AddUObject(this, &USkillTreeWidget::OnNodeUnSelected);
+	SimpleBuyWidget->OnSimpleBuyClosed.AddUObject(this, &USkillTreeWidget::OnNodeUnSelected);
 	XBtn->OnClicked.AddDynamic(this, &USkillTreeWidget::OnXButtonClicked);
 }
 
 void USkillTreeWidget::NativeDestruct()
 {
 	Super::NativeDestruct();
-	// ¸ðµç ³ëµå À§Á¬ÀÇ ÀÌº¥Æ® ¹ÙÀÎµùÀ» ÇØÁ¦
+	//ëª¨ë“  ìœ„ì ¯ì˜ ì´ë²¤íŠ¸ ë°”ì¸ë”© í•´ì œ
 	for (USkillTreeNodeWidget* NodeWidget : AllSkillNodes)
 	{
 		if (NodeWidget)
@@ -78,10 +74,10 @@ void USkillTreeWidget::NativeDestruct()
 	}
 	if (SkillTreeComp)
 	{
-		SkillTreeComp->OnSkillAcquired.RemoveDynamic(this, &USkillTreeWidget::RefreshNodeStates);
+		SkillTreeComp->OnSkillAcquired.RemoveAll(this);
 	}
-	SkillInfo->OnSkillInfoClosed.RemoveDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
-	SimpleBuyWidget->OnSimpleBuyClosed.RemoveDynamic(this, &USkillTreeWidget::OnNodeUnSelected);
+	SkillInfo->OnSkillInfoClosed.RemoveAll(this);
+	SimpleBuyWidget->OnSimpleBuyClosed.RemoveAll(this);
 }
 
 FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -89,7 +85,7 @@ FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKey
 	if (InKeyEvent.GetKey() == EKeys::Tab)
 	{
 		RemoveFromParent();
-		//UGameplayStatics::SetGamePaused(GetWorld(), false);
+
 		APlayerController* PlayerController = GetOwningPlayer();
 		if (PlayerController)
 		{
@@ -113,7 +109,6 @@ void USkillTreeWidget::HandleNodeSelection(USkillTreeNodeWidget* ClickedNode)
 		return;
 	}
 
-	// ÀÌ¹Ì Å¸ÀÌ¸Ó°¡ ½ÇÇà ÁßÀÌ¸é (ºü¸£°Ô ¿©·¯ ¹ø Å¬¸¯), »õ·Î¿î Å¸ÀÌ¸Ó¸¦ ½ÃÀÛ ¾ÈÇÔ
 	if (World->GetTimerManager().IsTimerActive(SelectionTimerHandle))
 	{
 		return;
@@ -121,7 +116,6 @@ void USkillTreeWidget::HandleNodeSelection(USkillTreeNodeWidget* ClickedNode)
 
 	PendingSelectionNode = ClickedNode;
 
-	// 0.25ÃÊ µÚ¿¡ ProcessSingleClick ÇÔ¼ö¸¦ È£ÃâÇÏ´Â Å¸ÀÌ¸Ó ¼³Á¤
 	World->GetTimerManager().SetTimer(SelectionTimerHandle, this, &USkillTreeWidget::ProcessSingleClick, 0.25f, false);
 }
 
@@ -130,9 +124,8 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	// ´õºíÅ¬¸¯ÀÌ ¹ß»ýÇßÀ¸¹Ç·Î, ´ë±â ÁßÀÌ´ø ´ÜÀÏ Å¬¸¯ Å¸ÀÌ¸Ó Ãë¼Ò
 	World->GetTimerManager().ClearTimer(SelectionTimerHandle);
-	PendingSelectionNode = nullptr; // ´ë±â ÁßÀÎ ³ëµåµµ ºñ¿ò
+	PendingSelectionNode = nullptr;
 	
 	UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Double clicked on node %s"), *DoubleClickedNode->GetName());
 	if (CurrentlySelectedNode)
@@ -141,15 +134,14 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 	}
 	CurrentlySelectedNode = DoubleClickedNode;
 	CurrentlySelectedNode->SetSelected(true);
-	//±¸¸ÅÇÏ½Ã°Ú½À´Ï±î?
+
 	const FSkillTreeDataRow* NodeData = CurrentlySelectedNode->GetNodeData();
 	if (NodeData)
 	{
 
 		SimpleBuyWidget->SetSkillCostText(*NodeData);
 		SimpleBuyWidget->SetVisibility(ESlateVisibility::Visible);
-		SkillInfo->SetVisibility(ESlateVisibility::Hidden);		//´Ù¸¥°Å´Â ¾Èº¸ÀÌ°Ô
-
+		SkillInfo->SetVisibility(ESlateVisibility::Hidden);		
 		UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Opened simple buy widget for node %s"), *CurrentlySelectedNode->GetName());
 	}
 	else
@@ -158,17 +150,14 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 	}
 }
 
-//½ºÅ³À» ¹è¿ì°Å³ª ÃÖÃÊ »ý¼º½Ã ³ëµå °»½Å
 void USkillTreeWidget::RefreshNodeStates()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Refreshing all skill nodes"));
 	if (SkillTreeComp)
 	{
 		for (USkillTreeNodeWidget* Node : AllSkillNodes)
 		{
 			if (Node)
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("RefreshNodeStates: Updating node %s"), *Node->GetName());
 				Node->UpdateNodeState(SkillTreeComp);
 			}
 		}
@@ -200,7 +189,7 @@ void USkillTreeWidget::ProcessSingleClick()
         {  
             SkillInfo->OpenSkillInfo(*NodeData);
 			SkillInfo->SetVisibility(ESlateVisibility::Visible);
-			SimpleBuyWidget->SetVisibility(ESlateVisibility::Hidden);	//´Ù¸¥°Å´Â ¾Èº¸ÀÌ°Ô
+			SimpleBuyWidget->SetVisibility(ESlateVisibility::Hidden);
 			UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: Opened skill info for node %s"), *CurrentlySelectedNode->GetName());
 			
         }  
@@ -221,7 +210,7 @@ void USkillTreeWidget::OnNodeUnSelected()
 void USkillTreeWidget::OnXButtonClicked()
 {
 	RemoveFromParent();
-	//UGameplayStatics::SetGamePaused(GetWorld(), false);
+
 	APlayerController* PlayerController = GetOwningPlayer();
 #if !(PLATFORM_ANDROID || PLATFORM_IOS)
 	if (PlayerController)

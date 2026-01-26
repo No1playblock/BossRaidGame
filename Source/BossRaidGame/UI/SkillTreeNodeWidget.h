@@ -14,8 +14,8 @@ class UBorder;
 class UButton;
 class USkillTreeNodeWidget;
 class USkillTreeComponent;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillNodeClicked, USkillTreeNodeWidget*, ClickedNode);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillNodeDoubleClicked, USkillTreeNodeWidget*, DoubleClickedNode); // 더블클릭 델리게이트 추가
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSkillNodeClicked, USkillTreeNodeWidget*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSkillNodeDoubleClicked, USkillTreeNodeWidget*); // 더블클릭 델리게이트 추가
 
 
 UCLASS()
@@ -36,10 +36,8 @@ public:
 	void UpdateNodeState(USkillTreeComponent* SkillTreeComp);
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "SkillNode")
 	FOnSkillNodeClicked OnNodeClicked;
 
-	UPROPERTY(BlueprintAssignable, Category = "SkillNode")
 	FOnSkillNodeDoubleClicked OnNodeDoubleClicked;
 
 protected:

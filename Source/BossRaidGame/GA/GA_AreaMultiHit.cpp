@@ -25,7 +25,6 @@ void UGA_AreaMultiHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, AttackMontage);
 	if (MontageTask)
 	{
-		//MontageTask->OnCompleted.AddDynamic(this, &UGA_AreaMultiHit::OnMontageCompleted);
 		MontageTask->OnInterrupted.AddDynamic(this, &UGA_AreaMultiHit::OnMontageInterrupted);
 		MontageTask->ReadyForActivation();
 	}
@@ -66,35 +65,14 @@ void UGA_AreaMultiHit::OnDamageEvent(FGameplayEventData Payload)
 
 	if (MultiHitTask)
 	{
-		MultiHitTask->OnHit.AddDynamic(this, &UGA_AreaMultiHit::OnTargetHit);
-		MultiHitTask->OnFinished.AddDynamic(this, &UGA_AreaMultiHit::OnMontageCompleted);
+		MultiHitTask->OnHit.AddUObject(this, &UGA_AreaMultiHit::OnTargetHit);
+		MultiHitTask->OnFinished.AddUObject(this, &UGA_AreaMultiHit::OnMontageCompleted);
 
 		MultiHitTask->ReadyForActivation();
 	}
 }
 void UGA_AreaMultiHit::OnTargetHit(const TArray<FOverlapResult>& OverlapResults)
 {
-	/*TArray<TWeakObjectPtr<AActor>> HitActors;
-	AActor* OwnerActor = GetAvatarActorFromActorInfo();
-
-	for (const FOverlapResult& Overlap : OverlapResults)
-	{
-		AActor* HitActor = Overlap.GetActor();
-		if (HitActor && HitActor != OwnerActor && !HitActors.Contains(HitActor))
-		{
-			HitActors.AddUnique(HitActor);
-		}
-	}
-
-	if (HitActors.Num() > 0 && DamageEffectClass)
-	{
-		FGameplayAbilityTargetData_ActorArray* NewTargetData = new FGameplayAbilityTargetData_ActorArray();
-		NewTargetData->TargetActorArray = HitActors;
-		FGameplayAbilityTargetDataHandle TargetDataHandle;
-		TargetDataHandle.Add(NewTargetData);
-
-		ApplyGameplayEffectToTarget(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), TargetDataHandle, DamageEffectClass, 1.0f);
-	}*/
 	UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
 	TArray<TWeakObjectPtr<AActor>> HitActors;
 	AActor* OwnerActor = GetAvatarActorFromActorInfo();
@@ -121,7 +99,6 @@ void UGA_AreaMultiHit::OnTargetHit(const TArray<FOverlapResult>& OverlapResults)
 				{
 					SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_DAMAGE, BaseDamage);
 
-					UE_LOG(LogTemp, Warning, TEXT("GA_AreaMultiHit::OnTargetsHit - DamageValue: %f"), BaseDamage);
 					SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 				}
 			}

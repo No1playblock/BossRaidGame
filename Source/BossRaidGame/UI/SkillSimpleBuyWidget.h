@@ -10,7 +10,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSimpleBuyClosed);
+DECLARE_MULTICAST_DELEGATE(FOnSimpleBuyClosed);
 
 
 UCLASS()
@@ -23,7 +23,6 @@ public:
 
 
 public:
-	UPROPERTY(BlueprintAssignable)
 	FOnSimpleBuyClosed OnSimpleBuyClosed; // ½ºÅ³ Á¤º¸ UI ´ÝÈû ÀÌº¥Æ®
 protected:
 	virtual void NativeConstruct() override;

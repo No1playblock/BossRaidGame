@@ -8,8 +8,7 @@
 #include "GameData/StatChoiceData.h" // FStatChoiceInfo
 #include "StatChoiceCardWidget.generated.h"
 
-// 블루프린트에서 바인딩할 수 있는 다이나믹 멀티캐스트 델리게이트 선언
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChoiceCardSelectedSignature, const FStatChoiceInfo&, ChoiceInfo);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnChoiceCardSelectedSignature, const FStatChoiceInfo&);
 
 UCLASS()
 class BOSSRAIDGAME_API UStatChoiceCardWidget : public UUserWidget
@@ -19,7 +18,6 @@ class BOSSRAIDGAME_API UStatChoiceCardWidget : public UUserWidget
 public:
 	void SetChoiceInfo(const FStatChoiceInfo& InChoiceInfo);
 
-	UPROPERTY(BlueprintAssignable, Category = "ChoiceCard")
 	FOnChoiceCardSelectedSignature OnChoiceCardSelected;
 
 protected:

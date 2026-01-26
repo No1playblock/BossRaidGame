@@ -25,7 +25,7 @@ void ULevelUpScreenWidget::InitializeChoices(const TArray<FStatChoiceInfo>& Choi
 		{
 			CardWidget->SetChoiceInfo(ChoiceInfo);
 
-			CardWidget->OnChoiceCardSelected.AddDynamic(this, &ULevelUpScreenWidget::OnCardSelected);
+			CardWidget->OnChoiceCardSelected.AddUObject(this, &ULevelUpScreenWidget::OnCardSelected);
 
 			UHorizontalBoxSlot* NewSlot = ChoiceContainer->AddChildToHorizontalBox(CardWidget);
 			if (NewSlot)

@@ -6,7 +6,7 @@
 #include "Abilities/Tasks/AbilityTask.h"
 #include "AT_LineTrace.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLineTraceHit, const FHitResult&, HitResult);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLineTraceHit, const FHitResult&);
 
 /**
  * 
@@ -23,7 +23,6 @@ public:
 
 	static UAT_LineTrace* CreateTask(UGameplayAbility* OwningAbility, FName TaskInstanceName);
 
-	UPROPERTY(BlueprintAssignable)
 	FOnLineTraceHit OnHit;
 protected:
 	virtual void Activate() override;
