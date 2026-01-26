@@ -17,11 +17,17 @@ class BOSSRAIDGAME_API ABRGameModeBase : public AGameModeBase
 public:
 	ABRGameModeBase();
 
+public:
+	virtual void OnPlayerDied(AController* Controller);
+
+	void RestartCurrentLevel();
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	void TickTimer();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Level")
+	FName GameLevelName;
 	//FTimerHandle GameTimerHandle;
 };

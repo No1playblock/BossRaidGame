@@ -3,6 +3,8 @@
 
 #include "BRGameModeBase.h"
 #include "BRGameState.h"
+#include "Player/BRPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 ABRGameModeBase::ABRGameModeBase()
 {
 	static ConstructorHelpers::FClassFinder<APawn> CharacterRef(TEXT("/Game/Blueprints/Character/BP_CharacterPlayer.BP_CharacterPlayer_C"));
@@ -10,6 +12,18 @@ ABRGameModeBase::ABRGameModeBase()
 	{
 		DefaultPawnClass = CharacterRef.Class;
 	}
+}
+void ABRGameModeBase::OnPlayerDied(AController* Controller)
+{
+	if (ABRPlayerController* PC = Cast<ABRPlayerController>(Controller))
+	{
+		PC->ShowGameOverUI();
+	}
+}
+void ABRGameModeBase::RestartCurrentLevel()
+{
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
+	UGameplayStatics::OpenLevel(this, FName(*CurrentLevelName));
 }
 void ABRGameModeBase::BeginPlay()
 {
