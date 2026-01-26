@@ -44,6 +44,8 @@ void UGA_AreaMultiHit::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 }
 void UGA_AreaMultiHit::OnDamageEvent(FGameplayEventData Payload)
 {
+
+	//현재는 AI 전용 어빌리티임.
 	AController* Controller = GetCurrentActorInfo()->PlayerController.IsValid() ? GetCurrentActorInfo()->PlayerController.Get() : GetCurrentActorInfo()->OwnerActor->GetInstigatorController();
 	AAIController* AIController = Cast<AAIController>(Controller);
 	if (!AIController) return;
