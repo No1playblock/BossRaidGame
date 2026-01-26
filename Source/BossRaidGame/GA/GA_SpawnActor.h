@@ -28,11 +28,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
 	FVector SpawnOffset;
 
-	/** 데미지 적용을 위한 GE 클래스 */
+	/** 데미지 적용을 위한 GE  */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage")
 	TSubclassOf<class UGameplayEffect> DamageEffectClass;
 
-	/** 쿨타임 적용용 GE 클래스 (스킬 트리 시간 적용) */
+	/** 쿨타임 적용용 GE (스킬 트리 시간 적용) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooldown")
 	TSubclassOf<class UGameplayEffect> CooldownEffectClass;
 

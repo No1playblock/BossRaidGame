@@ -31,7 +31,7 @@ void UAT_ShootProjectile::DoShoot()
 	if (!Avatar || !BulletClass) return;
 
 	USkeletalMeshComponent* Mesh = Avatar->FindComponentByClass<USkeletalMeshComponent>();
-	FVector MuzzleLocation = Mesh->GetSocketLocation(TEXT("Socket_Barrel")); // 소켓 이름 예시
+	FVector MuzzleLocation = Mesh->GetSocketLocation(TEXT("Socket_Barrel"));
 
 	APlayerController* PC = Cast<APlayerController>(Avatar->GetInstigatorController());
 	if (!PC) return;
@@ -69,8 +69,6 @@ void UAT_ShootProjectile::DoShoot()
 		{
 			APrimaryBullet* Bullet = GetWorld()->SpawnActor<APrimaryBullet>(BulletClass, MuzzleLocation, BulletRotation, SpawnParams);
 			Bullet->InitializeBullet(ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackPowerAttribute()), AttackEffectClass);
-			//Bullet->SetDamage(ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackPowerAttribute()));
-			UE_LOG(LogTemp, Warning, TEXT("AT_Shoot Damage: %f"), ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackPowerAttribute()));
 		}
 	}
 

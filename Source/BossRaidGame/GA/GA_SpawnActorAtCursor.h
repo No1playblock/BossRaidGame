@@ -22,8 +22,9 @@ protected:
 
     UFUNCTION()
     void OnGameplayEventReceived(FGameplayEventData Payload);
+
 protected:
-    // 블루프린트에서 지정할 힐링 장판 액터 클래스
+
     UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS")
     TSubclassOf<AActor> SpawnActorClass;
 

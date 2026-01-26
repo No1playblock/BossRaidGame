@@ -38,7 +38,6 @@ void UGA_AutoRaser::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		{
 			Damage = SkillData->SkillDamage;
 			CooldownTime = SkillData->SkillCoolTime;
-			//UE_LOG(LogTemp, Warning, TEXT("AutoRaser Damage: %f, CooldownTime: %f"), Damage, CooldownTime);
 		}
 	}
 	if (CooldownEffectClass)
@@ -80,7 +79,7 @@ void UGA_AutoRaser::SpawnOrbsAndFire(ACharacter* OwnerCharacter, float Damage)
 		const float AngleDeg = -90.f + (AngleStep * i); // -90 ~ +90
 		const float AngleRad = FMath::DegreesToRadians(AngleDeg);
 
-		// X축 기준 반원 → YZ 평면에 반원
+		// X축 기준 반원 -> YZ 평면에 반원
 		FVector Offset =
 			FMath::Cos(AngleRad) * Up +   // 중심 축 (Y축)
 			FMath::Sin(AngleRad) * Left;       // 위아래 방향

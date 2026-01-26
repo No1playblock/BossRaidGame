@@ -12,7 +12,6 @@
 UGA_SpawnActorAtCursor::UGA_SpawnActorAtCursor()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	//NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 }
 
 void UGA_SpawnActorAtCursor::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -196,8 +195,6 @@ void UGA_SpawnActorAtCursor::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 	}
 
-
-    //EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 void UGA_SpawnActorAtCursor::OnGameplayEventReceived(FGameplayEventData Payload)

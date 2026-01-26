@@ -6,7 +6,6 @@
 
 UGA_ItemBase::UGA_ItemBase()
 {
-	// AbilityInstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 void UGA_ItemBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

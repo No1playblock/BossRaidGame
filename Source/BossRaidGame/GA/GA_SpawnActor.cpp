@@ -70,7 +70,6 @@ void UGA_SpawnActor::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 			if (TargetData->HasHitResult())
 			{
 				SpawnLocation = TargetData->GetHitResult()->Location;
-				// 필요 시 회전값: SpawnRotation = TargetData->GetHitResult()->ImpactNormal.Rotation();
 			}
 			else if (TargetData->HasEndPoint())
 			{
@@ -79,11 +78,6 @@ void UGA_SpawnActor::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		}
 	}
 	
-	//else if (TriggerEventData && TriggerEventData->Target)
-	//{
-	//	AnchorActor = const_cast<AActor*>(TriggerEventData->Target);
-	//}
-
 	if (SpawnLocation.IsZero() && AnchorActor)
 	{
 		SpawnLocation = AnchorActor->GetActorLocation() + (AnchorActor->GetActorQuat().RotateVector(SpawnOffset));
