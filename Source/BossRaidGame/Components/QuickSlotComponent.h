@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "QuickSlotComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnQuickSlotUpdated);
+DECLARE_MULTICAST_DELEGATE(FOnQuickSlotUpdated);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BOSSRAIDGAME_API UQuickSlotComponent : public UActorComponent
@@ -14,11 +14,9 @@ class BOSSRAIDGAME_API UQuickSlotComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UQuickSlotComponent();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
@@ -34,7 +32,6 @@ public:
 	UFUNCTION()
 	void ActivateSlot(int32 SlotIndex);
 
-	UPROPERTY()
 	FOnQuickSlotUpdated OnQuickSlotUpdated;
 
 private:

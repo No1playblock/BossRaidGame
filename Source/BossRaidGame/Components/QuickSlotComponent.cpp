@@ -10,11 +10,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/GameplayAbility.h"
 
-// Sets default values for this component's properties
 UQuickSlotComponent::UQuickSlotComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-
     QuickSlotItems.Init(NAME_None, MaxQuickSlots);
 }
 
@@ -79,7 +76,7 @@ void UQuickSlotComponent::ActivateSlot(int32 SlotIndex)
 			// 어빌리티 클래스 유효성 확인
 			if (!ItemInfo->UseAbilityClass) return;
 
-			// [핵심 수정] 어빌리티가 등록되어 있는지 확인
+			//어빌리티가 등록되어 있는지 확인
 			FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(ItemInfo->UseAbilityClass);
 
 			if (!Spec)

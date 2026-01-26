@@ -46,8 +46,8 @@ void USkillTreeComponent::BeginPlay()
 	}
 	TryAcquireSkill(FName("Player.Skill.AutoRaser.Tier1")); // Q
 	TryAcquireSkill(FName("Player.Skill.Grenade.Tier1")); // E
-	TryAcquireSkill(FName("Player.Skill.OrbitalStrike.Tier1"));
-	TryAcquireSkill(FName("Player.Skill.TacticalDash.Tier1"));
+	TryAcquireSkill(FName("Player.Skill.OrbitalStrike.Tier1")); //R
+	TryAcquireSkill(FName("Player.Skill.TacticalDash.Tier1"));	//Shift
 
 }
 const FSkillTreeDataRow* USkillTreeComponent::FindAcquiredSkillByInputID(EAbilityInputID InputID) const
@@ -140,8 +140,7 @@ bool USkillTreeComponent::TryAcquireSkill(FName SkillID)
 
 	// 델리게이트를 호출하여 스킬 습득 성공을 외부에 알림
 	OnSkillAcquired.Broadcast();
-	UE_LOG(LogTemp, Log, TEXT("TryAcquireSkill: Skill [%s] acquired successfully! Remaining Points: %f"), *SkillID.ToString(), OwnerAttributeSet->GetSkillPoint());
-	//UE_LOG(LogTemp, Log, TEXT("Skill [%s] Acquired Successfully! Remaining Points: %f"), *SkillID.ToString(), OwnerAttributeSet->GetSkillPoint());
+
 	return true;
 }
 

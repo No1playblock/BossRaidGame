@@ -7,7 +7,7 @@
 #include "GameData/SkillTreeData.h" 
 #include "SkillTreeComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkillAcquired);
+DECLARE_MULTICAST_DELEGATE(FOnSkillAcquired);
 
 
 class UAbilitySystemComponent;
@@ -30,7 +30,6 @@ public:
 
 public:
 	// 스킬 습득 성공 시 호출될 델리게이트
-	UPROPERTY(BlueprintAssignable, Category = "Skill Tree")
 	FOnSkillAcquired OnSkillAcquired;
 
 	const FSkillTreeDataRow* GetSkillData(const FName& SkillID) const;

@@ -24,7 +24,9 @@ struct FInventorySlot
 	FInventorySlot() : ItemID(NAME_None), Quantity(0) {}
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
+
+
+DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BOSSRAIDGAME_API UInventoryComponent : public UActorComponent
@@ -32,8 +34,7 @@ class BOSSRAIDGAME_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
-	UInventoryComponent();
+
 
     const TArray<FInventorySlot>& GetInventorySlots() const { return InventorySlots; }
 
@@ -43,7 +44,6 @@ public:
     int32 GetTotalQuantity(FName ItemID) const;
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
@@ -60,7 +60,6 @@ public:
     const FItemData* GetItemData(FName ItemID) const;
 
     // UI 업데이트 알림용 델리게이트
-    UPROPERTY(BlueprintAssignable, Category = "Inventory")
     FOnInventoryUpdated OnInventoryUpdated;
 
 protected:
