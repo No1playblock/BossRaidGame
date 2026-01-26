@@ -124,13 +124,10 @@ void UPlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 	{
 		FTimerHandle WaitHandle;
 
-		// "야, 지금 당장 멈추지 말고 0.1초만 이따가 멈춰"
 		GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([this]()
 			{
-				// 람다 내부: 0.1초 뒤에 실행될 코드
 				if (IsValid(this))
 				{
-					// 여기서 레벨업 UI 띄우고 SetGamePaused(true) 실행!
 					ProcessLevelUp();
 				}
 			}), 0.1f, false);
