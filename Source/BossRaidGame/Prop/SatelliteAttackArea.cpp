@@ -38,13 +38,11 @@ void ASatelliteAttackArea::OnPoolDespawned()
 {
 	// 정리 로직
 	GetWorld()->GetTimerManager().ClearTimer(ReturnTimerHandle);
-	//ParticleComp->DeactivateSystem();
 
-	AttackRadius = SphereRadius;	//이거 AttackRange 고치자.
+
+	AttackRadius = SphereRadius;
 	DamageAmount = 0.0f;
 	DamageEffectClass = nullptr;
-
-	//AimingParticleComp->DeactivateSystem();
 }
 
 void ASatelliteAttackArea::InitializeInfo_Implementation(float Damage, TSubclassOf<UGameplayEffect> DamageEffect)
@@ -121,7 +119,6 @@ void ASatelliteAttackArea::ExecuteExplosion()
 
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("SatelliteAttackArea: Executing Explosion at Location: %s with Radius: %f"), *GetActorLocation().ToString(), AttackRadius);
 	//범위 내 적 감지
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams Params;
@@ -140,8 +137,6 @@ void ASatelliteAttackArea::ExecuteExplosion()
 		Params
 	);
 
-	// 디버그 (필요시 주석 해제)
-	UE_LOG(LogTemp, Log, TEXT("SatelliteAttackArea: OverlapMultiByObjectType returned %s"), bHit ? TEXT("true") : TEXT("false"));
 	// 데미지 적용
 	if (bHit)
 	{
