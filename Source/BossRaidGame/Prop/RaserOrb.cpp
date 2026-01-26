@@ -12,13 +12,19 @@
 #include "Attribute/PlayerCharacterAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Tag/BRGameplayTag.h"
-
+#include "NiagaraComponent.h"
 // Sets default values
 ARaserOrb::ARaserOrb()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	OrbMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("OrbMesh"));
+	RootComponent = OrbMesh;
+
+	LaserEffectComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LaserEffectComp"));
+
+	LaserEffectComp->SetupAttachment(RootComponent);
 }
 void ARaserOrb::BeginPlay()
 {
@@ -59,7 +65,25 @@ FHitResult ARaserOrb::LineTrace() const
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, WorldOrigin, TraceEnd, TargetChannel, Params);
 
-		DrawDebugLine(GetWorld(), GetActorLocation(), bHit ? Hit.Location : TraceEnd, bHit ? FColor::Green : FColor::Red, false, 1.0f, 0, 1.0f);
+		if (LaserEffectComp)
+		{
+			// 레이저 켜기 (필요할 때만)
+			if (!LaserEffectComp->IsActive())
+			{
+				LaserEffectComp->Activate();
+			}
+
+			// 나이아가라의 User Parameter 변수 이름과 똑같아야 함!
+			// 시작점: 구체 위치
+			LaserEffectComp->SetNiagaraVariableVec3(TEXT("BeamStart"), GetActorLocation());
+
+			// 끝점: 트레이스 닿은 곳
+			LaserEffectComp->SetNiagaraVariableVec3(TEXT("BeamEnd"), bHit ? Hit.Location : TraceEnd);
+		}
+
+		UGameplayStatics::PlaySoundAtLocation(this, RaserSound, GetActorLocation());
+
+		//DrawDebugLine(GetWorld(), GetActorLocation(), bHit ? Hit.Location : TraceEnd, bHit ? FColor::Green : FColor::Red, false, 1.0f, 0, 1.0f);
 
 		return Hit;
 	}

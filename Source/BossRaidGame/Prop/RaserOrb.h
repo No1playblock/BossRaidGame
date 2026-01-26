@@ -23,6 +23,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UStaticMeshComponent> OrbMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UNiagaraComponent> LaserEffectComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "VFX")
+	TObjectPtr<USoundBase> RaserSound;
 private:
 	FHitResult LineTrace() const;
 
