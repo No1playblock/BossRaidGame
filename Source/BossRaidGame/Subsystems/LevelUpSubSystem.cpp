@@ -223,11 +223,34 @@ void ULevelUpSubsystem::ApplyStatChoice(const FStatChoiceInfo& ChoiceInfo)
 		CurrentStatChoiceWidget = nullptr;
 	}
 
+	bool bStillLevelingUp = false;
+	if (ASC)
+	{
+		if (const UPlayerCharacterAttributeSet* AttSet = ASC->GetSet<UPlayerCharacterAttributeSet>())
+		{
+			// ProcessLevelUp을 호출하여 아직 TargetLevel에 도달 못했으면 다시 UI를 띄우게 함
+			UPlayerCharacterAttributeSet* MutableAttSet = const_cast<UPlayerCharacterAttributeSet*>(AttSet);
+			MutableAttSet->ProcessLevelUp();
+
+			// 만약 ProcessLevelUp 내부에서 UI를 띄웠다면 CurrentStatChoiceWidget이 다시 생성되었을 것임
+			if (CurrentStatChoiceWidget)
+			{
+				bStillLevelingUp = true;
+			}
+		}
+	}
+
+	// 게임 재개
 	APlayerController* PC = TargetPlayer->GetController<APlayerController>();
-	if (PC)
+	if (PC && !bStillLevelingUp)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
 	}
+}
+
+bool ULevelUpSubsystem::IsLevelUpWidgetShown() const
+{
+	return CurrentStatChoiceWidget && CurrentStatChoiceWidget->IsInViewport();
 }

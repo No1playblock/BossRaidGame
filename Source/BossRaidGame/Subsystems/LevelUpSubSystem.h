@@ -21,6 +21,7 @@ public:
 	void ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter, int32 NewLevel);
 	void ApplyStatChoice(const FStatChoiceInfo& ChoiceInfo);
 
+	bool IsLevelUpWidgetShown() const;
 protected:
 	UPROPERTY()
 	TObjectPtr<UDataTable> LevelStatDataTable;
