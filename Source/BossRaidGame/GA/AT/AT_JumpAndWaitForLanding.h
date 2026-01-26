@@ -6,7 +6,7 @@
 #include "Abilities/Tasks/AbilityTask.h"
 #include "AT_JumpAndWaitForLanding.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpAndWaitForLandingDelegate);
+DECLARE_MULTICAST_DELEGATE(FJumpAndWaitForLandingDelegate);
 
 /**
  * 
@@ -25,7 +25,6 @@ public:
 	virtual void Activate() override;
 	virtual void OnDestroy(bool AbilityEnded) override;
 
-	UPROPERTY(BlueprintAssignable)
 	FJumpAndWaitForLandingDelegate OnComplete;
 
 protected:

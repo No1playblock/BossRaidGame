@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArcSweepDelegate, const TArray<FOverlapResult>&, OverlapResults);
+DECLARE_MULTICAST_DELEGATE_OneParam(FArcSweepDelegate, const TArray<FOverlapResult>&);
 
 UCLASS()
 class BOSSRAIDGAME_API UAT_ArcSweepForTargets : public UAbilityTask
@@ -31,7 +31,6 @@ public:
 		bool bDrawDebug
 	);
 
-	UPROPERTY(BlueprintAssignable)
 	FArcSweepDelegate OnTargetsFound;
 
 protected:
