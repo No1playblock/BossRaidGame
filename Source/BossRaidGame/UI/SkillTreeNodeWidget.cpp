@@ -7,9 +7,9 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "GameData/SkillTreeData.h"
-#include "Blueprint/WidgetTree.h" // WidgetTree를 사용하기 위해 포함
+#include "Blueprint/WidgetTree.h"
 #include "Components/SkillTreeComponent.h"
-#include "Attribute/PlayerCharacterAttributeSet.h" // AttributeSet 헤더 포함
+#include "Attribute/PlayerCharacterAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/GASCharacterPlayer.h"
 void USkillTreeNodeWidget::NativePreConstruct()
@@ -84,10 +84,9 @@ void USkillTreeNodeWidget::UpdateNodeState(USkillTreeComponent* SkillTreeComp)
 	// 선행 스킬을 배우지 못했다면 노드를 잠김 상태로 표시
 	if (!bPrerequisiteMet)
 	{
-		//NodeBorder->SetBrushColor(LockedColor);
 		NodeBorder->SetContentColorAndOpacity(LockedColor);
-		//SetIsEnabled(false); // 노드 비활성화
-		return;
+		return;		//SetIsEnabled(false); // 노드 비활성화
+
 	}
 
 	// 선행 스킬을 배웠다면 활성화하고 기본 색상으로 변경

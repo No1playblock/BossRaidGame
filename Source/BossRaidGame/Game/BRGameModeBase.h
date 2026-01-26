@@ -29,5 +29,4 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Level")
 	FName GameLevelName;
-	//FTimerHandle GameTimerHandle;
 };

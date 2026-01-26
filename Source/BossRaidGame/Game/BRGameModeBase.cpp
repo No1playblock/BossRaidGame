@@ -29,7 +29,7 @@ void ABRGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 게임 시작 시 초기 시간 설정 (예: 300초 = 5분)
+	// 게임 시작 시 초기 시간 설정
 	ABRGameState* GS = GetGameState<ABRGameState>();
 	if (GS)
 	{

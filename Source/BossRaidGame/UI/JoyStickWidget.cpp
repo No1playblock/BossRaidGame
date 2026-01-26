@@ -16,7 +16,6 @@ void UJoyStickWidget::HandleTouchPress(const FVector2D& InTouchLocation)
 		JoystickBase->SetVisibility(ESlateVisibility::Visible);
 		JoystickThumb->SetVisibility(ESlateVisibility::Visible);
 
-		//UE_LOG(LogTemp, Warning, TEXT("Touch Pressed at: %s"), *InTouchLocation.ToString());
 
 		// DPI º¸Á¤
 		float ViewportScale = UWidgetLayoutLibrary::GetViewportScale(this);

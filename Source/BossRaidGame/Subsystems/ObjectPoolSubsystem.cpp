@@ -37,7 +37,7 @@ AActor* UObjectPoolSubsystem::SpawnFromPool(TSubclassOf<AActor> ActorClass, FVec
 
 	AActor* SpawnedActor = nullptr;
 
-	// 풀(Map)에 해당 클래스 키가 있고, 보관된 액터가 있는지 확인
+	// 풀에 해당 클래스 키가 있고, 보관된 액터가 있는지 확인
 	if (ObjectPool.Contains(ActorClass) && ObjectPool[ActorClass].Items.Num() > 0)
 	{
 		//꺼내고
@@ -114,9 +114,6 @@ void UObjectPoolSubsystem::ReturnToPool(AActor* ActorToReturn)
 	ActorToReturn->SetActorHiddenInGame(true);
 	ActorToReturn->SetActorEnableCollision(false);
 	ActorToReturn->SetActorTickEnabled(false);
-
-	//
-	// ActorToReturn->SetActorLocation(FVector(0.f, 0.f, -10000.f));
 
 	// 풀에 저장 (해당 클래스 타입의 배열을 찾아 추가)
 	UClass* ActorClass = ActorToReturn->GetClass();

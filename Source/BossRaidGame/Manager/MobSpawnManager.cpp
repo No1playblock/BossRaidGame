@@ -223,17 +223,7 @@ void AMobSpawnManager::RequestSpawnWave(const FName& WaveDataRowName)
 		}
 	}
 }
-/*TimeSlicing ÇÔ¼ö*/
-//void AMobSpawnManager::ProcessSpawnQueue()
-//{
-//	if (SpawnQueue.IsEmpty()) return;
-//
-//	TPair<const FMobSpawnInfo*, FVector> ItemToSpawn;
-//	if (SpawnQueue.Dequeue(ItemToSpawn))
-//	{
-//		SpawnSingleMonster(ItemToSpawn.Key, ItemToSpawn.Value, 1.0f);
-//	}
-//}
+
 bool AMobSpawnManager::FindSpawnLocation(TSubclassOf<AActor> ActorClass, FVector& OutLocation)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(FindSpawnLocation_Sync);
@@ -314,7 +304,6 @@ void AMobSpawnManager::SpawnSingleMonster(const FMobSpawnInfo* SpawnInfo, const 
 		NewMonster->InitializeFromData(SpawnInfo);
 		NewMonster->ActivateCharacter();
 
-		//UE_LOG(LogTemp, Warning, TEXT("Spawned Monster: %s at Location: %s"), *NewMonster->GetName(), *Location.ToString());
 		UAbilitySystemComponent* AbilitySystem = NewMonster->GetAbilitySystemComponent();
 		if (AbilitySystem && StatScalingEffectClass)
 		{

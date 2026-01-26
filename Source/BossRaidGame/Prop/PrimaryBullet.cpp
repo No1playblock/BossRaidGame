@@ -13,7 +13,6 @@ APrimaryBullet::APrimaryBullet()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->SetCollisionProfileName("Projectile");
-	//CollisionComp->OnComponentHit.AddDynamic(this, &APrimaryBullet::OnHit);
 	RootComponent = CollisionComp;
 
 	CollisionComp->SetGenerateOverlapEvents(true);
@@ -31,8 +30,6 @@ APrimaryBullet::APrimaryBullet()
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0.0f;
 
-	
-	//InitialLifeSpan = 3.0f;
 
 }
 void APrimaryBullet::BeginPlay()
@@ -52,7 +49,6 @@ void APrimaryBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	if (OtherActor && OtherActor != this && OtherActor != GetOwner())
 	{
 		
-		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *OtherActor->GetFName().ToString());
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			if (DamageEffectClass)

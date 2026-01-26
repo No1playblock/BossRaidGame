@@ -8,7 +8,7 @@
 ABRPlayerState::ABRPlayerState()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
-	//ASC->SetIsReplicated(true);
+
 	AttributeSet = CreateDefaultSubobject<UPlayerCharacterAttributeSet>(TEXT("AttributeSet"));
 }
 

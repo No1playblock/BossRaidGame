@@ -35,12 +35,10 @@ class BOSSRAIDGAME_API APoolManager : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	APoolManager();
 
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 protected:

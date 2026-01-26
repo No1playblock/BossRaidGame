@@ -24,9 +24,6 @@ ASatelliteAttackArea::ASatelliteAttackArea()
 	SphereComp->SetupAttachment(RootComp);
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 쿼리용으로만 사용
 
-	//AimingParticleComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("AimingParticleComp"));
-	//AimingParticleComp->SetupAttachment(RootComp);
-	//AimingParticleComp->bAutoActivate = false; // 수동 제어
 }
 
 void ASatelliteAttackArea::OnPoolSpawned()
@@ -64,11 +61,6 @@ void ASatelliteAttackArea::InitializeInfo_Implementation(float Damage, TSubclass
 void ASatelliteAttackArea::StartAiming()
 {
 	SphereComp->SetSphereRadius(AttackRadius);
-	//조준 이펙트 재생
-	/*if (AimingParticleComp->Template)
-	{
-		AimingParticleComp->ActivateSystem(true);
-	}*/
 
 	if (AimingVFX)
 	{

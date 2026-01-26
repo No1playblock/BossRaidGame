@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameData/MobSpawnInfo.h" // FMonsterSpawnInfo 구조체
-#include "GameData/BossSpawnInfo.h" // FBossSpawnInfo 구조체
+#include "GameData/MobSpawnInfo.h"
+#include "GameData/BossSpawnInfo.h" 
 #include "MobSpawnManager.generated.h"
 
 class UGameplayEffect;
@@ -13,27 +13,12 @@ struct FMobSpawnInfo;
 struct FBossSpawnInfo;
 class ANonPlayerGASCharacter;
 
-/*TImeSlicing 구조체*/
-//USTRUCT()
-//struct FSpawnQueueItem
-//{
-//	GENERATED_BODY()
-//
-//	UPROPERTY()
-//	FMobSpawnInfo SpawnInfo;
-//
-//	UPROPERTY()
-//	FVector Location;
-//
-//	UPROPERTY()
-//	float DifficultyMultiplier = 1.0f;
-//};
 USTRUCT()
 struct FMonsterPool
 {
 	GENERATED_BODY()
 
-	// 풀에 보관할 몬스터들 (GC에 잡히도록 UPROPERTY + TObjectPtr)
+	// 풀에 보관할 몬스터들
 	UPROPERTY()
 	TArray<TObjectPtr<ANonPlayerGASCharacter>> Inactive;
 };
@@ -51,9 +36,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	/*UFUNCTION()
-	void ProcessSpawnQueue();*/
-
 private:
 
 	void InitializePool();
@@ -61,7 +43,6 @@ private:
 
 	void ChooseRandomMob();
 	void RequestSpawnWave(const FName& WaveDataRowName);
-	//void ProcessSpawnQueue();
 
 	UFUNCTION()
 	void SpawnBoss();
@@ -109,11 +90,5 @@ private:
 	UPROPERTY()
 	TMap<TSubclassOf<ACharacter>, FMonsterPool> InactiveMonsterPool;
 
-	
-	/*TimeSlicing을 사용하기 위한 변수*/
-	//TQueue<TPair<const FMobSpawnInfo*, FVector>> SpawnQueue;
-
-	//// 큐를 처리할 타이머 핸들
-	//FTimerHandle SpawnQueueTimerHandle;
 
 };

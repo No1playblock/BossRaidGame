@@ -179,7 +179,7 @@ void ULevelUpSubsystem::ShowLevelUpChoices(AGASCharacterPlayer* PlayerCharacter,
 			}
 
 			CurrentStatChoiceWidget->AddToViewport();
-			//GamePausedSetting(true);
+
 			UGameplayStatics::SetGamePaused(GetWorld(), true);
 			PC->SetInputMode(FInputModeUIOnly());
 			PC->bShowMouseCursor = true;

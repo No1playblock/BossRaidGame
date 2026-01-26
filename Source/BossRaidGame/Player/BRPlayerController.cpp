@@ -162,7 +162,6 @@ void ABRPlayerController::RequestRestartGame()
 void ABRPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("PlayerController BeginPlay"));
 
 	APawn* MyPawn = GetPawn();
  
@@ -170,20 +169,6 @@ void ABRPlayerController::BeginPlay()
 	if(MyQuickSlotComponent)
 	{
 		QuickSlotComponent = MyQuickSlotComponent;
-		UE_LOG(LogTemp, Warning, TEXT("QuickSlotComponent found in PlayerController"));
-	}
-	if (IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("r.MaterialQualityLevel")))
-	{
-		// 변수를 찾았다면, 그 변수의 정수(int) 값을 가져옵니다.
-		const int32 QualityLevel = CVar->GetInt();
-
-		// 가져온 값을 Warning 레벨 로그로 출력합니다.
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@@@@@@@@@@@@@@@@@@@@ Current r.MaterialQualityLevel is: %d @@@@@@@@@@@@@@@@@@@@@@@@"), QualityLevel);
-	}
-	else
-	{
-		// 해당 이름의 콘솔 변수를 찾지 못한 경우
-		UE_LOG(LogTemp, Error, TEXT("@@@@@@@@@@@@@@@@@@@@@@@@ Could not find console variable r.MaterialQualityLevel @@@@@@@@@@@@@@@@@@@@@@@@"));
 	}
 
 
@@ -432,7 +417,6 @@ void ABRPlayerController::ToggleSkillTreeUI()
 			// 탭키만 UI 입력에 포함
 			SetInputMode(FInputModeUIOnly());
 			SkillTreeWidgetInstance->SetKeyboardFocus();
-			//UGameplayStatics::SetGamePaused(GetWorld(), true);
 
 		}
 	}

@@ -64,7 +64,7 @@ void USkillInfoWidget::OpenSkillInfo(const FSkillTreeDataRow& SkillData)
 	{
 		DescriptionText->SetText(SkillData.UpgradeDescription);
 	}
-	//SkillPointCost = SkillData.SkillPointCost;
+
 	SkillID = SkillData.SkillID;
 
 	AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));

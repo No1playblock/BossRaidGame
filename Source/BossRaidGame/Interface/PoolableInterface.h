@@ -24,14 +24,14 @@ class BOSSRAIDGAME_API IPoolableInterface
 public:
 /**
 	 * [풀에서 꺼내질 때 호출]
-	 * - 초기화 로직 (속도 리셋, 이펙트 켜기, 체력 복구 등)을 구현하세요.
+	 * - 초기화 로직 (속도 리셋, 이펙트 켜기, 체력 복구 등)을 구현해야함
 	 */
 	UFUNCTION(Category = "Object Pool")
 	virtual void OnPoolSpawned() =0 ;
 
 	/**
 	 * [풀로 돌아갈 때 호출]
-	 * - 정리 로직 (타이머 정지, 이펙트 끄기, 상태 초기화 등)을 구현하세요.
+	 * - 정리 로직 (타이머 정지, 이펙트 끄기, 상태 초기화 등)을 구현해야함
 	 */
 	UFUNCTION(Category = "Object Pool")
 	virtual void OnPoolDespawned() =0 ;

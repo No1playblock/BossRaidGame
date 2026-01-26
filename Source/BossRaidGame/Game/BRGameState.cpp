@@ -7,7 +7,7 @@
 void ABRGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	// RemainingTime 변수를 네트워크를 통해 복제하도록 설정
+
 	DOREPLIFETIME(ABRGameState, RemainingTime);
 }
 

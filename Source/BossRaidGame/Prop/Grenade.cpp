@@ -39,8 +39,6 @@ AGrenade::AGrenade()
 
 void AGrenade::OnPoolSpawned()
 {
-	/*FVector WorldDirection = GetInstigator()->GetTransform().TransformVector(FVector(700.0f, 0.0f, -50.0f));
-	ProjectileMovement->Velocity = WorldDirection * VelocityStrength;*/
 
 	FVector LaunchDirection = GetActorForwardVector();
 
@@ -80,7 +78,7 @@ void AGrenade::OnPoolSpawned()
 		}
 	}
 
-	//수류탄 자체를 그 방향으로 회전시킴
+	//수류탄 자체를 그 방향으로 회전
 	//SetActorRotation(LaunchDirection.Rotation());
 
 	//발사 속도 적용
@@ -102,7 +100,6 @@ void AGrenade::OnPoolDespawned()
 	ProjectileMovement->Deactivate();
 }
 
-// Called when the game starts or when spawned
 void AGrenade::BeginPlay()
 {
 	Super::BeginPlay();

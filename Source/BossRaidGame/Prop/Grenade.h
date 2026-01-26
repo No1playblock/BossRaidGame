@@ -14,14 +14,12 @@ class BOSSRAIDGAME_API AGrenade : public AActor, public ISkillSpawnedActorInterf
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AGrenade();
 
 	virtual void OnPoolSpawned() override;
 	virtual void OnPoolDespawned() override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void InitializeInfo_Implementation(float InDamage, TSubclassOf<UGameplayEffect> InDamageEffect) override;
