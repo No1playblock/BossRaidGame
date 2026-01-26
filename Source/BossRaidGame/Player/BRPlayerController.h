@@ -23,6 +23,12 @@ class BOSSRAIDGAME_API ABRPlayerController : public APlayerController
 public:
 	ABRPlayerController();
 
+	void ShowGameOverUI();
+	void HideGameOverUI();
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void RequestRestartGame();
+
 	FORCEINLINE class UPlayerHUDWidget* GetPlayerHUDWidgetInstance() const { return PlayerHUDWidgetInstance; }
 protected:
 	virtual void BeginPlay() override;
@@ -103,6 +109,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UInventoryMainWidget> InventoryWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> GameOverWidgetInstance;
 private:
 
 	void OnTouchBegan(const ETouchIndex::Type FingerIndex, const FVector Location);

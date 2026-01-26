@@ -13,6 +13,8 @@
 #include "UI/InventoryMainWidget.h"
 #include "Components/InventoryComponent.h"
 #include "Components/QuickSlotComponent.h"
+#include "Game/BRGameModeBase.h"
+#include "UI/GameOverWidget.h"
 ABRPlayerController::ABRPlayerController()
 {
 	MoveFingerIndex = -1;
@@ -66,13 +68,18 @@ ABRPlayerController::ABRPlayerController()
 	{
 		PlayerHUDWidgetClass = PlayerHUDWidgetBPClass.Class;
 	}
-
+	
 	static ConstructorHelpers::FClassFinder<UJoyStickWidget> PlayerMobileHUDWidgetBPClass(TEXT("/Game/UI/WBP_VirtualJoystick.WBP_VirtualJoystick_C"));
 	if (PlayerMobileHUDWidgetBPClass.Succeeded())
 	{
 		MobileHUDWidgetClass = PlayerMobileHUDWidgetBPClass.Class;
 	}
 
+	static ConstructorHelpers::FClassFinder<UGameOverWidget> GameOverWidgetBPClass(TEXT("/Game/UI/WBP_GameOverWidget.WBP_GameOverWidget_C"));
+	if (GameOverWidgetBPClass.Succeeded())
+	{
+		GameOverWidgetClass = GameOverWidgetBPClass.Class;
+	}
 	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleSkillTreeAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_ToggleSkillUI.IA_ToggleSkillUI'"));
 	if (ToggleSkillTreeAction.Succeeded())
 	{
@@ -115,6 +122,43 @@ ABRPlayerController::ABRPlayerController()
 	
 }
 
+void ABRPlayerController::ShowGameOverUI()
+{
+	if (GameOverWidgetClass && !GameOverWidgetInstance)
+	{
+		GameOverWidgetInstance = CreateWidget<UUserWidget>(this, GameOverWidgetClass);
+	}
+
+	if (GameOverWidgetInstance)
+	{
+		GameOverWidgetInstance->AddToViewport(10);
+
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
+	}
+}
+
+void ABRPlayerController::HideGameOverUI()
+{
+	if (GameOverWidgetInstance)
+	{
+		GameOverWidgetInstance->RemoveFromParent();
+		GameOverWidgetInstance = nullptr; 
+	}
+
+	bShowMouseCursor = false;
+	SetInputMode(FInputModeGameOnly());
+}
+
+void ABRPlayerController::RequestRestartGame()
+{
+	if (ABRGameModeBase* GM = Cast<ABRGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		GM->RestartCurrentLevel();
+	}
+	bShowMouseCursor = false;
+	SetInputMode(FInputModeGameOnly());
+}
 void ABRPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
