@@ -32,6 +32,12 @@ void UGA_ArcAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		return;
 	}
 
+	if(!ActorInfo || !ActorInfo->AvatarActor.IsValid())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+
 	//만약에 플레이어에서 사용하는거라면 DT에서 받아와서 데미지와 스킬쿨타임을 설정하도록
 	//나중에 이부분도 부모클래스나 따로 뺴야될듯.
 	if(AGASCharacterPlayer* Player = Cast<AGASCharacterPlayer>(ActorInfo->AvatarActor.Get()))
