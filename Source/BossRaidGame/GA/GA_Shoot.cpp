@@ -7,7 +7,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
 #include "Character/GASCharacterPlayer.h"
-#include "Character/ComboActionData.h"
 #include "GameFramework/Actor.h"
 #include "Attribute/PlayerCharacterAttributeSet.h"
 UGA_Shoot::UGA_Shoot() :

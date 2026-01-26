@@ -33,8 +33,6 @@ protected:
 
 protected:
 
-	UPROPERTY()
-	TObjectPtr<class UComboActionData> CurrentComboData;
 
 	uint8 CurrentCombo = 0;
 	FTimerHandle ComboTimerHandle;
