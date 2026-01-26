@@ -68,7 +68,7 @@ void AMobGASCharacter::SetWalkingState()
 {
 	if (!ASC) return;
 
-	// "State.Running" 태그를 부여하는 모든 활성화된 이펙트를 찾아서 제거
+	// "State.IsChasing" 태그를 부여하는 모든 활성화된 이펙트를 찾아서 제거
 	FGameplayTagContainer TagContainer;
 	TagContainer.AddTag(BRTAG_CHARACTER_ISCHASING);
 	ASC->RemoveActiveEffectsWithGrantedTags(TagContainer);
