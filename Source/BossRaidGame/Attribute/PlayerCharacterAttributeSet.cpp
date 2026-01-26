@@ -80,7 +80,7 @@ void UPlayerCharacterAttributeSet::ProcessLevelUp()
 		}
 	}
 
-	// UI가 이미 떠있으면 리턴 (위에서 구한 Subsystem 재사용)
+	// UI가 이미 떠있으면 리턴
 	if (LevelSubsystem && LevelSubsystem->IsLevelUpWidgetShown())
 	{
 		return;
@@ -131,7 +131,6 @@ void UPlayerCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffe
 					ProcessLevelUp();
 				}
 			}), 0.1f, false);
-		//ProcessLevelUp();
 	}
 	
 }
