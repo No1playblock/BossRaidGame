@@ -31,6 +31,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "VFX")
 	TObjectPtr<USoundBase> RaserSound;
+
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	FName TargetLocationParamName;
+
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	FName StartLocationParamName;
 private:
 	FHitResult LineTrace() const;
 

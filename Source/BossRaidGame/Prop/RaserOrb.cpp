@@ -25,6 +25,9 @@ ARaserOrb::ARaserOrb()
 	LaserEffectComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LaserEffectComp"));
 
 	LaserEffectComp->SetupAttachment(RootComponent);
+
+	StartLocationParamName = FName(TEXT("BeamStart"));
+	TargetLocationParamName = FName(TEXT("BeamEnd"));
 }
 void ARaserOrb::BeginPlay()
 {
@@ -65,6 +68,7 @@ FHitResult ARaserOrb::LineTrace() const
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, WorldOrigin, TraceEnd, TargetChannel, Params);
 
+
 		if (LaserEffectComp)
 		{
 			// 레이저 켜기 (필요할 때만)
@@ -75,10 +79,10 @@ FHitResult ARaserOrb::LineTrace() const
 
 			// 나이아가라의 User Parameter 변수 이름과 똑같아야 함!
 			// 시작점: 구체 위치
-			LaserEffectComp->SetNiagaraVariableVec3(TEXT("BeamStart"), GetActorLocation());
+			LaserEffectComp->SetVariableVec3(StartLocationParamName, GetActorLocation());
 
 			// 끝점: 트레이스 닿은 곳
-			LaserEffectComp->SetNiagaraVariableVec3(TEXT("BeamEnd"), bHit ? Hit.Location : TraceEnd);
+			LaserEffectComp->SetVariableVec3(TargetLocationParamName, bHit ? Hit.Location : TraceEnd);
 		}
 
 		UGameplayStatics::PlaySoundAtLocation(this, RaserSound, GetActorLocation());
