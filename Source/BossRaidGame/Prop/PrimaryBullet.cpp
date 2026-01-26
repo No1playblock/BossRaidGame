@@ -18,6 +18,11 @@ APrimaryBullet::APrimaryBullet()
 
 	CollisionComp->SetGenerateOverlapEvents(true);
 
+	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
+	BulletMesh->SetupAttachment(RootComponent);
+
+
+
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
 	ProjectileMovement->InitialSpeed = 1500.f;
@@ -26,6 +31,7 @@ APrimaryBullet::APrimaryBullet()
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0.0f;
 
+	
 	//InitialLifeSpan = 3.0f;
 
 }

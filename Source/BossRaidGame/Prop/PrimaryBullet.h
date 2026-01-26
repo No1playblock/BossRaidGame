@@ -32,6 +32,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* CollisionComp;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UStaticMeshComponent> BulletMesh;
+
 	TSubclassOf<class UGameplayEffect> DamageEffectClass;
 
 	float Damage = 0.0f;
