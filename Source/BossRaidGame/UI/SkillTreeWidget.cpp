@@ -18,7 +18,7 @@
 void USkillTreeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	bIsFocusable = true;
+	SetIsFocusable(true);
 
 	if (WidgetTree)
 	{
@@ -52,12 +52,30 @@ void USkillTreeWidget::NativeConstruct()
 		if (SkillTreeComp)
 		{
 			// 스킬 습득 성공 시 HandleSkillAcquired 함수가 호출되도록 연결
+			SkillTreeComp->OnSkillAcquired.RemoveAll(this);
 			SkillTreeComp->OnSkillAcquired.AddUObject(this, &USkillTreeWidget::RefreshNodeStates);
 		}
 	}
-	SkillInfo->OnSkillInfoClosed.AddUObject(this, &USkillTreeWidget::OnNodeUnSelected);
-	SimpleBuyWidget->OnSimpleBuyClosed.AddUObject(this, &USkillTreeWidget::OnNodeUnSelected);
-	XBtn->OnClicked.AddDynamic(this, &USkillTreeWidget::OnXButtonClicked);
+
+	if(SkillInfo)
+	{
+		SkillInfo->OnSkillInfoClosed.RemoveAll(this);
+		SkillInfo->OnSkillInfoClosed.AddUObject(this, &USkillTreeWidget::OnNodeUnSelected);
+
+	}
+	
+	if (SimpleBuyWidget)
+	{
+		SimpleBuyWidget->OnSimpleBuyClosed.RemoveAll(this);
+		SimpleBuyWidget->OnSimpleBuyClosed.AddUObject(this, &USkillTreeWidget::OnNodeUnSelected);
+	}
+
+	if (XBtn)
+	{
+		XBtn->OnClicked.RemoveAll(this);
+		XBtn->OnClicked.AddDynamic(this, &USkillTreeWidget::OnXButtonClicked);
+	}
+	
 }
 
 void USkillTreeWidget::NativeDestruct()
@@ -78,6 +96,7 @@ void USkillTreeWidget::NativeDestruct()
 	}
 	SkillInfo->OnSkillInfoClosed.RemoveAll(this);
 	SimpleBuyWidget->OnSimpleBuyClosed.RemoveAll(this);
+	XBtn->OnClicked.RemoveAll(this);
 }
 
 FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -127,7 +146,6 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 	World->GetTimerManager().ClearTimer(SelectionTimerHandle);
 	PendingSelectionNode = nullptr;
 	
-	UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Double clicked on node %s"), *DoubleClickedNode->GetName());
 	if (CurrentlySelectedNode)
 	{
 		CurrentlySelectedNode->SetSelected(false);
@@ -142,7 +160,6 @@ void USkillTreeWidget::HandleNodeDoubleClick(USkillTreeNodeWidget* DoubleClicked
 		SimpleBuyWidget->SetSkillCostText(*NodeData);
 		SimpleBuyWidget->SetVisibility(ESlateVisibility::Visible);
 		SkillInfo->SetVisibility(ESlateVisibility::Hidden);		
-		UE_LOG(LogTemp, Warning, TEXT("HandleNodeDoubleClick: Opened simple buy widget for node %s"), *CurrentlySelectedNode->GetName());
 	}
 	else
 	{
@@ -167,7 +184,7 @@ void USkillTreeWidget::RefreshNodeStates()
 
 void USkillTreeWidget::ProcessSingleClick()  
 {  
-    if (!PendingSelectionNode)  
+    if (!PendingSelectionNode.IsValid())  
     {  
 		UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: PendingSelectionNode is null."));
         return;  
@@ -177,12 +194,10 @@ void USkillTreeWidget::ProcessSingleClick()
         CurrentlySelectedNode->SetSelected(false);  
     }  
 
-    UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: Selected node %s"), *PendingSelectionNode->GetName());  
     if (CurrentlySelectedNode != PendingSelectionNode)  
     {  
-        CurrentlySelectedNode = PendingSelectionNode;  
+        CurrentlySelectedNode = PendingSelectionNode.Get();  
         CurrentlySelectedNode->SetSelected(true);  
-		UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: CurrentlySelectedNode set to %s"), *CurrentlySelectedNode->GetName());
         // Fix: Ensure the data is dereferenced properly before passing to OpenSkillInfo  
         const FSkillTreeDataRow* NodeData = CurrentlySelectedNode->GetNodeData();  
         if (NodeData)  
@@ -190,7 +205,6 @@ void USkillTreeWidget::ProcessSingleClick()
             SkillInfo->OpenSkillInfo(*NodeData);
 			SkillInfo->SetVisibility(ESlateVisibility::Visible);
 			SimpleBuyWidget->SetVisibility(ESlateVisibility::Hidden);
-			UE_LOG(LogTemp, Warning, TEXT("ProcessSingleClick: Opened skill info for node %s"), *CurrentlySelectedNode->GetName());
 			
         }  
         else  
