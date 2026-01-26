@@ -43,10 +43,11 @@ struct FStatChoiceInfo
 
 	FStatChoiceInfo(const FText& InDisplayName, const FText& InDisplayLevelText, float InValue, FGameplayAttribute InAttribute, const FGameplayAttribute InTargetLevelAttribute)
 		: DisplayName(InDisplayName)
+		, DisplayValue()
 		, DisplayLevelText(InDisplayLevelText)
-		, ModifierValue(InValue)
 		, TargetAttribute(InAttribute) 
 		, TargetLevelAttribute(InTargetLevelAttribute)
+		, ModifierValue(InValue)
 	{
 		FString ValueString;
 		if (TargetAttribute == UPlayerCharacterAttributeSet::GetSkillCooldownRateAttribute())
