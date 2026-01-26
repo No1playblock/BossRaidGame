@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Character/ComboActionData.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()
@@ -16,8 +15,6 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
 
-
-	//FORCEINLINE UComboActionData* GetComboActionData() const { return ComboActionData; }
 protected:
 
 	UFUNCTION()
@@ -25,10 +22,6 @@ protected:
 
 protected:
 	
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UComboActionData> ComboActionData;*/
-
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
