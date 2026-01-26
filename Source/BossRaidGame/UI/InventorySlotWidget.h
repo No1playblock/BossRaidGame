@@ -12,13 +12,14 @@
 class UImage;
 class UTextBlock;
 class UInventoryComponent;
+class UBorder;
 UCLASS()
 class BOSSRAIDGAME_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 public:
-    // ø‹∫Œø°º≠ µ•¿Ã≈Õ∏¶ ≥÷æÓ¡÷¥¬ «‘ºˆ
+    // Ïô∏Î∂ÄÏóêÏÑú Îç∞Ïù¥ÌÑ∞Î•º ÎÑ£Ïñ¥Ï£ºÎäî Ìï®Ïàò
     void UpdateSlot(FName InItemID, int32 InQuantity, int32 InSlotIndex, UInventoryComponent* InOwnerComp);
 
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -30,7 +31,13 @@ protected:
     TObjectPtr<UImage> IconImage;
 
     UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UImage> BackGroundImage;
+
+    UPROPERTY(meta = (BindWidget))
     TObjectPtr<UTextBlock> QuantityText;
+    
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UBorder> ItemBorder;
 
 private:
     FName ItemID;

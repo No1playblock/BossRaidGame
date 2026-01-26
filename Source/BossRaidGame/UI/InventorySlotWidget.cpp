@@ -7,110 +7,134 @@
 #include "Components/InventoryComponent.h"
 #include "GameData/ItemData.h"
 #include "Operation/BRDragDropOperation.h"
-#include "Blueprint/WidgetBlueprintLibrary.h" // µÂ∑°±◊ ∞®¡ˆøÎ ∂Û¿Ã∫Í∑Ø∏Æ
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Border.h"
 void UInventorySlotWidget::UpdateSlot(FName InItemID, int32 InQuantity, int32 InSlotIndex, UInventoryComponent* InOwnerComp)
 {
-    ItemID = InItemID;
-    Quantity = InQuantity;
+	ItemID = InItemID;
+	Quantity = InQuantity;
 	SlotIndex = InSlotIndex;
-    OwnerComp = InOwnerComp;
+	OwnerComp = InOwnerComp;
 
-    //∫Û ΩΩ∑‘¿œ∂ß
-    if (ItemID.IsNone() || Quantity <= 0)
-    {
-        if (IconImage) IconImage->SetVisibility(ESlateVisibility::Hidden);
-        if (QuantityText) QuantityText->SetVisibility(ESlateVisibility::Hidden);
-        return;
-    }
+	//Îπà Ïä¨Î°ØÏùºÎïå
+	if (ItemID.IsNone() || Quantity <= 0)
+	{
+		if (IconImage) IconImage->SetVisibility(ESlateVisibility::Hidden);
+		if (QuantityText) QuantityText->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
 
-    if (OwnerComp)
-    {
-        // ≥ª∫Œ «‘ºˆ∑Œ µ•¿Ã≈Õ ∆˜¿Œ≈Õ ∞°¡Æø»
-        const FItemData* Info = OwnerComp->GetItemData(ItemID);
-        if (Info)
-        {
-            // æ∆¿Ãƒ‹ º≥¡§ (Soft Object Ptr ∑ŒµÂ)
-            UTexture2D* IconTexture = Info->ItemIcon.LoadSynchronous();
+	if (OwnerComp)
+	{
+		// ÎÇ¥Î∂Ä Ìï®ÏàòÎ°ú Îç∞Ïù¥ÌÑ∞ Ìè¨Ïù∏ÌÑ∞ Í∞ÄÏ†∏Ïò¥
+		const FItemData* Info = OwnerComp->GetItemData(ItemID);
+		if (Info)
+		{
+			// ÏïÑÏù¥ÏΩò ÏÑ§Ï†ï (Soft Object Ptr Î°úÎìú)
+			UTexture2D* IconTexture = Info->ItemIcon.LoadSynchronous();
 
-            if (IconImage && IconTexture)
-            {
-                IconImage->SetBrushFromTexture(IconTexture);
-                IconImage->SetVisibility(ESlateVisibility::Visible);
-            }
+			if (IconImage && IconTexture)
+			{
+				IconImage->SetBrushFromTexture(IconTexture);
+				IconImage->SetVisibility(ESlateVisibility::Visible);
+			}
 
-            // ºˆ∑Æ «•Ω√ (1∞≥∏È º˚±Ë, 2∞≥ ¿ÃªÛ∏∏ «•Ω√)
-            if (QuantityText)
-            {
-                if (Quantity > 1)
-                {
-                    QuantityText->SetText(FText::AsNumber(Quantity));
-                    QuantityText->SetVisibility(ESlateVisibility::Visible);
-                }
-                else
-                {
-                    // 1∞≥¿œ ∂ß¥¬ º˝¿⁄ æ¯¿Ã æ∆¿Ãƒ‹∏∏ ∫∏¿Ã∞‘
-                    QuantityText->SetVisibility(ESlateVisibility::Hidden);
-                }
-            }
-        }
-    }
+			// ÏàòÎüâ ÌëúÏãú (1Í∞úÎ©¥ Ïà®ÍπÄ, 2Í∞ú Ïù¥ÏÉÅÎßå ÌëúÏãú)
+			if (QuantityText)
+			{
+				if (Quantity > 1)
+				{
+					QuantityText->SetText(FText::AsNumber(Quantity));
+					QuantityText->SetVisibility(ESlateVisibility::Visible);
+				}
+				else
+				{
+					// 1Í∞úÏùº ÎïåÎäî Ïà´Ïûê ÏóÜÏù¥ ÏïÑÏù¥ÏΩòÎßå Î≥¥Ïù¥Í≤å
+					QuantityText->SetVisibility(ESlateVisibility::Hidden);
+				}
+			}
+		}
+	}
 }
 FReply UInventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-    FReply Reply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	FReply Reply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
-    // ¡¬≈¨∏Ø¿Ã∞Ì, ¿Ø»ø«— Ω∫≈≥ µ•¿Ã≈Õ∞° ¿÷¿ª ∂ß
-    if (OwnerComp && InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-    {
+	// Ï¢åÌÅ¥Î¶≠Ïù¥Í≥†, Ïú†Ìö®Ìïú Ïä§ÌÇ¨ Îç∞Ïù¥ÌÑ∞Í∞Ä ÏûàÏùÑ Îïå
+	if (OwnerComp && InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
 
-        return FReply::Handled().DetectDrag(this->TakeWidget(), InMouseEvent.GetEffectingButton());
-    }
+		return FReply::Handled().DetectDrag(this->TakeWidget(), InMouseEvent.GetEffectingButton());
+	}
 
-    return FReply::Unhandled();
+	return FReply::Unhandled();
 }
 void UInventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-    Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 
-    UBRDragDropOperation* DragOp = NewObject<UBRDragDropOperation>();
+	UBRDragDropOperation* DragOp = NewObject<UBRDragDropOperation>();
 
-    //µ•¿Ã≈Õ √§øÏ±‚
-    DragOp->DragType = EDragType::Item;          // ≈∏¿‘ ¡ˆ¡§
-    DragOp->DataID = ItemID;                     // æ∆¿Ã≈€ ID
-    DragOp->Quantity = Quantity;                 // ºˆ∑Æ
-    DragOp->SourceIndex = SlotIndex;             // √‚πﬂ ΩΩ∑‘ π¯»£
-    DragOp->SourceObject = OwnerComp;            // √‚πﬂ¡ˆ ƒƒ∆˜≥Õ∆Æ (InventoryComponent)
+	//Îç∞Ïù¥ÌÑ∞ Ï±ÑÏö∞Í∏∞
+	DragOp->DragType = EDragType::Item;          // ÌÉÄÏûÖ ÏßÄÏ†ï
+	DragOp->DataID = ItemID;                     // ÏïÑÏù¥ÌÖú ID
+	DragOp->Quantity = Quantity;                 // ÏàòÎüâ
+	DragOp->SourceIndex = SlotIndex;             // Ï∂úÎ∞ú Ïä¨Î°Ø Î≤àÌò∏
+	DragOp->SourceObject = OwnerComp;            // Ï∂úÎ∞úÏßÄ Ïª¥Ìè¨ÎÑåÌä∏ (InventoryComponent)
 
-    //∫Ò¡÷æÛ º≥¡§
-    DragOp->DefaultDragVisual = this;
-    DragOp->Pivot = EDragPivot::CenterCenter;
 
-	UE_LOG(LogTemp, Warning, TEXT("UInventorySlotWidget::NativeOnDragDetected - Dragging ItemID: %s from SlotIndex: %d"), *ItemID.ToString(), SlotIndex);
-    OutOperation = DragOp;
+	//ÎìúÎûòÍ∑∏ ÎπÑÏ£ºÏñº ÏÑ§Ï†ï
+	UInventorySlotWidget* DragVisual = CreateWidget<UInventorySlotWidget>(GetWorld(), GetClass());
+	if (DragVisual)
+	{
+		DragVisual->UpdateSlot(ItemID, Quantity, SlotIndex, OwnerComp);
+
+		if (DragVisual->ItemBorder)
+		{
+			FLinearColor BorderColor = DragVisual->ItemBorder->GetBrushColor();
+			BorderColor.A = 0.0f;
+			DragVisual->ItemBorder->SetBrushColor(BorderColor);
+		}
+
+		if (DragVisual->BackGroundImage)
+		{
+			DragVisual->BackGroundImage->SetVisibility(ESlateVisibility::Hidden);
+		}
+
+		DragOp->DefaultDragVisual = DragVisual;
+	}
+	else
+	{
+		DragOp->DefaultDragVisual = this;
+	}
+
+	DragOp->Pivot = EDragPivot::CenterCenter;
+
+	OutOperation = DragOp;
 }
 bool UInventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 
-    UBRDragDropOperation* DragOp = NewObject<UBRDragDropOperation>();
+	UBRDragDropOperation* DragOp = NewObject<UBRDragDropOperation>();
 
-    // ¿Ø»øº∫∞ÀªÁ
-    if (DragOp && DragOp->DragType == EDragType::Item)
-    {
-        // 3. ∞∞¿∫ ¿Œ∫•≈‰∏Æ √¢ ≥ª∫Œø°º≠¿« ¿Ãµø¿Œ¡ˆ »Æ¿Œ (√‚√≥ ƒƒ∆˜≥Õ∆Æ ∫Ò±≥)
-        if (DragOp->SourceObject == OwnerComp)
-        {
-           
-            if (OwnerComp)
-            {
-                OwnerComp->SwapSlot(DragOp->SourceIndex, SlotIndex);
-                return true; // µÂ∑” √≥∏Æ øœ∑·
-            }
-        }
-        else
-        {
-            // TODO: √¢∞Ì≥™ ¥Ÿ∏• ªÁ∂˜ ¿Œ∫•≈‰∏Æø°º≠ ø¬ ∞ÊøÏ (√ﬂ»ƒ ±∏«ˆ)
-        }
-    }
+	// Ïú†Ìö®ÏÑ±Í≤ÄÏÇ¨
+	if (DragOp && DragOp->DragType == EDragType::Item)
+	{
+		//Í∞ôÏùÄ Ïù∏Î≤§ÌÜ†Î¶¨ Ï∞Ω ÎÇ¥Î∂ÄÏóêÏÑúÏùò Ïù¥ÎèôÏù∏ÏßÄ ÌôïÏù∏
+		if (DragOp->SourceObject == OwnerComp)
+		{
 
-    return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+			if (OwnerComp)
+			{
+				OwnerComp->SwapSlot(DragOp->SourceIndex, SlotIndex);
+				return true; // ÎìúÎ°≠ Ï≤òÎ¶¨ ÏôÑÎ£å
+			}
+		}
+		else
+		{
+			// TODO: Ï∞ΩÍ≥†ÎÇò Îã§Î•∏ ÏÇ¨Îûå Ïù∏Î≤§ÌÜ†Î¶¨ÏóêÏÑú Ïò® Í≤ΩÏö∞ (Ï∂îÌõÑ Íµ¨ÌòÑ)
+		}
+	}
+
+	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
