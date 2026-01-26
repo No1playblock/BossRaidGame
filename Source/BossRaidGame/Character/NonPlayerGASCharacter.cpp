@@ -18,7 +18,6 @@
 ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 {
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
-	//AttributeSet = CreateDefaultSubobject<UMobCharacterAttributeSet>(TEXT("AttributeSet"));
 	GetCharacterMovement()->SetWalkableFloorAngle(5.0f);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // AI가 스폰되거나 월드에 배치될 때 자동으로 소유됨
@@ -37,8 +36,6 @@ ANonPlayerGASCharacter::ANonPlayerGASCharacter()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Block);
-
-	
 
 
 	//TODO:
@@ -63,11 +60,6 @@ UAbilitySystemComponent* ANonPlayerGASCharacter::GetAbilitySystemComponent() con
 void ANonPlayerGASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	/*if (AttributeSet)
-	{
-		AttributeSet->OnOutOfHealth.AddUObject(this, &ANonPlayerGASCharacter::OnOutOfHealth);
-	}*/
 }
 
 void ANonPlayerGASCharacter::PossessedBy(AController* NewController)
@@ -194,10 +186,6 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
 
 	if (!Player)
 		return;
-	if (Player)
-	{
-		//Player->GainExperience(AttributeSet->GetExpReward()); // float ExpReward; 몬스터가 가진 보상 경험치
-	}
 
 	UAbilitySystemComponent* PlayerASC = Player->GetAbilitySystemComponent();
 	if (PlayerASC)
@@ -213,10 +201,7 @@ void ANonPlayerGASCharacter::OnOutOfHealth()
 		{
 
 			// SetByCaller 값 세팅
-			//const FGameplayTag XPTag = FGameplayTag::RequestGameplayTag(FName("Data.Experience"));
 			SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_EXPERIENCE, AttributeSet->GetExpReward());
-
-			//SpecHandle.Data->SetSetByCallerMagnitude(BRTAG_DATA_EXPERIENCE, ExpReward);
 
 			// 적용
 			PlayerASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);

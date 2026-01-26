@@ -8,8 +8,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
-
-
 ACharacterPlayer::ACharacterPlayer()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -81,68 +79,7 @@ ACharacterPlayer::ACharacterPlayer()
 
 }
 
-//void ACharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-//{
-//	Super::SetupPlayerInputComponent(PlayerInputComponent);
-//
-//	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-//
-//	//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-//	//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-//
-//	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACharacterPlayer::Look);
-//	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACharacterPlayer::Move);
-//}
-
 void ACharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//APlayerController* PlayerController = CastChecked<APlayerController>(GetController());
-	//if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-	//{
-	//	Subsystem->AddMappingContext(DefaultMappingContext, 0);		// 0 우선순위 설정
-	//}
-
 }
-
-//void ACharacterPlayer::Move(const FInputActionValue& Value)
-//{
-//	FVector2D MovementVector = Value.Get<FVector2D>();
-//
-//	const FRotator Rotation = Controller->GetControlRotation();
-//	const FRotator YawRotation(0, Rotation.Yaw, 0);
-//
-//	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-//	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-//
-//	AddMovementInput(ForwardDirection, MovementVector.X);
-//	AddMovementInput(RightDirection, MovementVector.Y);
-//
-//}
-//
-//void ACharacterPlayer::Look(const FInputActionValue& Value)
-//{
-//	FVector2D LookAxisVector = Value.Get<FVector2D>();
-//
-//	AddControllerYawInput(LookAxisVector.X);
-//	AddControllerPitchInput(LookAxisVector.Y);
-//}
-//void ACharacterPlayer::HandleMoveInput(const FInputActionValue& Value)
-//{
-//	FVector2D MovementVector = Value.Get<FVector2D>();
-//
-//	if (Controller != nullptr)
-//	{
-//		const FRotator Rotation = Controller->GetControlRotation();
-//		const FRotator YawRotation(0, Rotation.Yaw, 0);
-//
-//		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-//		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-//
-//		// Y축이 앞/뒤, X축이 좌/우를 담당하도록 수정
-//		AddMovementInput(ForwardDirection, MovementVector.Y);
-//		AddMovementInput(RightDirection, MovementVector.X);
-//	}
-//}
-
