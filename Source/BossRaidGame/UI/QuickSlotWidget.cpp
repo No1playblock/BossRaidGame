@@ -46,6 +46,7 @@ void UQuickSlotWidget::NativeConstruct()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("[QuickSlot] Could not find Owning Pawn!"));
+		return;
 	}
 
 	// 최초 갱신
