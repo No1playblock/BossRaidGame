@@ -26,7 +26,7 @@ void UGameOverWidget::OnYesBtnClicked()
 {
 	if (ABRPlayerController* PC = Cast<ABRPlayerController>(GetOwningPlayer()))
 	{
-		PC->RequestReturnToTown();
+		PC->RequestRestartGame();
 	}
 }
 
