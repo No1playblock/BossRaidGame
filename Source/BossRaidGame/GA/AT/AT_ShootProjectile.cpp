@@ -8,6 +8,7 @@
 #include "Character/GASCharacterPlayer.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/PlayerCharacterAttributeSet.h"
+#include "Subsystems/ObjectPoolSubsystem.h"
 
 UAT_ShootProjectile* UAT_ShootProjectile::CreateTask(UGameplayAbility* OwningAbility, FName TaskName)
 {
@@ -57,21 +58,50 @@ void UAT_ShootProjectile::DoShoot()
 
 	FRotator BulletRotation = BulletDirection.Rotation();
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = Avatar;
-	SpawnParams.Instigator = Cast<APawn>(Avatar);
 
-	AGASCharacterPlayer* BaseCharacter = Cast<AGASCharacterPlayer>(Avatar);
-	if (BaseCharacter)
+	AActor* NewActor = nullptr;
+	APrimaryBullet* Bullet = nullptr;
+	UWorld* World = GetWorld();
+
+	if (World)
 	{
-		UAbilitySystemComponent* ASC = BaseCharacter->GetAbilitySystemComponent();
-		if (ASC)
+		if (BulletClass)
 		{
-			APrimaryBullet* Bullet = GetWorld()->SpawnActor<APrimaryBullet>(BulletClass, MuzzleLocation, BulletRotation, SpawnParams);
-			Bullet->InitializeBullet(ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackPowerAttribute()), AttackEffectClass);
+			AGASCharacterPlayer* BaseCharacter = Cast<AGASCharacterPlayer>(Avatar);
+			if (BaseCharacter)
+			{
+				UAbilitySystemComponent* ASC = BaseCharacter->GetAbilitySystemComponent();
+				if (ASC)
+				{
+					// 서브시스템 가져오기
+					if (UObjectPoolSubsystem* PoolSys = World->GetSubsystem<UObjectPoolSubsystem>())
+					{
+						// Owner와 Instigator 설정
+						AActor* OwnerActor = Avatar;
+						APawn* InstigatorPawn = Cast<APawn>(Avatar);
+
+						// 풀에서 소환
+						NewActor = PoolSys->SpawnFromPool(BulletClass, MuzzleLocation, BulletRotation, OwnerActor, InstigatorPawn);
+
+
+					}
+					else
+					{
+						FActorSpawnParameters SpawnParams;
+						SpawnParams.Owner = Avatar;
+						SpawnParams.Instigator = Cast<APawn>(Avatar);
+						SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+						NewActor = World->SpawnActor<AActor>(BulletClass, MuzzleLocation, BulletRotation, SpawnParams);
+					}
+					Bullet = Cast<APrimaryBullet>(NewActor);
+					Bullet->InitializeBullet(ASC->GetNumericAttribute(UPlayerCharacterAttributeSet::GetAttackPowerAttribute()), AttackEffectClass);
+				}
+
+			}
 		}
 	}
 
-	
+
 }
 
