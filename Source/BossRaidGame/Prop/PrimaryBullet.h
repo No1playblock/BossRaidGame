@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameplayTagContainer.h"
+#include "Interface/PoolableInterface.h"
 #include "PrimaryBullet.generated.h"
 
 
 UCLASS()
-class BOSSRAIDGAME_API APrimaryBullet : public AActor
+class BOSSRAIDGAME_API APrimaryBullet : public AActor, public IPoolableInterface
 {
 	GENERATED_BODY()
 	
@@ -22,9 +23,16 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void OnPoolSpawned() override;
+	virtual void OnPoolDespawned() override;
+
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void ReturnToPool();
+
+protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class UProjectileMovementComponent* ProjectileMovement;
@@ -38,4 +46,6 @@ protected:
 	TSubclassOf<class UGameplayEffect> DamageEffectClass;
 
 	float Damage = 0.0f;
+
+	FTimerHandle DeactivateTimerHandle;
 };

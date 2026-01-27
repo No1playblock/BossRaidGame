@@ -7,9 +7,12 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Tag/BRGameplayTag.h"
+#include "Subsystems/ObjectPoolSubsystem.h"
 
 APrimaryBullet::APrimaryBullet()
 {
+	PrimaryActorTick.bCanEverTick = false;
+
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->SetCollisionProfileName("Projectile");
@@ -39,6 +42,37 @@ void APrimaryBullet::BeginPlay()
 
 }
 
+void APrimaryBullet::OnPoolSpawned()
+{
+	SetActorHiddenInGame(false);
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	// 물리 이동 초기화 및 재시작
+	ProjectileMovement->SetUpdatedComponent(CollisionComp);
+	ProjectileMovement->Velocity = GetActorForwardVector() * ProjectileMovement->InitialSpeed;
+	ProjectileMovement->UpdateComponentVelocity(); // 속도 갱신 강제
+	ProjectileMovement->Activate(true);
+
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimer(DeactivateTimerHandle, this, &APrimaryBullet::ReturnToPool, 3.0f, false);
+	}
+}
+
+void APrimaryBullet::OnPoolDespawned()
+{
+	ProjectileMovement->StopMovementImmediately();
+	ProjectileMovement->Deactivate();
+
+	// 충돌 판정 끄기
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(DeactivateTimerHandle);
+	}
+
+}
 void APrimaryBullet::InitializeBullet(float InDamage, TSubclassOf<class UGameplayEffect> InDamageEffectClass)
 {
 	Damage = InDamage;
@@ -66,6 +100,23 @@ void APrimaryBullet::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AA
 				}
 			}
 		}
-		Destroy();
+		ReturnToPool();
+	}
+}
+
+void APrimaryBullet::ReturnToPool()
+{
+	if (UWorld* World = GetWorld())
+	{
+		if (UObjectPoolSubsystem* PoolSys = World->GetSubsystem<UObjectPoolSubsystem>())
+		{
+			// 타이머 안전하게 정리 후 반환
+			World->GetTimerManager().ClearTimer(DeactivateTimerHandle);
+			PoolSys->ReturnToPool(this);
+		}
+		else
+		{
+			Destroy();
+		}
 	}
 }
