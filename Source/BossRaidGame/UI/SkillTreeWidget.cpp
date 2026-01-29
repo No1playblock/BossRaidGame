@@ -72,7 +72,7 @@ void USkillTreeWidget::NativeConstruct()
 
 	if (XBtn)
 	{
-		XBtn->OnClicked.RemoveAll(this);
+		XBtn->OnClicked.RemoveDynamic(this, &USkillTreeWidget::OnXButtonClicked);
 		XBtn->OnClicked.AddDynamic(this, &USkillTreeWidget::OnXButtonClicked);
 	}
 	
@@ -96,7 +96,7 @@ void USkillTreeWidget::NativeDestruct()
 	}
 	SkillInfo->OnSkillInfoClosed.RemoveAll(this);
 	SimpleBuyWidget->OnSimpleBuyClosed.RemoveAll(this);
-	XBtn->OnClicked.RemoveAll(this);
+	XBtn->OnClicked.RemoveDynamic(this, &USkillTreeWidget::OnXButtonClicked);
 }
 
 FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -110,6 +110,7 @@ FReply USkillTreeWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKey
 		{
 			PlayerController->SetShowMouseCursor(false);
 			PlayerController->SetInputMode(FInputModeGameOnly());
+
 
 		}
 
@@ -225,8 +226,9 @@ void USkillTreeWidget::OnXButtonClicked()
 {
 	RemoveFromParent();
 
-	APlayerController* PlayerController = GetOwningPlayer();
 #if !(PLATFORM_ANDROID || PLATFORM_IOS)
+
+	APlayerController* PlayerController = GetOwningPlayer();
 	if (PlayerController)
 	{
 		PlayerController->SetShowMouseCursor(false);
