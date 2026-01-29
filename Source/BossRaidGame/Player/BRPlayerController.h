@@ -93,25 +93,25 @@ protected:
 
 
 	UPROPERTY()
-	class UPlayerHUDWidget* PlayerHUDWidgetInstance;
+	TObjectPtr<class UPlayerHUDWidget> PlayerHUDWidgetInstance;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
 
 	UPROPERTY()
-	USkillTreeWidget* SkillTreeWidgetInstance;
+	TObjectPtr <USkillTreeWidget> SkillTreeWidgetInstance;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<USkillTreeWidget> SkillTreeWidgetClass;
+	TSoftClassPtr<USkillTreeWidget> SkillTreeWidgetClass;
 
 	UPROPERTY()
 	UInventoryMainWidget* InventoryWidgetInstance;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UInventoryMainWidget> InventoryWidgetClass;
+	TSoftClassPtr<UInventoryMainWidget> InventoryWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> GameOverWidgetClass;
+	TSoftClassPtr<UUserWidget> GameOverWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UUserWidget> GameOverWidgetInstance;

@@ -20,113 +20,22 @@ ABRPlayerController::ABRPlayerController()
 	MoveFingerIndex = -1;
 	LookFingerIndex = -1;
 
-	//InputAction
-	static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Jump.IA_Jump'"));
-	if (JumpActionRef.Object)
-	{
-		IA_Jump = JumpActionRef.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Move.IA_Move'"));
-	if (MoveActionRef.Object)
-	{
-		IA_Move = MoveActionRef.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputAction> LookActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Look.IA_Look'"));
-	if (LookActionRef.Object)
-	{
-		IA_Look = LookActionRef.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UInputAction> AttackActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Attack.IA_Attack'"));
-	if (AttackActionRef.Object)
-	{
-		IA_Attack = AttackActionRef.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleInventoryAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_Inventory.IA_Inventory'"));
-	if (ToggleInventoryAction.Object)
-	{
-		IA_Inventory = ToggleInventoryAction.Object;
-	}
-
-	//위젯
-	static ConstructorHelpers::FClassFinder<UInventoryMainWidget> InventoryWidgetBPClass(TEXT("/Game/UI/WBP_InventoryMainWidget.WBP_InventoryMainWidget_C"));
-	if (InventoryWidgetBPClass.Succeeded())
-	{
-		InventoryWidgetClass = InventoryWidgetBPClass.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<USkillTreeWidget> SkillTreeWidgetBPClass(TEXT("/Game/UI/WBP_SkillTree.WBP_SkillTree_C"));
-	if (SkillTreeWidgetBPClass.Succeeded())
-	{
-		SkillTreeWidgetClass = SkillTreeWidgetBPClass.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<UPlayerHUDWidget> PlayerHUDWidgetBPClass(TEXT("/Game/UI/WBP_PlayerHUDWidget.WBP_PlayerHUDWidget_C"));
-	if (PlayerHUDWidgetBPClass.Succeeded())
-	{
-		PlayerHUDWidgetClass = PlayerHUDWidgetBPClass.Class;
-	}
-	
-	static ConstructorHelpers::FClassFinder<UJoyStickWidget> PlayerMobileHUDWidgetBPClass(TEXT("/Game/UI/WBP_VirtualJoystick.WBP_VirtualJoystick_C"));
-	if (PlayerMobileHUDWidgetBPClass.Succeeded())
-	{
-		MobileHUDWidgetClass = PlayerMobileHUDWidgetBPClass.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<UGameOverWidget> GameOverWidgetBPClass(TEXT("/Game/UI/WBP_GameOverWidget.WBP_GameOverWidget_C"));
-	if (GameOverWidgetBPClass.Succeeded())
-	{
-		GameOverWidgetClass = GameOverWidgetBPClass.Class;
-	}
-	static ConstructorHelpers::FObjectFinder<UInputAction> ToggleSkillTreeAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_ToggleSkillUI.IA_ToggleSkillUI'"));
-	if (ToggleSkillTreeAction.Succeeded())
-	{
-		IA_ToggleSkillTree = ToggleSkillTreeAction.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DesktopMappingContext(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
-	if (DesktopMappingContext.Succeeded())
-	{
-		IMC_Desktop = DesktopMappingContext.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> MobileMappingContext(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Mobile.IMC_Mobile'"));
-	if (MobileMappingContext.Succeeded())
-	{
-		IMC_Mobile = MobileMappingContext.Object;
-	}
-
-	//quickslot input action
-	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot1_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot1.IA_QuickSlot1'"));
-	if (QuickSlot1_Action.Succeeded())
-	{
-		IA_QuickSlot_1 = QuickSlot1_Action.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot2_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot2.IA_QuickSlot2'"));
-	if (QuickSlot2_Action.Succeeded())
-	{
-		IA_QuickSlot_2 = QuickSlot2_Action.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot3_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot3.IA_QuickSlot3'"));
-	if (QuickSlot3_Action.Succeeded())
-	{
-		IA_QuickSlot_3 = QuickSlot3_Action.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UInputAction> QuickSlot4_Action(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/InputAction/IA_QuickSlot4.IA_QuickSlot4'"));
-	if (QuickSlot4_Action.Succeeded())
-	{
-		IA_QuickSlot_4 = QuickSlot4_Action.Object;
-	}
-	
 }
 
 void ABRPlayerController::ShowGameOverUI()
 {
-	if (GameOverWidgetClass && !GameOverWidgetInstance)
+	if (!GameOverWidgetInstance)
 	{
-		GameOverWidgetInstance = CreateWidget<UUserWidget>(this, GameOverWidgetClass);
+		// 클래스가 설정되어 있다면
+		if (!GameOverWidgetClass.IsNull())
+		{
+			// 동기 로딩
+			UClass* LoadedClass = GameOverWidgetClass.LoadSynchronous();
+			if (LoadedClass)
+			{
+				GameOverWidgetInstance = CreateWidget<UUserWidget>(this, LoadedClass);
+			}
+		}
 	}
 
 	if (GameOverWidgetInstance)
@@ -291,10 +200,9 @@ void ABRPlayerController::SetupInputComponent()
 		EnhancedInput->BindAction(IA_Inventory, ETriggerEvent::Started, this, &ABRPlayerController::ToggleInventoryUI);
 		//EnhancedInput->BindAction(IA_Attack, ETriggerEvent::Started, this, &ABRPlayerController::Attack);
 
-		if (IA_QuickSlot_1) EnhancedInput->BindAction(IA_QuickSlot_1, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot1);
-		if (IA_QuickSlot_2) EnhancedInput->BindAction(IA_QuickSlot_2, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot2);
-		if (IA_QuickSlot_3) EnhancedInput->BindAction(IA_QuickSlot_3, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot3);
-		if (IA_QuickSlot_4) EnhancedInput->BindAction(IA_QuickSlot_4, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot4);
+		
+		
+#if PLATFORM_ANDROID || PLATFORM_IOS
 		//Touch는 EnhancedInputComponent를 사용하지 않고 별도 바인딩
 		if (InputComponent)
 		{
@@ -302,7 +210,12 @@ void ABRPlayerController::SetupInputComponent()
 			InputComponent->BindTouch(IE_Released, this, &ABRPlayerController::OnTouchEnded);
 			InputComponent->BindTouch(IE_Repeat, this, &ABRPlayerController::OnTouchMoved); // Moved는 IE_Repeat에 해당
 		}
-
+#else
+		if (IA_QuickSlot_1) EnhancedInput->BindAction(IA_QuickSlot_1, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot1);
+		if (IA_QuickSlot_2) EnhancedInput->BindAction(IA_QuickSlot_2, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot2);
+		if (IA_QuickSlot_3) EnhancedInput->BindAction(IA_QuickSlot_3, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot3);
+		if (IA_QuickSlot_4) EnhancedInput->BindAction(IA_QuickSlot_4, ETriggerEvent::Started, this, &ABRPlayerController::OnQuickSlot4);
+#endif
 	}
 }
 
@@ -403,17 +316,30 @@ void ABRPlayerController::OnTouchEnded(const ETouchIndex::Type FingerIndex, cons
 }
 void ABRPlayerController::ToggleSkillTreeUI()
 {
-	if (!SkillTreeWidgetInstance && SkillTreeWidgetClass)
+
+	if (!SkillTreeWidgetInstance)
 	{
-		SkillTreeWidgetInstance = CreateWidget<USkillTreeWidget>(this, SkillTreeWidgetClass);
+		//클래스 정보가 유효한지 확인
+		if (!SkillTreeWidgetClass.IsNull())
+		{
+			UClass* LoadedClass = SkillTreeWidgetClass.LoadSynchronous();
+
+			if (LoadedClass)
+			{
+				SkillTreeWidgetInstance = CreateWidget<USkillTreeWidget>(this, LoadedClass);
+			}
+		}
 	}
+
 	if (SkillTreeWidgetInstance)
 	{
 		const bool bVisible = SkillTreeWidgetInstance->IsInViewport();
 		if (!bVisible)
 		{
+		
 			SkillTreeWidgetInstance->AddToViewport();
 			SetShowMouseCursor(true);						//여기서 CallStack
+
 			// 탭키만 UI 입력에 포함
 			SetInputMode(FInputModeUIOnly());
 			SkillTreeWidgetInstance->SetKeyboardFocus();
@@ -424,9 +350,19 @@ void ABRPlayerController::ToggleSkillTreeUI()
 void ABRPlayerController::ToggleInventoryUI()
 {
 	//없으면 Create
-	if (!InventoryWidgetInstance && InventoryWidgetClass)
+	if (!InventoryWidgetInstance)
 	{
-		InventoryWidgetInstance = CreateWidget<UInventoryMainWidget>(this, InventoryWidgetClass);
+		//클래스 정보가 유효한지 확인
+		if (!InventoryWidgetClass.IsNull())
+		{
+
+			UClass* LoadedClass = InventoryWidgetClass.LoadSynchronous();
+
+			if (LoadedClass)
+			{
+				InventoryWidgetInstance = CreateWidget<UInventoryMainWidget>(this, LoadedClass);
+			}
+		}
 	}
 
 	//있으면 여닫
