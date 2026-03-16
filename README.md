@@ -1,8 +1,8 @@
 # Project: BossRaid
 
-### 5분마다 보스를 처치하며 무한히 도전하는 3인칭 FPS 로그라이크 게임
+### 보스를 처치하며 무한히 도전하는 3인칭 FPS 로그라이크 게임
 
- <img width="1519" height="649" alt="스크린샷 2025-08-24 234322" src="https://github.com/user-attachments/assets/6ba3a7b0-b9cf-4d78-8c7d-2f4a37b6dc00" />
+ <img width="1392" height="675" alt="Image" src="https://github.com/user-attachments/assets/1b48a29a-9644-4545-a360-516ffc1d85fc" />
 
 ## 1. 프로젝트 개요
 이 프로젝트는 개인 포트폴리오 목적으로 제작된 3인칭 FPS 로그라이크 게임입니다. 단순히 게임을 완성하는 것을 넘어, 아래와 같은 구체적인 기술 목표를 달성하는 데 중점을 두었습니다.
