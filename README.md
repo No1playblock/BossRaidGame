@@ -3,6 +3,15 @@
 ### 보스를 처치하며 무한히 도전하는 3인칭 FPS 로그라이크 게임
 
 [![YouTube 영상 보기](https://img.youtube.com/vi/J0O3r9x6T8Q/mqdefault.jpg)](https://youtu.be/J0O3r9x6T8Q)
+<details>
+  <summary>🎬 여기를 클릭해서 유튜브 영상 보기</summary>
+  <br>
+  <p align="center">
+    <a href="https://youtu.be/J0O3r9x6T8Q">
+      <img src="https://img.youtube.com/vi/J0O3r9x6T8Q/maxresdefault.jpg" alt="YouTube 영상 보기" width="70%">
+    </a>
+  </p>
+</details>
  <img width="1314" height="709" alt="Image" src="https://github.com/user-attachments/assets/ffc44d4a-16a4-451c-bfdc-92b7c8ceda5b" />
 
 ## 1. 프로젝트 개요
