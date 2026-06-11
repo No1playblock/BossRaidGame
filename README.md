@@ -2,9 +2,9 @@
 
 ### 보스를 처치하며 무한히 도전하는 3인칭 FPS 로그라이크 게임
 
-유튜브 링크: https://img.youtube.com/vi/J0O3r9x6T8Q/mqdefault.jpg)](https://youtu.be/J0O3r9x6T8Q
-
  <img width="1314" height="709" alt="Image" src="https://github.com/user-attachments/assets/ffc44d4a-16a4-451c-bfdc-92b7c8ceda5b" />
+
+유튜브 링크: https://youtu.be/J0O3r9x6T8Q
 
 ## 1. 프로젝트 개요
 이 프로젝트는 개인 포트폴리오 목적으로 제작된 3인칭 FPS 로그라이크 게임입니다. 단순히 게임을 완성하는 것을 넘어, 아래와 같은 구체적인 기술 목표를 달성하는 데 중점을 두었습니다.
